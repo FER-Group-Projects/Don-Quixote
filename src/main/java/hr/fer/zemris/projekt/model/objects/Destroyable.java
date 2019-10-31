@@ -1,6 +1,6 @@
 package hr.fer.zemris.projekt.model.objects;
 
-public interface Destryable {
+public interface Destroyable {
 	
 	void destroy();
 

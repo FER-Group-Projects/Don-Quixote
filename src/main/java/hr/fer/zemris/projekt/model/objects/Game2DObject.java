@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class Game2DObject implements BoundingBoxListener, Destryable {
+public abstract class Game2DObject implements BoundingBoxListener, Destroyable {
 	
 	private BoundingBox position;
 	
@@ -32,7 +32,7 @@ public abstract class Game2DObject implements BoundingBoxListener, Destryable {
 	}
 
 	@Override
-	public void bouningBoxChange(BoundingBox source) {
+	public void boundingBoxChange(BoundingBox source) {
 		notifyAllListeners();
 	}
 	

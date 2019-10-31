@@ -12,113 +12,120 @@ public class ModelToScreenCoordinateConvertor {
 		public long y;
 	}
 	
-	private double minXD;
-	private double maxXD;
-	private double minYD;
-	private double maxYD;
+	/**
+	 * Minimum and maximum coordinates of the model
+	 */
+	private double minXM;
+	private double maxXM;
+	private double minYM;
+	private double maxYM;
 	
-	private long minXI;
-	private long maxXI;
-	private long minYI;
-	private long maxYI;
+	/**
+	 * Minimum and maximum coordinates of the screen
+	 */
+	private long minXS;
+	private long maxXS;
+	private long minYS;
+	private long maxYS;
 	
 	private double scaleX;
 	private double scaleY;
 	
-	public ModelToScreenCoordinateConvertor(double minXD, double maxXD, double minYD, double maxYD, long minXI, long maxXI,
-			long minYI, long maxYI) {
-		this.minXD = minXD;
-		this.maxXD = maxXD;
-		this.minYD = minYD;
-		this.maxYD = maxYD;
-		this.minXI = minXI;
-		this.maxXI = maxXI;
-		this.minYI = minYI;
-		this.maxYI = maxYI;
-		refreshScaling();		
+	public ModelToScreenCoordinateConvertor(double minXM, double maxXM, double minYM, double maxYM, long minXS,
+			long maxXS, long minYS, long maxYS) {
+		this.minXM = minXM;
+		this.maxXM = maxXM;
+		this.minYM = minYM;
+		this.maxYM = maxYM;
+		this.minXS = minXS;
+		this.maxXS = maxXS;
+		this.minYS = minYS;
+		this.maxYS = maxYS;
+		
+		refreshScaling();
 	}
-	
+
 	private void refreshScaling() {
-		this.scaleX = (maxXI-minXI) / (maxXD-minXD);
-		this.scaleY = (maxYI-minYI) / (maxYD-minYD);
+		this.scaleX = (maxXS-minXS) / (maxXM-minXM);
+		this.scaleY = (maxYS-minYS) / (maxYM-minYM);
 	}
 	
 	public LongPoint convert(DoublePoint dp) {
 		LongPoint point = new LongPoint();
 		point.x = Math.round(dp.x * scaleX);
-		point.y = maxYI-Math.round(dp.y * scaleY);
+		point.y = maxYS-Math.round(dp.y * scaleY);
 		return point;
 	}
 
-	public double getMinXD() {
-		return minXD;
+	public double getMinXM() {
+		return minXM;
 	}
 
-	public void setMinXD(double minXD) {
-		this.minXD = minXD;
+	public void setMinXM(double minXM) {
+		this.minXM = minXM;
 		refreshScaling();
 	}
 
-	public double getMaxXD() {
-		return maxXD;
+	public double getMaxXM() {
+		return maxXM;
 	}
 
-	public void setMaxXD(double maxXD) {
-		this.maxXD = maxXD;
+	public void setMaxXM(double maxXM) {
+		this.maxXM = maxXM;
 		refreshScaling();
 	}
 
-	public double getMinYD() {
-		return minYD;
+	public double getMinYM() {
+		return minYM;
 	}
 
-	public void setMinYD(double minYD) {
-		this.minYD = minYD;
+	public void setMinYM(double minYM) {
+		this.minYM = minYM;
 		refreshScaling();
 	}
 
-	public double getMaxYD() {
-		return maxYD;
+	public double getMaxYM() {
+		return maxYM;
 	}
 
-	public void setMaxYD(double maxYD) {
-		this.maxYD = maxYD;
+	public void setMaxYM(double maxYM) {
+		this.maxYM = maxYM;
 		refreshScaling();
 	}
 
-	public long getMinXI() {
-		return minXI;
+	public long getMinXS() {
+		return minXS;
 	}
 
-	public void setMinXI(long minXI) {
-		this.minXI = minXI;
+	public void setMinXS(long minXS) {
+		this.minXS = minXS;
 		refreshScaling();
 	}
 
-	public long getMaxXI() {
-		return maxXI;
+	public long getMaxXS() {
+		return maxXS;
 	}
 
-	public void setMaxXI(long maxXI) {
-		this.maxXI = maxXI;
+	public void setMaxXS(long maxXS) {
+		this.maxXS = maxXS;
 		refreshScaling();
 	}
 
-	public long getMinYI() {
-		return minYI;
+	public long getMinYS() {
+		return minYS;
 	}
 
-	public void setMinYI(long minYI) {
-		this.minYI = minYI;
+	public void setMinYS(long minYS) {
+		this.minYS = minYS;
 		refreshScaling();
 	}
 
-	public long getMaxYI() {
-		return maxYI;
+	public long getMaxYS() {
+		return maxYS;
 	}
 
-	public void setMaxYI(long maxYI) {
-		this.maxYI = maxYI;
+	public void setMaxYS(long maxYS) {
+		this.maxYS = maxYS;
 		refreshScaling();
 	}
 

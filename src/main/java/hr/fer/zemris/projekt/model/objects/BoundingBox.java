@@ -29,7 +29,7 @@ public class BoundingBox {
 	}
 	
 	private void notifyAllListeners() {
-		listeners.forEach(l -> l.bouningBoxChange(this));
+		listeners.forEach(l -> l.boundingBoxChange(this));
 	}
 
 	public double getX() {
