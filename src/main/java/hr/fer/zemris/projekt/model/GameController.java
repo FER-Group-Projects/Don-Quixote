@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import hr.fer.zemris.projekt.model.objects.BoundingBox;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.Player;
 
@@ -122,10 +121,10 @@ public class GameController {
 	
 	public synchronized void tick() {
 		
-		BoundingBox pbb = player.getPosition();
-		
-		if(player.getVelocityX()!=0 || player.getVelocityY()!=0)
-			pbb.setPosition(pbb.getX() + player.getVelocityX()*tickDelay, pbb.getY() + player.getVelocityY()*tickDelay);
+		if(player.getVelocityX()!=0 || player.getVelocityY()!=0) {
+			player.setX(player.getPosition().getX() + player.getVelocityX()*tickDelay);
+			player.setY(player.getPosition().getY() + player.getVelocityY()*tickDelay);
+		}
 		
 		if(player.isOnGround()) {
 			if(actions.get(PlayerAction.LEFT) && !actions.get(PlayerAction.RIGHT)) {

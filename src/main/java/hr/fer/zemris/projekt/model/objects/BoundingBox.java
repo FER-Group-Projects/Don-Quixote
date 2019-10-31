@@ -1,7 +1,5 @@
 package hr.fer.zemris.projekt.model.objects;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class BoundingBox {
@@ -11,25 +9,11 @@ public class BoundingBox {
 	private double width;
 	private double height;
 	
-	List<BoundingBoxListener> listeners = new ArrayList<>();
-	
 	public BoundingBox(double x, double y, double width, double height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-	}
-	
-	public void addListener(BoundingBoxListener listener) {
-		listeners.add(Objects.requireNonNull(listener));
-	}
-	
-	public void removeListener(BoundingBoxListener listener) {
-		listeners.remove(Objects.requireNonNull(listener));
-	}
-	
-	private void notifyAllListeners() {
-		listeners.forEach(l -> l.boundingBoxChange(this));
 	}
 
 	public double getX() {
@@ -38,7 +22,6 @@ public class BoundingBox {
 
 	public void setX(double x) {
 		this.x = x;
-		notifyAllListeners();
 	}
 
 	public double getY() {
@@ -47,13 +30,11 @@ public class BoundingBox {
 
 	public void setY(double y) {
 		this.y = y;
-		notifyAllListeners();
 	}
 	
 	public void setPosition(double x, double y) {
 		this.x = x;
 		this.y = y;
-		notifyAllListeners();
 	}
 
 	public double getWidth() {
@@ -62,7 +43,6 @@ public class BoundingBox {
 
 	public void setWidth(double width) {
 		this.width = width;
-		notifyAllListeners();
 	}
 
 	public double getHeight() {
@@ -71,7 +51,6 @@ public class BoundingBox {
 
 	public void setHeight(double height) {
 		this.height = height;
-		notifyAllListeners();
 	}
 
 	@Override

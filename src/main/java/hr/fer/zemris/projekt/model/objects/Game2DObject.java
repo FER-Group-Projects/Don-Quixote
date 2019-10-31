@@ -4,19 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class Game2DObject implements BoundingBoxListener, Destroyable {
+public abstract class Game2DObject implements Destroyable {
 	
 	private BoundingBox position;
 	
 	private List<Game2DObjectListener> listeners = new ArrayList<>();
 	
 	public Game2DObject(BoundingBox position) {
-		this.position = Objects.requireNonNull(position);
-		this.position.addListener(this);
+		this.position = new BoundingBox(position.getX(), position.getY(), position.getWidth(), position.getHeight());
 	}
 
 	public BoundingBox getPosition() {
-		return position;
+		return new BoundingBox(position.getX(), position.getY(), position.getWidth(), position.getHeight());
+	}
+	
+	public void setX(double x) {
+		position.setX(x);
+		notifyAllListeners();
+	}
+	
+	public void setY(double y) {
+		position.setY(y);
+		notifyAllListeners();
+	}
+	
+	public void setWidth(double w) {
+		position.setWidth(w);
+		notifyAllListeners();
+	}
+	
+	public void setHeight(double h) {
+		position.setHeight(h);
+		notifyAllListeners();
 	}
 	
 	public void addListener(Game2DObjectListener listener) {
@@ -30,15 +49,9 @@ public abstract class Game2DObject implements BoundingBoxListener, Destroyable {
 	private void notifyAllListeners() {
 		listeners.forEach(l -> l.positionChanged(this));
 	}
-
-	@Override
-	public void boundingBoxChange(BoundingBox source) {
-		notifyAllListeners();
-	}
 	
 	@Override
 	public void destroy() {
-		position.removeListener(this);
 		listeners.forEach(l -> l.objectDestroyed(this));
 	}
 
