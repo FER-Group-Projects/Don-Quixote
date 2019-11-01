@@ -4,37 +4,44 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import hr.fer.zemris.projekt.model.objects.impl.BoundingBoxImpl;
+
 public abstract class Game2DObject implements Destroyable {
 	
-	private BoundingBox position;
+	private UnmodifiableBoundingBox boundingBox;
 	
 	private List<Game2DObjectListener> listeners = new ArrayList<>();
 	
 	public Game2DObject(BoundingBox position) {
-		this.position = new BoundingBox(position.getX(), position.getY(), position.getWidth(), position.getHeight());
+		this.boundingBox = new UnmodifiableBoundingBox(new BoundingBoxImpl(position.getX(), position.getY(), position.getWidth(), position.getHeight()));
 	}
 
-	public BoundingBox getPosition() {
-		return new BoundingBox(position.getX(), position.getY(), position.getWidth(), position.getHeight());
+	public BoundingBox getBoundingBox() {
+		return boundingBox;
 	}
 	
 	public void setX(double x) {
-		position.setX(x);
+		boundingBox.boundingBox.setX(x);
 		notifyAllListeners();
 	}
 	
 	public void setY(double y) {
-		position.setY(y);
+		boundingBox.boundingBox.setY(y);
 		notifyAllListeners();
 	}
 	
 	public void setWidth(double w) {
-		position.setWidth(w);
+		boundingBox.boundingBox.setWidth(w);
 		notifyAllListeners();
 	}
 	
 	public void setHeight(double h) {
-		position.setHeight(h);
+		boundingBox.boundingBox.setHeight(h);
+		notifyAllListeners();
+	}
+	
+	public void setLocation(double x, double y) {
+		boundingBox.boundingBox.setLocation(x, y);
 		notifyAllListeners();
 	}
 	
@@ -47,7 +54,7 @@ public abstract class Game2DObject implements Destroyable {
 	}
 	
 	private void notifyAllListeners() {
-		listeners.forEach(l -> l.positionChanged(this));
+		listeners.forEach(l -> l.boundingBoxChanged(this));
 	}
 	
 	@Override
@@ -57,7 +64,67 @@ public abstract class Game2DObject implements Destroyable {
 
 	@Override
 	public String toString() {
-		return "Game2DObject [position=" + position + "]";
+		return "Game2DObject [boundingBox=" + boundingBox + "]";
+	}
+	
+	private static class UnmodifiableBoundingBox implements BoundingBox {
+
+		private BoundingBox boundingBox;
+		
+		public UnmodifiableBoundingBox(BoundingBox boundingBox) {
+			this.boundingBox = Objects.requireNonNull(boundingBox);
+		}
+
+		@Override
+		public double getX() {
+			return boundingBox.getX();
+		}
+
+		@Override
+		public void setX(double x) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public double getY() {
+			return boundingBox.getY();
+		}
+
+		@Override
+		public void setY(double y) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public double getWidth() {
+			return boundingBox.getWidth();
+		}
+
+		@Override
+		public void setWidth(double width) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public double getHeight() {
+			return boundingBox.getHeight();
+		}
+
+		@Override
+		public void setHeight(double height) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void setLocation(double x, double y) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public String toString() {
+			return boundingBox.toString();
+		}
+		
 	}
 
 }

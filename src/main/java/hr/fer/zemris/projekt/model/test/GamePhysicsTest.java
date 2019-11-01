@@ -9,16 +9,17 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-import hr.fer.zemris.projekt.model.GameController;
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor;
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor.DoublePoint;
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor.LongPoint;
-import hr.fer.zemris.projekt.model.GameController.GameParameters;
-import hr.fer.zemris.projekt.model.GameController.PlayerAction;
-import hr.fer.zemris.projekt.model.objects.BoundingBox;
+import hr.fer.zemris.projekt.model.controller.GameController;
+import hr.fer.zemris.projekt.model.controller.GameController.PlayerAction;
+import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl;
+import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl.GameParameters;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.Game2DObjectListener;
-import hr.fer.zemris.projekt.model.objects.Player;
+import hr.fer.zemris.projekt.model.objects.impl.BoundingBoxImpl;
+import hr.fer.zemris.projekt.model.objects.impl.Player;
 
 @SuppressWarnings("serial")
 public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
@@ -50,11 +51,11 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 		old = new DoublePoint();
 		old.x = 2.5;
 		old.y = 2.5;
-		p = new Player(new BoundingBox(old.x, old.y, playerWidth, playerHeight), 0, 0, "Player1");
+		p = new Player(new BoundingBoxImpl(old.x, old.y, playerWidth, playerHeight), 0, 0, "Player1");
 		p.setOnGround(true);
-		System.out.println(p.getPosition());
+		System.out.println(p.getBoundingBox());
 		
-		gc = new GameController(p, new ArrayList<>(), params);
+		gc = new GameControllerImpl(p, new ArrayList<>(), params);
 		p.addListener(this);
 		convertor = new ModelToScreenCoordinateConvertor(0, params.getVisibleScreenWidth(), 
 				0, params.getVisibleScreenHeight(), 
@@ -71,15 +72,15 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 				int key = e.getKeyCode();
 				
 				if(key == KeyEvent.VK_A) {
-					gc.setPlayerAction(PlayerAction.LEFT, false);
+					gc.unsetPlayerAction(PlayerAction.LEFT);
 				} else if(key == KeyEvent.VK_D) {
-					gc.setPlayerAction(PlayerAction.RIGHT, false);
+					gc.unsetPlayerAction(PlayerAction.RIGHT);
 				} else if(key == KeyEvent.VK_SPACE) {
-					gc.setPlayerAction(PlayerAction.JUMP, false);
+					gc.unsetPlayerAction(PlayerAction.JUMP);
 				} else if(key == KeyEvent.VK_D) {
-					gc.setPlayerAction(PlayerAction.DOWN, false);
+					gc.unsetPlayerAction(PlayerAction.DOWN);
 				} else if(key == KeyEvent.VK_W) {
-					gc.setPlayerAction(PlayerAction.UP, false);
+					gc.unsetPlayerAction(PlayerAction.UP);
 				}
 			}
 			
@@ -88,15 +89,15 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 				int key = e.getKeyCode();
 				
 				if(key == KeyEvent.VK_A) {
-					gc.setPlayerAction(PlayerAction.LEFT, true);
+					gc.setPlayerAction(PlayerAction.LEFT);
 				} else if(key == KeyEvent.VK_D) {
-					gc.setPlayerAction(PlayerAction.RIGHT, true);
+					gc.setPlayerAction(PlayerAction.RIGHT);
 				} else if(key == KeyEvent.VK_SPACE) {
-					gc.setPlayerAction(PlayerAction.JUMP, true);
+					gc.setPlayerAction(PlayerAction.JUMP);
 				} else if(key == KeyEvent.VK_D) {
-					gc.setPlayerAction(PlayerAction.DOWN, true);
+					gc.setPlayerAction(PlayerAction.DOWN);
 				} else if(key == KeyEvent.VK_W) {
-					gc.setPlayerAction(PlayerAction.UP, true);
+					gc.setPlayerAction(PlayerAction.UP);
 				}
 			}
 			
@@ -115,10 +116,10 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 	}
 
 	@Override
-	public void positionChanged(Game2DObject source) {
+	public void boundingBoxChanged(Game2DObject source) {
 		repaint();
-		if(p.getPosition().getY()<=2.5) p.setOnGround(true);
-		System.out.println(p.getPosition());
+		if(p.getBoundingBox().getY()<=2.5) p.setOnGround(true);
+		System.out.println(p.getBoundingBox());
 	}
 
 	@Override
@@ -135,12 +136,12 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 		g2d.fillRect((int)oldScreen.x, (int)oldScreen.y, 25, 50);
 		
 		DoublePoint newPosition = new DoublePoint();
-		newPosition.x = p.getPosition().getX();
-		newPosition.y = p.getPosition().getY();
+		newPosition.x = p.getBoundingBox().getX();
+		newPosition.y = p.getBoundingBox().getY();
 		LongPoint newScreen = convertor.convert(newPosition);
 		g2d.setColor(Color.BLACK);
 		g2d.fillRect((int)newScreen.x, (int)newScreen.y, 
-				(int)Math.round(p.getPosition().getWidth()), (int)Math.round(p.getPosition().getHeight()));
+				(int)Math.round(p.getBoundingBox().getWidth()), (int)Math.round(p.getBoundingBox().getHeight()));
 		old = newPosition;
 	}
 	
