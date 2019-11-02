@@ -1,17 +1,23 @@
 package hr.fer.zemris.projekt.model.objects;
 
-public abstract class MoveableGame2DObject extends Game2DObject {
+public abstract class MovableGame2DObject extends Game2DObject {
 
 	private double velocityX;
 	private double velocityY;
 	
+	private double defaultSpeedGround;
+	private double defaultSpeedLadder;
+	
 	private boolean isOnGround = false;
 	private boolean isOnLadders = false;
 	
-	public MoveableGame2DObject(BoundingBox position, double velocityX, double velocityY) {
+	public MovableGame2DObject(BoundingBox2D position, double velocityX, double velocityY, double defaultSpeedGround,
+			double defaultSpeedLadder) {
 		super(position);
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
+		this.defaultSpeedGround = defaultSpeedGround;
+		this.defaultSpeedLadder = defaultSpeedLadder;
 	}
 
 	public double getVelocityX() {
@@ -44,6 +50,22 @@ public abstract class MoveableGame2DObject extends Game2DObject {
 	
 	public void setOnLadders(boolean isOnLadders) {
 		this.isOnLadders = isOnLadders;
+	}
+	
+	public double getDefaultSpeedGround() {
+		return defaultSpeedGround;
+	}
+	
+	public void setDefaultSpeedGround(double defaultSpeedGround) {
+		this.defaultSpeedGround = defaultSpeedGround;
+	}
+	
+	public double getDefaultSpeedLadder() {
+		return defaultSpeedLadder;
+	}
+	
+	public void setDefaultSpeedLadder(double defaultSpeedLadder) {
+		this.defaultSpeedLadder = defaultSpeedLadder;
 	}
 
 	@Override

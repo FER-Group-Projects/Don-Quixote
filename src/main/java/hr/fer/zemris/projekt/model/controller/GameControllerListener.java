@@ -13,7 +13,6 @@ public interface GameControllerListener {
 	void tickPerformed();
 
 	void playerActionStateChanged(PlayerAction action, boolean isSet);
-
 	void playerDestroyed(Player player);
 
 }

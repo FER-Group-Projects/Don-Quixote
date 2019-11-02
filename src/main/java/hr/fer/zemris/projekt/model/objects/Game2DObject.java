@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import hr.fer.zemris.projekt.model.objects.impl.BoundingBoxImpl;
+import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
 
 public abstract class Game2DObject implements Destroyable {
 	
@@ -12,11 +12,11 @@ public abstract class Game2DObject implements Destroyable {
 	
 	private List<Game2DObjectListener> listeners = new ArrayList<>();
 	
-	public Game2DObject(BoundingBox position) {
-		this.boundingBox = new UnmodifiableBoundingBox(new BoundingBoxImpl(position.getX(), position.getY(), position.getWidth(), position.getHeight()));
+	public Game2DObject(BoundingBox2D position) {
+		this.boundingBox = new UnmodifiableBoundingBox(new BoundingBox2DImpl(position.getX(), position.getY(), position.getWidth(), position.getHeight()));
 	}
 
-	public BoundingBox getBoundingBox() {
+	public BoundingBox2D getBoundingBox() {
 		return boundingBox;
 	}
 	
@@ -67,11 +67,11 @@ public abstract class Game2DObject implements Destroyable {
 		return "Game2DObject [boundingBox=" + boundingBox + "]";
 	}
 	
-	private static class UnmodifiableBoundingBox implements BoundingBox {
+	private static class UnmodifiableBoundingBox implements BoundingBox2D {
 
-		private BoundingBox boundingBox;
+		private BoundingBox2D boundingBox;
 		
-		public UnmodifiableBoundingBox(BoundingBox boundingBox) {
+		public UnmodifiableBoundingBox(BoundingBox2D boundingBox) {
 			this.boundingBox = Objects.requireNonNull(boundingBox);
 		}
 
@@ -119,12 +119,32 @@ public abstract class Game2DObject implements Destroyable {
 		public void setLocation(double x, double y) {
 			throw new UnsupportedOperationException();
 		}
+		
+		@Override
+		public boolean collidesWith(BoundingBox2D other) {
+			return boundingBox.collidesWith(other);
+		}
+		
+		@Override
+		public boolean isOnTopOf(BoundingBox2D other) {
+			return boundingBox.isOnTopOf(other);
+		}
+		
+		@Override
+		public boolean isAbove(BoundingBox2D other) {
+			return boundingBox.isAbove(other);
+		}
+		
+		@Override
+		public boolean isPartOf(BoundingBox2D other) {
+			return boundingBox.isPartOf(other);
+		}
 
 		@Override
 		public String toString() {
 			return boundingBox.toString();
 		}
-		
+
 	}
 
 }
