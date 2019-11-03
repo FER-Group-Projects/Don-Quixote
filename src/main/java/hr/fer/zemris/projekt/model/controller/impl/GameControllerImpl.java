@@ -52,6 +52,8 @@ public class GameControllerImpl implements GameController {
 		private Barrel b;
 	}
 
+	private List<GameControllerListener> listeners = new ArrayList<>();
+	
 	private Player player;
 	private List<Game2DObject> objects = new ArrayList<>();
 	private GameParameters params;
@@ -73,12 +75,38 @@ public class GameControllerImpl implements GameController {
 
 	public synchronized void setPlayerAction(PlayerAction action) {
 		actions.add(action);
+		listeners.forEach(l -> l.playerActionStateChanged(action, true));
 	}
 
 	public synchronized void unsetPlayerAction(PlayerAction action) {
 		actions.remove(action);
+		listeners.forEach(l -> l.playerActionStateChanged(action, false));
 	}
 
+	@Override
+	public void addListener(GameControllerListener listener) {
+		listeners.add(Objects.requireNonNull(listener));
+	}
+
+	@Override
+	public void removeListener(GameControllerListener listener) {
+		listeners.remove(Objects.requireNonNull(listener));
+	}
+
+	@Override
+	public synchronized void addGameObject(Game2DObject object) {
+		if(object instanceof Player) throw new IllegalArgumentException("Player cannot be added as object!");
+		
+		objects.add(Objects.requireNonNull(object));
+		listeners.forEach(l -> l.gameObjectAdded(object));
+	}
+
+	@Override
+	public synchronized void removeGameObject(Game2DObject object) {
+		objects.remove(Objects.requireNonNull(object));
+		listeners.forEach(l -> l.gameObjectRemoved(object));
+	}
+	
 	public synchronized void tick() {
 
 		if (!player.isAlive())
@@ -115,7 +143,7 @@ public class GameControllerImpl implements GameController {
 		// Check collision : player with other objects
 		CollisionCollection collision = checkPlayerCollision(player.getBoundingBox(), newPlayerBB);
 		if (!player.isAlive()) {
-			System.out.println("Game Over!");
+			listeners.forEach(l -> l.playerDestroyed(player));
 			return; // Player is dead
 		}
 
@@ -130,15 +158,21 @@ public class GameControllerImpl implements GameController {
 
 		// Update location for player
 		if (player.getBoundingBox().getX() != newPlayerBB.getX()
-				|| player.getBoundingBox().getY() != newPlayerBB.getY())
+				|| player.getBoundingBox().getY() != newPlayerBB.getY()) {
 			player.setLocation(newPlayerBB.getX(), newPlayerBB.getY());
+			listeners.forEach(l -> l.gameObjectChanged(player));
+		}
 
 		// Update location for other movable objects
 		for (var move : moveMap.entrySet()) {
 			if (move.getKey().getBoundingBox().getX() != move.getValue().getX()
-					|| move.getKey().getBoundingBox().getY() != move.getValue().getY())
+					|| move.getKey().getBoundingBox().getY() != move.getValue().getY()) {
 				move.getKey().setLocation(move.getValue().getX(), move.getValue().getY());
+				listeners.forEach(l -> l.gameObjectChanged(move.getKey()));
+			}
 		}
+		
+		listeners.forEach(l -> l.tickPerformed());
 
 	}
 
@@ -347,30 +381,6 @@ public class GameControllerImpl implements GameController {
 		}
 
 		return collision;
-	}
-
-	@Override
-	public void addListener(GameControllerListener listener) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removeListener(GameControllerListener listener) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void addGameObject(Game2DObject object) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removeGameObject(Game2DObject object) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
