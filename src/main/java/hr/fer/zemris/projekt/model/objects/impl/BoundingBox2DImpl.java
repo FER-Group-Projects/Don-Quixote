@@ -92,6 +92,12 @@ public class BoundingBox2DImpl implements BoundingBox2D {
 				(this.y - this.height >= other.getY() - other.getHeight()) &&
 				(this.x + this.width <= other.getX() + other.getWidth());
 	}
+	
+	@Override
+	public boolean isBetweenVerticalBoundariesOf(BoundingBox2D other) {
+		return (this.x > other.getX()) && (this.x < other.getX() + other.getWidth()) &&
+				(this.x + this.width > other.getX()) && (this.x + this.width < other.getX() + other.getWidth());
+	}
 
 	@Override
 	public String toString() {

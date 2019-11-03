@@ -10,6 +10,8 @@ public abstract class MovableGame2DObject extends Game2DObject {
 	
 	private boolean isOnGround = false;
 	private boolean isOnLadders = false;
+	private boolean isAboveLadders = false;
+	private boolean isInGround = false;
 	
 	public MovableGame2DObject(BoundingBox2D position, double velocityX, double velocityY, double defaultSpeedGround,
 			double defaultSpeedLadder) {
@@ -50,6 +52,22 @@ public abstract class MovableGame2DObject extends Game2DObject {
 	
 	public void setOnLadders(boolean isOnLadders) {
 		this.isOnLadders = isOnLadders;
+	}
+	
+	public boolean isAboveLadders() {
+		return isAboveLadders;
+	}
+	
+	public void setAboveLadders(boolean isAboveLadders) {
+		this.isAboveLadders = isAboveLadders;
+	}
+	
+	public boolean isInGround() {
+		return isInGround;
+	}
+	
+	public void setInGround(boolean isInGround) {
+		this.isInGround = isInGround;
 	}
 	
 	public double getDefaultSpeedGround() {

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor;
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor.DoublePoint;
@@ -49,22 +50,23 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 	}
 
 	private void init() {
-		params = new GameParameters(640, 480, 60, 10 * 50, 1);
+		params = new GameParameters(60, 1000, 0.7);
 
 		p = new Player(new BoundingBox2DImpl(320, 200, playerWidth, playerHeight), 0, 0, 1.5 * 50, 1.5 * 50, "Player1", 5 * 50);
 		System.out.println(p.getBoundingBox());
 
 		objects = new ArrayList<>();
 		objects.add(new Platform(new BoundingBox2DImpl(100, 50, 420, 20)));
-		objects.add(new Ladder(new BoundingBox2DImpl(150, 300, 50, 250)));
-		objects.add(new Ladder(new BoundingBox2DImpl(400, 175, 50, 125)));
-		objects.add(new Platform(new BoundingBox2DImpl(100, 300, 420, 20)));
 		objects.add(new Platform(new BoundingBox2DImpl(100, 175, 420, 20)));
-		//objects.add(new Barrel(new BoundingBox2DImpl(105, 120, 40, 40), 0, 0, 1.5 * 50, 1.5 * 50));
+		objects.add(new Platform(new BoundingBox2DImpl(100, 300, 420, 20)));
+		objects.add(new Ladder(new BoundingBox2DImpl(150, 155, 35, 105)));
+		objects.add(new Ladder(new BoundingBox2DImpl(220, 280, 35, 105)));
+		objects.add(new Ladder(new BoundingBox2DImpl(400, 155, 35, 105)));
+		
 		gc = new GameControllerImpl(p, objects, params);
 		p.addListener(this);
-		convertor = new ModelToScreenCoordinateConvertor(0, params.getVisibleScreenWidth(), 0,
-				params.getVisibleScreenHeight(), 0, WIDTH, 0, HEIGHT);
+		convertor = new ModelToScreenCoordinateConvertor(0, WIDTH, 0,
+				HEIGHT, 0, WIDTH, 0, HEIGHT);
 
 		this.addKeyListener(new KeyListener() {
 
@@ -111,8 +113,8 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 		new Thread(() -> {
 			while (true) {
 				gc.tick();
-				repaint();
 				try {
+					SwingUtilities.invokeAndWait(() -> repaint());
 					Thread.sleep((long) (1000.0/params.getFps()));
 				} catch (Exception e1) {
 					e1.printStackTrace();

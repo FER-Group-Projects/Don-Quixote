@@ -139,6 +139,11 @@ public abstract class Game2DObject implements Destroyable {
 		public boolean isPartOf(BoundingBox2D other) {
 			return boundingBox.isPartOf(other);
 		}
+		
+		@Override
+		public boolean isBetweenVerticalBoundariesOf(BoundingBox2D other) {
+			return boundingBox.isBetweenVerticalBoundariesOf(other);
+		}
 
 		@Override
 		public String toString() {

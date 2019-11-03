@@ -30,4 +30,6 @@ public interface BoundingBox2D {
 	
 	boolean isPartOf(BoundingBox2D other);
 	
+	boolean isBetweenVerticalBoundariesOf(BoundingBox2D other);
+	
 }
