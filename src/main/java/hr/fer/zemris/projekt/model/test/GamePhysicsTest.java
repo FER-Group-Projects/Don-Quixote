@@ -15,11 +15,11 @@ import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor;
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor.DoublePoint;
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor.LongPoint;
 import hr.fer.zemris.projekt.model.controller.GameController;
-import hr.fer.zemris.projekt.model.controller.GameController.PlayerAction;
+import hr.fer.zemris.projekt.model.controller.GameControllerListener;
+import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl.GameParameters;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
-import hr.fer.zemris.projekt.model.objects.Game2DObjectListener;
 import hr.fer.zemris.projekt.model.objects.impl.Barrel;
 import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
 import hr.fer.zemris.projekt.model.objects.impl.Ladder;
@@ -27,11 +27,11 @@ import hr.fer.zemris.projekt.model.objects.impl.Platform;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
 
 @SuppressWarnings("serial")
-public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
+public class GamePhysicsTest extends JFrame implements GameControllerListener {
 
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 480;
-	private static final int FPS = 60;
+	private static final int FPS = 10;
 
 	private Player p;
 	private List<Game2DObject> objects;
@@ -51,9 +51,9 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 	}
 
 	private void init() {
-		params = new GameParameters(60, 1000, 1);
+		params = new GameParameters(60, 1000, 1, 100, 100, 250, 75, 75);
 
-		p = new Player(new BoundingBox2DImpl(250, 150, playerWidth, playerHeight), 0, 0, 100, 100, "Player1", 250);
+		p = new Player(new BoundingBox2DImpl(250, 150, playerWidth, playerHeight), 0, 0, "Player1");
 		System.out.println(p.getBoundingBox());
 
 		objects = new ArrayList<>();
@@ -63,11 +63,11 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 		objects.add(new Ladder(new BoundingBox2DImpl(150, 155, 35, 105)));
 		objects.add(new Ladder(new BoundingBox2DImpl(220, 280, 35, 105)));
 		objects.add(new Ladder(new BoundingBox2DImpl(400, 155, 35, 105)));
-		objects.add(new Barrel(new BoundingBox2DImpl(320, 450, 20, 20), 0, 0, 75, 75));
-		objects.add(new Barrel(new BoundingBox2DImpl(250, 450, 20, 20), 0, 0, 75, 75));
+		objects.add(new Barrel(new BoundingBox2DImpl(320, 320, 20, 20), -75, 0));
+		objects.add(new Barrel(new BoundingBox2DImpl(250, 320, 20, 20), 75, 0));
 		
 		gc = new GameControllerImpl(p, objects, params);
-		p.addListener(this);
+		gc.addListener(this);
 		convertor = new ModelToScreenCoordinateConvertor(0, WIDTH, 0,
 				HEIGHT, 0, WIDTH, 0, HEIGHT);
 
@@ -118,25 +118,14 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 				gc.tick();
 				try {
 					SwingUtilities.invokeAndWait(() -> repaint());
-					Thread.sleep((long) (1000.0/10));
+					Thread.sleep((long) (1000.0/FPS));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
 		}).start();
 	}
-
-	@Override
-	public void boundingBoxChanged(Game2DObject source) {
-//		repaint();
-	}
-
-	@Override
-	public void objectDestroyed(Game2DObject source) {
-		this.dispose();
-	}
-
-	boolean first = true;
+	
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
@@ -181,6 +170,36 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 		GamePhysicsTest frame = new GamePhysicsTest();
 		frame.setVisible(true);
 
+	}
+
+	@Override
+	public void gameObjectAdded(Game2DObject object) {
+		// DO NOTHING
+	}
+
+	@Override
+	public void gameObjectRemoved(Game2DObject object) {
+		// DO NOTHING
+	}
+
+	@Override
+	public void gameObjectChanged(Game2DObject object) {
+		// DO NOTHING
+	}
+
+	@Override
+	public void gameObjectDestroyed(Game2DObject object) {
+		if(object instanceof Player) System.exit(0);
+	}
+
+	@Override
+	public void tickPerformed() {
+		// DO NOTHING
+	}
+
+	@Override
+	public void playerActionStateChanged(PlayerAction action, boolean isSet) {
+		// DO NOTHING
 	}
 
 }

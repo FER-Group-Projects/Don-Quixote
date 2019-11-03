@@ -6,16 +6,13 @@ import hr.fer.zemris.projekt.model.objects.MovableGame2DObject;
 public class Player extends MovableGame2DObject {
 	
 	private String name;
-	private double defaultSpeedJump;
 	
 	private boolean isAlive = true;
 	private boolean isJumping = false;
 
-	public Player(BoundingBox2D position, double velocityX, double velocityY, double defaultSpeedGround,
-			double defaultSpeedLadder, String name, double defaultSpeedJump) {
-		super(position, velocityX, velocityY, defaultSpeedGround, defaultSpeedLadder);
+	public Player(BoundingBox2D position, double velocityX, double velocityY, String name) {
+		super(position, velocityX, velocityY);
 		this.name = name;
-		this.defaultSpeedJump = defaultSpeedJump;
 	}
 
 	public String getName() {
@@ -36,14 +33,6 @@ public class Player extends MovableGame2DObject {
 	
 	public void setJumping(boolean isJumping) {
 		this.isJumping = isJumping;
-	}
-	
-	public double getDefaultSpeedJump() {
-		return defaultSpeedJump;
-	}
-	
-	public void setDefaultSpeedJump(double defaultSpeedJump) {
-		this.defaultSpeedJump = defaultSpeedJump;
 	}
 
 }

@@ -4,14 +4,6 @@ import hr.fer.zemris.projekt.model.objects.Game2DObject;
 
 public interface GameController {
 	
-	public enum PlayerAction {
-		RIGHT,
-		LEFT,
-		UP,
-		DOWN,
-		JUMP;
-	}
-	
 	void setPlayerAction(PlayerAction action);
 	void unsetPlayerAction(PlayerAction action);
 

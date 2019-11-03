@@ -7,12 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 
 import hr.fer.zemris.projekt.model.controller.GameController;
 import hr.fer.zemris.projekt.model.controller.GameControllerListener;
+import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
+import hr.fer.zemris.projekt.model.objects.Game2DObjectListener;
 import hr.fer.zemris.projekt.model.objects.MovableGame2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.Barrel;
 import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
@@ -20,17 +23,31 @@ import hr.fer.zemris.projekt.model.objects.impl.Ladder;
 import hr.fer.zemris.projekt.model.objects.impl.Platform;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
 
-public class GameControllerImpl implements GameController {
+public class GameControllerImpl implements GameController, Game2DObjectListener {
 
 	public static class GameParameters {
 		private int tickRatePerSec;
 		private double gravitationalAcceleration;
-		private double objectLadderProbability;
+		private double barrelLadderProbability;
 
-		public GameParameters(int tickRatePerSec, double gravitationalAcceleration, double objectLadderProbability) {
+		private double playerDefaultSpeedGround;
+		private double playerDefaultSpeedLadders;
+		private double playerDefaultSpeedJump;
+		
+		private double otherDefaultSpeedGround;
+		private double otherDefaultSpeedLadders;
+		
+		public GameParameters(int tickRatePerSec, double gravitationalAcceleration, double barrelLadderProbability,
+				double playerDefaultSpeedGround, double playerDefaultSpeedLadders, double playerDefaultSpeedJump,
+				double otherDefaultSpeedGround, double otherDefaultSpeedLadders) {
 			this.tickRatePerSec = tickRatePerSec;
 			this.gravitationalAcceleration = gravitationalAcceleration;
-			this.objectLadderProbability = objectLadderProbability;
+			this.barrelLadderProbability = barrelLadderProbability;
+			this.playerDefaultSpeedGround = playerDefaultSpeedGround;
+			this.playerDefaultSpeedLadders = playerDefaultSpeedLadders;
+			this.playerDefaultSpeedJump = playerDefaultSpeedJump;
+			this.otherDefaultSpeedGround = otherDefaultSpeedGround;
+			this.otherDefaultSpeedLadders = otherDefaultSpeedLadders;
 		}
 
 		public int getTickRatePerSec() {
@@ -41,8 +58,28 @@ public class GameControllerImpl implements GameController {
 			return gravitationalAcceleration;
 		}
 
-		public double getObjectLadderProbability() {
-			return objectLadderProbability;
+		public double getBarrelLadderProbability() {
+			return barrelLadderProbability;
+		}
+
+		public double getPlayerDefaultSpeedGround() {
+			return playerDefaultSpeedGround;
+		}
+
+		public double getPlayerDefaultSpeedLadders() {
+			return playerDefaultSpeedLadders;
+		}
+
+		public double getPlayerDefaultSpeedJump() {
+			return playerDefaultSpeedJump;
+		}
+
+		public double getOtherDefaultSpeedGround() {
+			return otherDefaultSpeedGround;
+		}
+
+		public double getOtherDefaultSpeedLadders() {
+			return otherDefaultSpeedLadders;
 		}
 	}
 
@@ -51,6 +88,8 @@ public class GameControllerImpl implements GameController {
 		private Ladder l;
 		private Barrel b;
 	}
+	
+	private Random random = new Random(System.currentTimeMillis());
 
 	private List<GameControllerListener> listeners = new ArrayList<>();
 	
@@ -63,14 +102,20 @@ public class GameControllerImpl implements GameController {
 
 	public GameControllerImpl(Player p, List<Game2DObject> objects, GameParameters parameters) {
 		this.player = Objects.requireNonNull(p);
+		this.player.addListener(this);
 		objects.forEach(o -> {
 			if (o instanceof Player)
 				throw new IllegalArgumentException("Collection of other game objects must not contain a player!");
 			this.objects.add(o);
+			o.addListener(this);
 		});
 		this.params = parameters;
 
 		this.tickDelay = 1000.0 / params.tickRatePerSec * 1E-3;
+	}
+	
+	public GameParameters getGameParameters() {
+		return params;
 	}
 
 	public synchronized void setPlayerAction(PlayerAction action) {
@@ -98,13 +143,26 @@ public class GameControllerImpl implements GameController {
 		if(object instanceof Player) throw new IllegalArgumentException("Player cannot be added as object!");
 		
 		objects.add(Objects.requireNonNull(object));
+		object.addListener(this);
 		listeners.forEach(l -> l.gameObjectAdded(object));
 	}
 
 	@Override
 	public synchronized void removeGameObject(Game2DObject object) {
 		objects.remove(Objects.requireNonNull(object));
+		object.removeListener(this);
 		listeners.forEach(l -> l.gameObjectRemoved(object));
+	}
+	
+	@Override
+	public void boundingBoxChanged(Game2DObject source) {
+		listeners.forEach(l -> l.gameObjectChanged(source));
+	}
+
+	@Override
+	public void objectDestroyed(Game2DObject source) {
+		listeners.forEach(l -> l.gameObjectDestroyed(source));
+		removeGameObject(source);
 	}
 	
 	public synchronized void tick() {
@@ -134,7 +192,7 @@ public class GameControllerImpl implements GameController {
 			bb.setY(bb.getY() + m.getVelocityY() * tickDelay);
 			moveMap.put(m, bb);
 			
-			if(m instanceof Barrel && Math.random() < params.objectLadderProbability) {
+			if(m instanceof Barrel && random.nextDouble() < params.barrelLadderProbability) {
 				goDownObjects.add((Barrel) m);
 			}
 
@@ -143,7 +201,7 @@ public class GameControllerImpl implements GameController {
 		// Check collision : player with other objects
 		CollisionCollection collision = checkPlayerCollision(player.getBoundingBox(), newPlayerBB);
 		if (!player.isAlive()) {
-			listeners.forEach(l -> l.playerDestroyed(player));
+			player.destroy();
 			return; // Player is dead
 		}
 
@@ -160,7 +218,6 @@ public class GameControllerImpl implements GameController {
 		if (player.getBoundingBox().getX() != newPlayerBB.getX()
 				|| player.getBoundingBox().getY() != newPlayerBB.getY()) {
 			player.setLocation(newPlayerBB.getX(), newPlayerBB.getY());
-			listeners.forEach(l -> l.gameObjectChanged(player));
 		}
 
 		// Update location for other movable objects
@@ -168,7 +225,6 @@ public class GameControllerImpl implements GameController {
 			if (move.getKey().getBoundingBox().getX() != move.getValue().getX()
 					|| move.getKey().getBoundingBox().getY() != move.getValue().getY()) {
 				move.getKey().setLocation(move.getValue().getX(), move.getValue().getY());
-				listeners.forEach(l -> l.gameObjectChanged(move.getKey()));
 			}
 		}
 		
@@ -176,75 +232,59 @@ public class GameControllerImpl implements GameController {
 
 	}
 
-	private void updateOtherVelocity(Map<MovableGame2DObject, BoundingBox2D> moveMap,
-			Map<MovableGame2DObject, CollisionCollection> collisionMap,
-			Set<MovableGame2DObject> goDownObjects) {
-		for (var move : moveMap.entrySet()) {
-			var moveObj = move.getKey();
-			
-			if (moveObj.isOnGround()) {
-				if (moveObj.getVelocityX() == 0) {
-					if (Math.random() < 0.5)
-						moveObj.setVelocityX(moveObj.getDefaultSpeedGround());
-					else
-						moveObj.setVelocityX(-moveObj.getDefaultSpeedGround());
-				}
-				
-				moveObj.setVelocityY(0);
-			}
+	private CollisionCollection checkPlayerCollision(BoundingBox2D oldBBPlayer, BoundingBox2D newBBPlayer) {
 
-			if (moveObj.isOnLadders() || moveObj.isInGround() || moveObj.isAboveLadders() && goDownObjects.contains(moveObj)) {
-				moveObj.setVelocityY(-moveObj.getDefaultSpeedLadder());
-
-				if (!moveObj.isOnGround())
-					moveObj.setVelocityX(0);
-			}
-
-			if (!moveObj.isOnGround() && !moveObj.isOnLadders() && !moveObj.isInGround()) // Free fall
-				moveObj.setVelocityY(moveObj.getVelocityY() - params.gravitationalAcceleration * tickDelay);
-		}
-	}
-
-	private void updatePlayerVelocity(BoundingBox2D newPlayerBB, CollisionCollection collision) {
-		// Jump
-		if (actions.contains(PlayerAction.JUMP) && !player.isJumping() && player.isOnGround()) {
-			player.setVelocityY(player.getDefaultSpeedJump());
-			player.setJumping(true);
-		}
-
-		// Left and right movement
-		if (player.isOnGround() && !player.isJumping()) {
-			if (actions.contains(PlayerAction.LEFT) && !actions.contains(PlayerAction.RIGHT)) {
-				player.setVelocityX(-player.getDefaultSpeedGround());
-			} else if (!actions.contains(PlayerAction.LEFT) && actions.contains(PlayerAction.RIGHT)) {
-				player.setVelocityX(player.getDefaultSpeedGround());
-			} else {
-				player.setVelocityX(0);
-			}
-			
-			if (!player.isOnLadders())
-				player.setVelocityY(0);
-		}
-
-		// Up and down movement
-		if ((player.isOnLadders() || player.isInGround() || player.isAboveLadders()) && !player.isJumping()) {
-			if (actions.contains(PlayerAction.UP) && !actions.contains(PlayerAction.DOWN)) {
-				player.setVelocityY(player.getDefaultSpeedLadder());
-			} else if (!actions.contains(PlayerAction.UP) && actions.contains(PlayerAction.DOWN)) {
-				player.setVelocityY(-player.getDefaultSpeedLadder());
-			} else {
-				player.setVelocityY(0);
-			}
-			
-			if(!player.isOnGround())
-				player.setVelocityX(0);
-		}
+		player.setOnGround(false);
+		player.setOnLadders(false);
+		player.setAboveLadders(false);
+		player.setInGround(false);
+		CollisionCollection collision = new CollisionCollection();
 		
-		// Free fall
-		if (!player.isOnGround() && !player.isOnLadders() && !player.isInGround() || player.isJumping()) 
-			player.setVelocityY(player.getVelocityY() - params.gravitationalAcceleration * tickDelay);
-	}
+		for (Game2DObject g2o : objects) {
 
+			if (!newBBPlayer.collidesWith(g2o.getBoundingBox()))
+				continue;
+
+			if (g2o instanceof Platform) {
+				if (oldBBPlayer.isAbove(g2o.getBoundingBox())) { // Player is on platform only if it approaches it from the top or was already on platform
+					player.setOnGround(true);
+					player.setJumping(false);
+				} else {										// Else, player is (in 3D space) hanging on the edge
+					player.setInGround(true);
+				}
+				collision.p = (Platform) g2o ; 
+			} else if (g2o instanceof Ladder) {
+				if (newBBPlayer.isBetweenVerticalBoundariesOf(g2o.getBoundingBox())) { // Player is on ladder only if his whole bounding box is within left and right ladder boundary
+					player.setOnLadders(true);
+					collision.l = (Ladder) g2o;
+				}
+			} else if (g2o instanceof Barrel) {
+				player.setAlive(false);
+				collision.b = (Barrel) g2o;
+			}
+
+		}
+
+		if (player.isOnGround()) {	
+			// Checking if he is above ladders
+			for(var obj : objects) {
+				if(!(obj instanceof Ladder)) continue;
+				
+				Ladder l = (Ladder) obj;
+				if(player.getBoundingBox().isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collision.p.getBoundingBox().getY() - collision.p.getBoundingBox().getHeight()) {
+					player.setAboveLadders(true);
+					break;
+				}
+			}
+			
+			// Location correction
+			if(!(player.isAboveLadders() && (actions.contains(PlayerAction.UP) || actions.contains(PlayerAction.DOWN))))
+				newBBPlayer.setY(collision.p.getBoundingBox().getY() + newBBPlayer.getHeight());
+		}
+
+		return collision;
+	}
+	
 	private Map<MovableGame2DObject, CollisionCollection> checkOtherCollision(
 			Map<MovableGame2DObject, BoundingBox2D> moveMap,
 			Set<MovableGame2DObject> goDownObjects) {
@@ -329,58 +369,74 @@ public class GameControllerImpl implements GameController {
 
 		return collisionMap;
 	}
-
-	private CollisionCollection checkPlayerCollision(BoundingBox2D oldBBPlayer, BoundingBox2D newBBPlayer) {
-
-		player.setOnGround(false);
-		player.setOnLadders(false);
-		player.setAboveLadders(false);
-		player.setInGround(false);
-		CollisionCollection collision = new CollisionCollection();
-		
-		for (Game2DObject g2o : objects) {
-
-			if (!newBBPlayer.collidesWith(g2o.getBoundingBox()))
-				continue;
-
-			if (g2o instanceof Platform) {
-				if (oldBBPlayer.isAbove(g2o.getBoundingBox())) { // Player is on platform only if it approaches it from the top or was already on platform
-					player.setOnGround(true);
-					player.setJumping(false);
-				} else {										// Else, player is (in 3D space) hanging on the edge
-					player.setInGround(true);
-				}
-				collision.p = (Platform) g2o ; 
-			} else if (g2o instanceof Ladder) {
-				if (newBBPlayer.isBetweenVerticalBoundariesOf(g2o.getBoundingBox())) { // Player is on ladder only if his whole bounding box is within left and right ladder boundary
-					player.setOnLadders(true);
-					collision.l = (Ladder) g2o;
-				}
-			} else if (g2o instanceof Barrel) {
-				player.setAlive(false);
-				collision.b = (Barrel) g2o;
-			}
-
+	
+	private void updatePlayerVelocity(BoundingBox2D newPlayerBB, CollisionCollection collision) {
+		// Jump
+		if (actions.contains(PlayerAction.JUMP) && !player.isJumping() && player.isOnGround()) {
+			player.setVelocityY(params.playerDefaultSpeedJump);
+			player.setJumping(true);
 		}
 
-		if (player.isOnGround()) {	
-			// Checking if he is above ladders
-			for(var obj : objects) {
-				if(!(obj instanceof Ladder)) continue;
-				
-				Ladder l = (Ladder) obj;
-				if(player.getBoundingBox().isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collision.p.getBoundingBox().getY() - collision.p.getBoundingBox().getHeight()) {
-					player.setAboveLadders(true);
-					break;
-				}
+		// Left and right movement
+		if (player.isOnGround() && !player.isJumping()) {
+			if (actions.contains(PlayerAction.LEFT) && !actions.contains(PlayerAction.RIGHT)) {
+				player.setVelocityX(-params.playerDefaultSpeedGround);
+			} else if (!actions.contains(PlayerAction.LEFT) && actions.contains(PlayerAction.RIGHT)) {
+				player.setVelocityX(params.playerDefaultSpeedGround);
+			} else {
+				player.setVelocityX(0);
 			}
 			
-			// Location correction
-			if(!(player.isAboveLadders() && (actions.contains(PlayerAction.UP) || actions.contains(PlayerAction.DOWN))))
-				newBBPlayer.setY(collision.p.getBoundingBox().getY() + newBBPlayer.getHeight());
+			if (!player.isOnLadders())
+				player.setVelocityY(0);
 		}
 
-		return collision;
+		// Up and down movement
+		if ((player.isOnLadders() || player.isInGround() || player.isAboveLadders()) && !player.isJumping()) {
+			if (actions.contains(PlayerAction.UP) && !actions.contains(PlayerAction.DOWN)) {
+				player.setVelocityY(params.playerDefaultSpeedLadders);
+			} else if (!actions.contains(PlayerAction.UP) && actions.contains(PlayerAction.DOWN)) {
+				player.setVelocityY(-params.playerDefaultSpeedLadders);
+			} else {
+				player.setVelocityY(0);
+			}
+			
+			if(!player.isOnGround())
+				player.setVelocityX(0);
+		}
+		
+		// Free fall
+		if (!player.isOnGround() && !player.isOnLadders() && !player.isInGround() || player.isJumping()) 
+			player.setVelocityY(player.getVelocityY() - params.gravitationalAcceleration * tickDelay);
+	}
+	
+	private void updateOtherVelocity(Map<MovableGame2DObject, BoundingBox2D> moveMap,
+			Map<MovableGame2DObject, CollisionCollection> collisionMap,
+			Set<MovableGame2DObject> goDownObjects) {
+		for (var move : moveMap.entrySet()) {
+			var moveObj = move.getKey();
+			
+			if (moveObj.isOnGround()) {
+				if (moveObj.getVelocityX() == 0) {
+					if (random.nextDouble() < 0.5)
+						moveObj.setVelocityX(params.otherDefaultSpeedGround);
+					else
+						moveObj.setVelocityX(-params.otherDefaultSpeedGround);
+				}
+				
+				moveObj.setVelocityY(0);
+			}
+
+			if (moveObj.isOnLadders() || moveObj.isInGround() || moveObj.isAboveLadders() && goDownObjects.contains(moveObj)) {
+				moveObj.setVelocityY(-params.otherDefaultSpeedLadders);
+
+				if (!moveObj.isOnGround())
+					moveObj.setVelocityX(0);
+			}
+
+			if (!moveObj.isOnGround() && !moveObj.isOnLadders() && !moveObj.isInGround()) // Free fall
+				moveObj.setVelocityY(moveObj.getVelocityY() - params.gravitationalAcceleration * tickDelay);
+		}
 	}
 
 }

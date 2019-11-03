@@ -67,11 +67,8 @@ public class BoundingBox2DImpl implements BoundingBox2D {
 		double otherYUp = other.getY();
 		double otherYDown = other.getY() - other.getHeight() - 1;
 		
-		if (thisXLeft <= otherXRight && thisXRight >= otherXLeft &&
-			     thisYUp >= otherYDown && thisYDown <= otherYUp)
-		return true;
-		
-		return false;
+		return (thisXLeft <= otherXRight && thisXRight >= otherXLeft &&
+			     thisYUp >= otherYDown && thisYDown <= otherYUp);
 		
 	}
 	
