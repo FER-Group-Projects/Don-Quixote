@@ -31,6 +31,7 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 480;
+	private static final int FPS = 60;
 
 	private Player p;
 	private List<Game2DObject> objects;
@@ -50,9 +51,9 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 	}
 
 	private void init() {
-		params = new GameParameters(60, 1000, 0.7);
+		params = new GameParameters(60, 1000, 1);
 
-		p = new Player(new BoundingBox2DImpl(320, 200, playerWidth, playerHeight), 0, 0, 1.5 * 50, 1.5 * 50, "Player1", 5 * 50);
+		p = new Player(new BoundingBox2DImpl(250, 150, playerWidth, playerHeight), 0, 0, 100, 100, "Player1", 250);
 		System.out.println(p.getBoundingBox());
 
 		objects = new ArrayList<>();
@@ -62,6 +63,8 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 		objects.add(new Ladder(new BoundingBox2DImpl(150, 155, 35, 105)));
 		objects.add(new Ladder(new BoundingBox2DImpl(220, 280, 35, 105)));
 		objects.add(new Ladder(new BoundingBox2DImpl(400, 155, 35, 105)));
+		objects.add(new Barrel(new BoundingBox2DImpl(320, 450, 20, 20), 0, 0, 75, 75));
+		objects.add(new Barrel(new BoundingBox2DImpl(250, 450, 20, 20), 0, 0, 75, 75));
 		
 		gc = new GameControllerImpl(p, objects, params);
 		p.addListener(this);
@@ -115,7 +118,7 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 				gc.tick();
 				try {
 					SwingUtilities.invokeAndWait(() -> repaint());
-					Thread.sleep((long) (1000.0/params.getFps()));
+					Thread.sleep((long) (1000.0/10));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -164,6 +167,9 @@ public class GamePhysicsTest extends JFrame implements Game2DObjectListener {
 			} else if (obj instanceof Barrel) {
 				g2d.setColor(Color.RED);
 				g2d.fillRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
+						(int) obj.getBoundingBox().getHeight());
+				g2d.setColor(Color.BLUE);
+				g2d.drawRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
 						(int) obj.getBoundingBox().getHeight());
 			}
 		}
