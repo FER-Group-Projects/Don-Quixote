@@ -56,7 +56,6 @@ public class BoundingBox2DImpl implements BoundingBox2D {
 	
 	@Override
 	public boolean collidesWith(BoundingBox2D r) {
-		
 		double tw = this.width + 1;
 		double th = this.height + 1;
 		double rw = r.getWidth() + 1;
@@ -75,7 +74,6 @@ public class BoundingBox2DImpl implements BoundingBox2D {
                 (rh < ry || rh > ty) &&
                 (tw < tx || tw > rx) &&
                 (th < ty || th > ry));
-		
 	}
 	
 	@Override
@@ -94,6 +92,28 @@ public class BoundingBox2DImpl implements BoundingBox2D {
 				(this.x >= other.getX()) &&
 				(this.y - this.height >= other.getY() - other.getHeight()) &&
 				(this.x + this.width <= other.getX() + other.getWidth());
+	}
+	
+	@Override
+	public boolean intersects(BoundingBox2D r) {
+		double tw = this.width;
+		double th = this.height;
+		double rw = r.getWidth();
+		double rh = r.getHeight();
+
+		double tx = this.x;
+		double ty = this.y - th;
+		double rx = r.getX();
+		double ry = r.getY() - rh;
+        rw += rx;
+        rh += ry;
+        tw += tx;
+        th += ty;
+        //      overflow || intersect
+        return ((rw < rx || rw > tx) &&
+                (rh < ry || rh > ty) &&
+                (tw < tx || tw > rx) &&
+                (th < ty || th > ry));
 	}
 	
 	@Override

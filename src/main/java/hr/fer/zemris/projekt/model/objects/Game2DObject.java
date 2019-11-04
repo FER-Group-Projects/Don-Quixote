@@ -145,6 +145,11 @@ public abstract class Game2DObject implements Destroyable {
 		}
 		
 		@Override
+		public boolean intersects(BoundingBox2D other) {
+			return boundingBox.intersects(other);
+		}
+		
+		@Override
 		public boolean isBetweenVerticalBoundariesOf(BoundingBox2D other) {
 			return boundingBox.isBetweenVerticalBoundariesOf(other);
 		}

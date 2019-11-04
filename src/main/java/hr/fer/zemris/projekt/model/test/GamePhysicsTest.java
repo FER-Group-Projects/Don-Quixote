@@ -109,20 +109,12 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 	}
 
 	private void init() {
-		params = new GameParameters(60, 1000, 1, 100, 100, 300          , 75, 75);
+		params = new GameParameters(60, 1000, 0.5, 100, 100, 300, 75, 75);
 
 		p = new Player(new BoundingBox2DImpl(250, 150, playerWidth, playerHeight), 0, 0, "Player1");
-		System.out.println(p.getBoundingBox());
 
 		objects = new ArrayList<>();
-		objects.add(new Barrel(new BoundingBox2DImpl(320, 320, 20, 20), -75, 0));
-		objects.add(new Barrel(new BoundingBox2DImpl(250, 320, 20, 20), 75, 0));
-		objects.add(new Platform(new BoundingBox2DImpl(100, 50, 420, 20)));
-		objects.add(new Platform(new BoundingBox2DImpl(100, 175, 420, 20)));
-		objects.add(new Platform(new BoundingBox2DImpl(100, 300, 420, 20)));
-		objects.add(new Ladder(new BoundingBox2DImpl(150, 155, 35, 105)));
-		objects.add(new Ladder(new BoundingBox2DImpl(220, 280, 35, 105)));
-		objects.add(new Ladder(new BoundingBox2DImpl(400, 155, 35, 105)));
+		objects.add(new Platform(new BoundingBox2DImpl(100, 50, 420, 20)));		
 		
 		gc = new GameControllerImpl(p, objects, params);
 		objects = null;
@@ -140,6 +132,43 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 				}
 			}
 		}).start();
+		
+		new Thread(() -> {
+			try {
+			Thread.sleep((long) (2_000.0));
+			gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 175, 420, 20)));
+			Thread.sleep((long) (2_000.0));
+			gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 300, 420, 20)));
+			Thread.sleep((long) (2_000.0));
+			gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 425, 420, 20)));
+			Thread.sleep((long) (2_000.0));
+			gc.addGameObject(new Ladder(new BoundingBox2DImpl(150, 155, 35, 105)));
+			Thread.sleep((long) (2_000.0));
+			gc.addGameObject(new Ladder(new BoundingBox2DImpl(400, 155, 35, 105)));
+			Thread.sleep((long) (2_000.0));
+			gc.addGameObject(new Ladder(new BoundingBox2DImpl(220, 280, 35, 105)));
+			Thread.sleep((long) (2_000.0));
+			gc.addGameObject(new Ladder(new BoundingBox2DImpl(245, 405, 35, 105)));
+			Thread.sleep((long) (2_000.0));
+			gc.addGameObject(new Barrel(new BoundingBox2DImpl(320, 320, 20, 20), -75, 0));
+			gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 320, 20, 20), 75, 0));
+			} catch(InterruptedException ex) {
+			}
+			
+			while (true) {
+				try {
+					Thread.sleep((long) (5_000.0));
+				} catch (InterruptedException ex) {
+				}
+				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 380, 20, 20), 0, 0));
+				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 270, 20, 20), 0, 0));
+				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 380, 20, 20), 0, 0));
+				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 270, 20, 20), 0, 0));
+			}
+		}).start();
+		
+		System.out.println("Game started with parameters: ");
+		System.out.println(params);
 	}
 	
 	@Override
@@ -148,35 +177,35 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 		g2d.setColor(Color.WHITE);
 		g2d.fillRect(0, 0, WIDTH, HEIGHT);
 
-		DoublePoint newPosition = new DoublePoint();
-		newPosition.x = p.getBoundingBox().getX();
-		newPosition.y = p.getBoundingBox().getY();
-		LongPoint newScreen = convertor.convert(newPosition);
-		g2d.setColor(Color.BLACK);
-		g2d.fillRect((int) newScreen.x, (int) newScreen.y, (int) Math.round(p.getBoundingBox().getWidth()),
-				(int) Math.round(p.getBoundingBox().getHeight()));
-
 		for (Game2DObject obj : gc.getGameObjects()) {
-			newPosition = new DoublePoint();
+			DoublePoint newPosition = new DoublePoint();
 			newPosition.x = obj.getBoundingBox().getX();
 			newPosition.y = obj.getBoundingBox().getY();
-			newScreen = convertor.convert(newPosition);
+			LongPoint newScreen = convertor.convert(newPosition);
+			
+			Color inner = null, outer = null;
 			if (obj instanceof Platform) {
-				g2d.setColor(Color.BLACK);
-				g2d.drawRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
-						(int) obj.getBoundingBox().getHeight());
+				inner = Color.CYAN;
+				outer = Color.BLUE;
 			} else if (obj instanceof Ladder) {
-				g2d.setColor(Color.RED);
-				g2d.drawRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
-						(int) obj.getBoundingBox().getHeight());
+				inner = Color.PINK;
+				outer = Color.RED;
 			} else if (obj instanceof Barrel) {
-				g2d.setColor(Color.RED);
-				g2d.fillRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
-						(int) obj.getBoundingBox().getHeight());
-				g2d.setColor(Color.BLUE);
-				g2d.drawRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
-						(int) obj.getBoundingBox().getHeight());
+				inner = Color.MAGENTA;
+				outer = Color.RED;
+			} else if (obj instanceof Player) {
+				inner = Color.GRAY;
+				outer = Color.DARK_GRAY;
+			} else {
+				continue;
 			}
+			
+			g2d.setColor(inner);
+			g2d.fillRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
+					(int) obj.getBoundingBox().getHeight());
+			g2d.setColor(outer);
+			g2d.drawRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
+					(int) obj.getBoundingBox().getHeight());
 		}
 	}
 

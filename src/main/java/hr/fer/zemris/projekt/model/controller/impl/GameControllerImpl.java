@@ -1,7 +1,6 @@
 package hr.fer.zemris.projekt.model.controller.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,10 +38,10 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 	private double tickDelay;
 	private EnumSet<PlayerAction> actions = EnumSet.noneOf(PlayerAction.class);
 
-	public GameControllerImpl(Player p, List<Game2DObject> objects, GameParameters parameters) {
+	public GameControllerImpl(Player p, List<Game2DObject> otherObjects, GameParameters parameters) {
 		this.player = Objects.requireNonNull(p);
 		this.player.addListener(this);
-		objects.forEach(o -> {
+		otherObjects.forEach(o -> {
 			if (o instanceof Player)
 				throw new IllegalArgumentException("Collection of other game objects must not contain a player!");
 			this.objects.add(o);
@@ -53,13 +52,11 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		this.tickDelay = 1000.0 / params.tickRatePerSec * 1E-3;
 	}
 	
-	public Player getPlayer() {
-		return player;
-	}
-	
 	@Override
 	public List<Game2DObject> getGameObjects() {
-		return Collections.unmodifiableList(objects);
+		var objs = new ArrayList<>(objects);
+		objs.add(player);
+		return objs;
 	}
 	
 	public GameParameters getGameParameters() {
@@ -113,7 +110,6 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 	public void objectDestroyed(Game2DObject source) {
 		listeners.forEach(l -> l.gameObjectDestroyed(source));
 		removeGameObject(source);
-		System.out.println("Object destroyed " + source);
 	}
 	
 	public synchronized void tick() {
@@ -200,9 +196,9 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				if (oldBBPlayer.isAbove(g2o.getBoundingBox()) && !oldBBPlayer.isOnTopOf(g2o.getBoundingBox()) || newBBPlayer.isOnTopOf(g2o.getBoundingBox())) { // Player is on platform only if it approaches it from the top or was already on platform
 					player.setOnGround(true);
 					player.setJumping(false);
-				} else {										// Else, player is (in 3D space) hanging on the edge
+				} else if (newBBPlayer.intersects(g2o.getBoundingBox())){										// Else, player is (in 3D space) hanging on the edge
 					player.setInGround(true);
-				}
+				} // else it is a corner touch
 				collision.p = (Platform) g2o ; 
 			} else if (g2o instanceof Ladder) {
 				if (newBBPlayer.isBetweenVerticalBoundariesOf(g2o.getBoundingBox())) { // Player is on ladder only if his whole bounding box is within left and right ladder boundary
@@ -277,10 +273,11 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				if (obj2 instanceof Platform) {
 					if (obj1.getBoundingBox().isAbove(obj2.getBoundingBox()) && !obj1.getBoundingBox().isOnTopOf(obj2.getBoundingBox()) || bb.isOnTopOf(obj2.getBoundingBox())) {
 						obj1.setOnGround(true);
-					} else {
+						collisionMap.get(obj1).p = (Platform) obj2 ; 
+					} else if (bb.intersects(obj2.getBoundingBox())){
 						obj1.setInGround(true);
+						collisionMap.get(obj1).p = (Platform) obj2 ; 
 					}
-					collisionMap.get(obj1).p = (Platform) obj2 ; 
 				} else if (obj2 instanceof Ladder) {
 					if (bb.isBetweenVerticalBoundariesOf(obj2.getBoundingBox())) {
 						obj1.setOnLadders(true);
@@ -329,7 +326,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		}
 
 		// Left and right movement
-		if (player.isOnGround() && !player.isJumping()) {
+		if (player.isOnGround()) {
 			if (actions.contains(PlayerAction.LEFT) && !actions.contains(PlayerAction.RIGHT)) {
 				player.setVelocityX(-params.playerDefaultSpeedGround);
 			} else if (!actions.contains(PlayerAction.LEFT) && actions.contains(PlayerAction.RIGHT)) {
@@ -338,7 +335,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				player.setVelocityX(0);
 			}
 			
-			if (!player.isOnLadders())
+			if (!player.isOnLadders() && !player.isJumping())
 				player.setVelocityY(0);
 		}
 
@@ -454,6 +451,16 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 
 		public double getOtherDefaultSpeedLadders() {
 			return otherDefaultSpeedLadders;
+		}
+
+		@Override
+		public String toString() {
+			return "GameParameters [tickRatePerSec=" + tickRatePerSec + ", gravitationalAcceleration="
+					+ gravitationalAcceleration + ", barrelLadderProbability=" + barrelLadderProbability
+					+ ", playerDefaultSpeedGround=" + playerDefaultSpeedGround + ", playerDefaultSpeedLadders="
+					+ playerDefaultSpeedLadders + ", playerDefaultSpeedJump=" + playerDefaultSpeedJump
+					+ ", otherDefaultSpeedGround=" + otherDefaultSpeedGround + ", otherDefaultSpeedLadders="
+					+ otherDefaultSpeedLadders + "]";
 		}
 	}
 
