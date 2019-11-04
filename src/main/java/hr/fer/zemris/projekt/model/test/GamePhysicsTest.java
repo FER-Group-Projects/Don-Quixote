@@ -109,7 +109,7 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 	}
 
 	private void init() {
-		params = new GameParameters(60, 1000, 1, 100, 100, 250, 75, 75);
+		params = new GameParameters(60, 1000, 1, 100, 100, 300          , 75, 75);
 
 		p = new Player(new BoundingBox2DImpl(250, 150, playerWidth, playerHeight), 0, 0, "Player1");
 		System.out.println(p.getBoundingBox());

@@ -1,9 +1,8 @@
 package hr.fer.zemris.projekt.model.objects;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
 
@@ -11,7 +10,7 @@ public abstract class Game2DObject implements Destroyable {
 	
 	private UnmodifiableBoundingBox boundingBox;
 	
-	private List<Game2DObjectListener> listeners = new LinkedList<>();
+	private List<Game2DObjectListener> listeners = new CopyOnWriteArrayList<>();
 	
 	public Game2DObject(BoundingBox2D position) {
 		this.boundingBox = new UnmodifiableBoundingBox(new BoundingBox2DImpl(position.getX(), position.getY(), position.getWidth(), position.getHeight()));
@@ -55,12 +54,10 @@ public abstract class Game2DObject implements Destroyable {
 	}
 	
 	private void notifyAllListenersChanged() {
-		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.boundingBoxChanged(this));
 	}
 	
 	private  void notifyAllListenersDestroyed() {
-		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.objectDestroyed(this));
 	}
 	
