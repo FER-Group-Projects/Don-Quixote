@@ -82,6 +82,7 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 		frame.pack();
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
 	}

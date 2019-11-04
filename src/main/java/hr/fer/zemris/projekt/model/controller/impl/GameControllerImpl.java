@@ -148,7 +148,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			bb.setY(bb.getY() + m.getVelocityY() * tickDelay);
 			moveMap.put(m, bb);
 			
-			if(m instanceof Barrel && random.nextDouble() < params.barrelLadderProbability) {
+			if(m instanceof Barrel && !m.isAboveLadders() && random.nextDouble() < params.barrelLadderProbability) {
 				goDownObjects.add((Barrel) m);
 			}
 
@@ -203,7 +203,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				continue;
 
 			if (g2o instanceof Platform) {
-				if (oldBBPlayer.isAbove(g2o.getBoundingBox())) { // Player is on platform only if it approaches it from the top or was already on platform
+				if (oldBBPlayer.isAbove(g2o.getBoundingBox()) && !oldBBPlayer.isOnTopOf(g2o.getBoundingBox()) || newBBPlayer.isOnTopOf(g2o.getBoundingBox())) { // Player is on platform only if it approaches it from the top or was already on platform
 					player.setOnGround(true);
 					player.setJumping(false);
 				} else {										// Else, player is (in 3D space) hanging on the edge
@@ -222,13 +222,13 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 
 		}
 
-		if (player.isOnGround()) {	
+		if (player.isOnGround()) {
 			// Checking if he is above ladders
 			for(var obj : objects) {
 				if(!(obj instanceof Ladder)) continue;
 				
 				Ladder l = (Ladder) obj;
-				if(player.getBoundingBox().isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collision.p.getBoundingBox().getY() - collision.p.getBoundingBox().getHeight()) {
+				if(newBBPlayer.isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collision.p.getBoundingBox().getY() - collision.p.getBoundingBox().getHeight()) {
 					player.setAboveLadders(true);
 					break;
 				}
@@ -238,7 +238,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			if(!(player.isAboveLadders() && (actions.contains(PlayerAction.UP) || actions.contains(PlayerAction.DOWN))))
 				newBBPlayer.setY(collision.p.getBoundingBox().getY() + newBBPlayer.getHeight());
 		}
-
+		
 		return collision;
 	}
 	
@@ -281,7 +281,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 					collisionMap.put(obj1, new CollisionCollection());
 
 				if (obj2 instanceof Platform) {
-					if (obj1.getBoundingBox().isAbove(obj2.getBoundingBox())) { 
+					if (obj1.getBoundingBox().isAbove(obj2.getBoundingBox()) && !obj1.getBoundingBox().isOnTopOf(obj2.getBoundingBox()) || bb.isOnTopOf(obj2.getBoundingBox())) {
 						obj1.setOnGround(true);
 					} else {
 						obj1.setInGround(true);
@@ -312,7 +312,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 					if(!(obj instanceof Ladder)) continue;
 					
 					Ladder l = (Ladder) obj;
-					if(entry.getKey().getBoundingBox().isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collisionMap.get(entry.getKey()).p.getBoundingBox().getY() - collisionMap.get(entry.getKey()).p.getBoundingBox().getHeight()) {
+					if(moveMap.get(entry.getKey()).isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collisionMap.get(entry.getKey()).p.getBoundingBox().getY() - collisionMap.get(entry.getKey()).p.getBoundingBox().getHeight()) {
 						entry.getKey().setAboveLadders(true);
 						break;
 					}
@@ -362,6 +362,11 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				player.setVelocityX(0);
 		}
 		
+		// Player cannot go through the platform if he is on ladders, but there is no ladders below him
+		if(player.isOnGround() && !player.isAboveLadders() && player.getVelocityY() < 0) {
+			player.setVelocityY(0);
+		}
+		
 		// Free fall
 		if (!player.isOnGround() && !player.isOnLadders() && !player.isInGround() || player.isJumping()) 
 			player.setVelocityY(player.getVelocityY() - params.gravitationalAcceleration * tickDelay);
@@ -391,6 +396,10 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 					moveObj.setVelocityX(0);
 			}
 
+			if(moveObj.isOnGround() && !moveObj.isAboveLadders() && moveObj.getVelocityY() < 0) {
+				moveObj.setVelocityY(0);
+			}
+			
 			if (!moveObj.isOnGround() && !moveObj.isOnLadders() && !moveObj.isInGround()) // Free fall
 				moveObj.setVelocityY(moveObj.getVelocityY() - params.gravitationalAcceleration * tickDelay);
 		}
