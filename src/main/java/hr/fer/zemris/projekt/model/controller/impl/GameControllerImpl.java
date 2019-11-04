@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import hr.fer.zemris.projekt.model.controller.GameController;
 import hr.fer.zemris.projekt.model.controller.GameControllerListener;
@@ -24,86 +26,22 @@ import hr.fer.zemris.projekt.model.objects.impl.Platform;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
 
 public class GameControllerImpl implements GameController, Game2DObjectListener {
-
-	public static class GameParameters {
-		private int tickRatePerSec;
-		private double gravitationalAcceleration;
-		private double barrelLadderProbability;
-
-		private double playerDefaultSpeedGround;
-		private double playerDefaultSpeedLadders;
-		private double playerDefaultSpeedJump;
-		
-		private double otherDefaultSpeedGround;
-		private double otherDefaultSpeedLadders;
-		
-		public GameParameters(int tickRatePerSec, double gravitationalAcceleration, double barrelLadderProbability,
-				double playerDefaultSpeedGround, double playerDefaultSpeedLadders, double playerDefaultSpeedJump,
-				double otherDefaultSpeedGround, double otherDefaultSpeedLadders) {
-			this.tickRatePerSec = tickRatePerSec;
-			this.gravitationalAcceleration = gravitationalAcceleration;
-			this.barrelLadderProbability = barrelLadderProbability;
-			this.playerDefaultSpeedGround = playerDefaultSpeedGround;
-			this.playerDefaultSpeedLadders = playerDefaultSpeedLadders;
-			this.playerDefaultSpeedJump = playerDefaultSpeedJump;
-			this.otherDefaultSpeedGround = otherDefaultSpeedGround;
-			this.otherDefaultSpeedLadders = otherDefaultSpeedLadders;
-		}
-
-		public int getTickRatePerSec() {
-			return tickRatePerSec;
-		}
-
-		public double getGravitationalAcceleration() {
-			return gravitationalAcceleration;
-		}
-
-		public double getBarrelLadderProbability() {
-			return barrelLadderProbability;
-		}
-
-		public double getPlayerDefaultSpeedGround() {
-			return playerDefaultSpeedGround;
-		}
-
-		public double getPlayerDefaultSpeedLadders() {
-			return playerDefaultSpeedLadders;
-		}
-
-		public double getPlayerDefaultSpeedJump() {
-			return playerDefaultSpeedJump;
-		}
-
-		public double getOtherDefaultSpeedGround() {
-			return otherDefaultSpeedGround;
-		}
-
-		public double getOtherDefaultSpeedLadders() {
-			return otherDefaultSpeedLadders;
-		}
-	}
-
-	private static class CollisionCollection {
-		private Platform p;
-		private Ladder l;
-		private Barrel b;
-	}
 	
 	private Random random = new Random(System.currentTimeMillis());
 
-	private List<GameControllerListener> listeners = new ArrayList<>();
+	private List<GameControllerListener> listeners = new CopyOnWriteArrayList<>();
 	
 	private Player player;
-	private List<Game2DObject> objects = new ArrayList<>();
+	private List<Game2DObject> objects = new LinkedList<>();
 	private GameParameters params;
 
 	private double tickDelay;
 	private EnumSet<PlayerAction> actions = EnumSet.noneOf(PlayerAction.class);
 
-	public GameControllerImpl(Player p, List<Game2DObject> objects, GameParameters parameters) {
+	public GameControllerImpl(Player p, List<Game2DObject> otherObjects, GameParameters parameters) {
 		this.player = Objects.requireNonNull(p);
 		this.player.addListener(this);
-		objects.forEach(o -> {
+		otherObjects.forEach(o -> {
 			if (o instanceof Player)
 				throw new IllegalArgumentException("Collection of other game objects must not contain a player!");
 			this.objects.add(o);
@@ -114,15 +52,24 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		this.tickDelay = 1000.0 / params.tickRatePerSec * 1E-3;
 	}
 	
+	@Override
+	public List<Game2DObject> getGameObjects() {
+		var objs = new ArrayList<>(objects);
+		objs.add(player);
+		return objs;
+	}
+	
 	public GameParameters getGameParameters() {
 		return params;
 	}
 
+	@Override
 	public synchronized void setPlayerAction(PlayerAction action) {
 		actions.add(action);
 		listeners.forEach(l -> l.playerActionStateChanged(action, true));
 	}
 
+	@Override
 	public synchronized void unsetPlayerAction(PlayerAction action) {
 		actions.remove(action);
 		listeners.forEach(l -> l.playerActionStateChanged(action, false));
@@ -192,7 +139,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			bb.setY(bb.getY() + m.getVelocityY() * tickDelay);
 			moveMap.put(m, bb);
 			
-			if(m instanceof Barrel && random.nextDouble() < params.barrelLadderProbability) {
+			if(m instanceof Barrel && !m.isAboveLadders() && random.nextDouble() < params.barrelLadderProbability) {
 				goDownObjects.add((Barrel) m);
 			}
 
@@ -246,12 +193,12 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				continue;
 
 			if (g2o instanceof Platform) {
-				if (oldBBPlayer.isAbove(g2o.getBoundingBox())) { // Player is on platform only if it approaches it from the top or was already on platform
+				if (oldBBPlayer.isAbove(g2o.getBoundingBox()) && !oldBBPlayer.isOnTopOf(g2o.getBoundingBox()) || newBBPlayer.isOnTopOf(g2o.getBoundingBox())) { // Player is on platform only if it approaches it from the top or was already on platform
 					player.setOnGround(true);
 					player.setJumping(false);
-				} else {										// Else, player is (in 3D space) hanging on the edge
+				} else if (newBBPlayer.intersects(g2o.getBoundingBox())){										// Else, player is (in 3D space) hanging on the edge
 					player.setInGround(true);
-				}
+				} // else it is a corner touch
 				collision.p = (Platform) g2o ; 
 			} else if (g2o instanceof Ladder) {
 				if (newBBPlayer.isBetweenVerticalBoundariesOf(g2o.getBoundingBox())) { // Player is on ladder only if his whole bounding box is within left and right ladder boundary
@@ -265,13 +212,13 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 
 		}
 
-		if (player.isOnGround()) {	
+		if (player.isOnGround()) {
 			// Checking if he is above ladders
 			for(var obj : objects) {
 				if(!(obj instanceof Ladder)) continue;
 				
 				Ladder l = (Ladder) obj;
-				if(player.getBoundingBox().isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collision.p.getBoundingBox().getY() - collision.p.getBoundingBox().getHeight()) {
+				if(newBBPlayer.isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collision.p.getBoundingBox().getY() - collision.p.getBoundingBox().getHeight()) {
 					player.setAboveLadders(true);
 					break;
 				}
@@ -281,7 +228,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			if(!(player.isAboveLadders() && (actions.contains(PlayerAction.UP) || actions.contains(PlayerAction.DOWN))))
 				newBBPlayer.setY(collision.p.getBoundingBox().getY() + newBBPlayer.getHeight());
 		}
-
+		
 		return collision;
 	}
 	
@@ -324,12 +271,13 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 					collisionMap.put(obj1, new CollisionCollection());
 
 				if (obj2 instanceof Platform) {
-					if (obj1.getBoundingBox().isAbove(obj2.getBoundingBox())) { 
+					if (obj1.getBoundingBox().isAbove(obj2.getBoundingBox()) && !obj1.getBoundingBox().isOnTopOf(obj2.getBoundingBox()) || bb.isOnTopOf(obj2.getBoundingBox())) {
 						obj1.setOnGround(true);
-					} else {
+						collisionMap.get(obj1).p = (Platform) obj2 ; 
+					} else if (bb.intersects(obj2.getBoundingBox())){
 						obj1.setInGround(true);
+						collisionMap.get(obj1).p = (Platform) obj2 ; 
 					}
-					collisionMap.get(obj1).p = (Platform) obj2 ; 
 				} else if (obj2 instanceof Ladder) {
 					if (bb.isBetweenVerticalBoundariesOf(obj2.getBoundingBox())) {
 						obj1.setOnLadders(true);
@@ -355,7 +303,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 					if(!(obj instanceof Ladder)) continue;
 					
 					Ladder l = (Ladder) obj;
-					if(entry.getKey().getBoundingBox().isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collisionMap.get(entry.getKey()).p.getBoundingBox().getY() - collisionMap.get(entry.getKey()).p.getBoundingBox().getHeight()) {
+					if(moveMap.get(entry.getKey()).isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collisionMap.get(entry.getKey()).p.getBoundingBox().getY() - collisionMap.get(entry.getKey()).p.getBoundingBox().getHeight()) {
 						entry.getKey().setAboveLadders(true);
 						break;
 					}
@@ -378,7 +326,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		}
 
 		// Left and right movement
-		if (player.isOnGround() && !player.isJumping()) {
+		if (player.isOnGround()) {
 			if (actions.contains(PlayerAction.LEFT) && !actions.contains(PlayerAction.RIGHT)) {
 				player.setVelocityX(-params.playerDefaultSpeedGround);
 			} else if (!actions.contains(PlayerAction.LEFT) && actions.contains(PlayerAction.RIGHT)) {
@@ -387,7 +335,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				player.setVelocityX(0);
 			}
 			
-			if (!player.isOnLadders())
+			if (!player.isOnLadders() && !player.isJumping())
 				player.setVelocityY(0);
 		}
 
@@ -403,6 +351,11 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			
 			if(!player.isOnGround())
 				player.setVelocityX(0);
+		}
+		
+		// Player cannot go through the platform if he is on ladders, but there is no ladders below him
+		if(player.isOnGround() && !player.isAboveLadders() && player.getVelocityY() < 0) {
+			player.setVelocityY(0);
 		}
 		
 		// Free fall
@@ -434,9 +387,87 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 					moveObj.setVelocityX(0);
 			}
 
+			if(moveObj.isOnGround() && !moveObj.isAboveLadders() && moveObj.getVelocityY() < 0) {
+				moveObj.setVelocityY(0);
+			}
+			
 			if (!moveObj.isOnGround() && !moveObj.isOnLadders() && !moveObj.isInGround()) // Free fall
 				moveObj.setVelocityY(moveObj.getVelocityY() - params.gravitationalAcceleration * tickDelay);
 		}
+	}
+	
+	public static class GameParameters {
+		private int tickRatePerSec;
+		private double gravitationalAcceleration;
+		private double barrelLadderProbability;
+
+		private double playerDefaultSpeedGround;
+		private double playerDefaultSpeedLadders;
+		private double playerDefaultSpeedJump;
+		
+		private double otherDefaultSpeedGround;
+		private double otherDefaultSpeedLadders;
+		
+		public GameParameters(int tickRatePerSec, double gravitationalAcceleration, double barrelLadderProbability,
+				double playerDefaultSpeedGround, double playerDefaultSpeedLadders, double playerDefaultSpeedJump,
+				double otherDefaultSpeedGround, double otherDefaultSpeedLadders) {
+			this.tickRatePerSec = tickRatePerSec;
+			this.gravitationalAcceleration = gravitationalAcceleration;
+			this.barrelLadderProbability = barrelLadderProbability;
+			this.playerDefaultSpeedGround = playerDefaultSpeedGround;
+			this.playerDefaultSpeedLadders = playerDefaultSpeedLadders;
+			this.playerDefaultSpeedJump = playerDefaultSpeedJump;
+			this.otherDefaultSpeedGround = otherDefaultSpeedGround;
+			this.otherDefaultSpeedLadders = otherDefaultSpeedLadders;
+		}
+
+		public int getTickRatePerSec() {
+			return tickRatePerSec;
+		}
+
+		public double getGravitationalAcceleration() {
+			return gravitationalAcceleration;
+		}
+
+		public double getBarrelLadderProbability() {
+			return barrelLadderProbability;
+		}
+
+		public double getPlayerDefaultSpeedGround() {
+			return playerDefaultSpeedGround;
+		}
+
+		public double getPlayerDefaultSpeedLadders() {
+			return playerDefaultSpeedLadders;
+		}
+
+		public double getPlayerDefaultSpeedJump() {
+			return playerDefaultSpeedJump;
+		}
+
+		public double getOtherDefaultSpeedGround() {
+			return otherDefaultSpeedGround;
+		}
+
+		public double getOtherDefaultSpeedLadders() {
+			return otherDefaultSpeedLadders;
+		}
+
+		@Override
+		public String toString() {
+			return "GameParameters [tickRatePerSec=" + tickRatePerSec + ", gravitationalAcceleration="
+					+ gravitationalAcceleration + ", barrelLadderProbability=" + barrelLadderProbability
+					+ ", playerDefaultSpeedGround=" + playerDefaultSpeedGround + ", playerDefaultSpeedLadders="
+					+ playerDefaultSpeedLadders + ", playerDefaultSpeedJump=" + playerDefaultSpeedJump
+					+ ", otherDefaultSpeedGround=" + otherDefaultSpeedGround + ", otherDefaultSpeedLadders="
+					+ otherDefaultSpeedLadders + "]";
+		}
+	}
+
+	private static class CollisionCollection {
+		private Platform p;
+		private Ladder l;
+		private Barrel b;
 	}
 
 }

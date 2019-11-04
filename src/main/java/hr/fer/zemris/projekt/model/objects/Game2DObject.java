@@ -1,8 +1,8 @@
 package hr.fer.zemris.projekt.model.objects;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
 
@@ -10,7 +10,7 @@ public abstract class Game2DObject implements Destroyable {
 	
 	private UnmodifiableBoundingBox boundingBox;
 	
-	private List<Game2DObjectListener> listeners = new ArrayList<>();
+	private List<Game2DObjectListener> listeners = new CopyOnWriteArrayList<>();
 	
 	public Game2DObject(BoundingBox2D position) {
 		this.boundingBox = new UnmodifiableBoundingBox(new BoundingBox2DImpl(position.getX(), position.getY(), position.getWidth(), position.getHeight()));
@@ -22,27 +22,27 @@ public abstract class Game2DObject implements Destroyable {
 	
 	public void setX(double x) {
 		boundingBox.boundingBox.setX(x);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void setY(double y) {
 		boundingBox.boundingBox.setY(y);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void setWidth(double w) {
 		boundingBox.boundingBox.setWidth(w);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void setHeight(double h) {
 		boundingBox.boundingBox.setHeight(h);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void setLocation(double x, double y) {
 		boundingBox.boundingBox.setLocation(x, y);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void addListener(Game2DObjectListener listener) {
@@ -53,13 +53,17 @@ public abstract class Game2DObject implements Destroyable {
 		listeners.remove(Objects.requireNonNull(listener));
 	}
 	
-	private void notifyAllListeners() {
+	private void notifyAllListenersChanged() {
 		listeners.forEach(l -> l.boundingBoxChanged(this));
+	}
+	
+	private  void notifyAllListenersDestroyed() {
+		listeners.forEach(l -> l.objectDestroyed(this));
 	}
 	
 	@Override
 	public void destroy() {
-		listeners.forEach(l -> l.objectDestroyed(this));
+		notifyAllListenersDestroyed();
 	}
 
 	@Override
@@ -138,6 +142,11 @@ public abstract class Game2DObject implements Destroyable {
 		@Override
 		public boolean isPartOf(BoundingBox2D other) {
 			return boundingBox.isPartOf(other);
+		}
+		
+		@Override
+		public boolean intersects(BoundingBox2D other) {
+			return boundingBox.intersects(other);
 		}
 		
 		@Override
