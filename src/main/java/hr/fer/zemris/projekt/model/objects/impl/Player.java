@@ -35,4 +35,10 @@ public class Player extends MovableGame2DObject {
 		this.isJumping = isJumping;
 	}
 
+	@Override
+	public String toString() {
+		return "Player [name=" + name + ", isAlive=" + isAlive + ", isJumping=" + isJumping + ", toString()="
+				+ super.toString() + "]";
+	}
+
 }

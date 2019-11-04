@@ -1,9 +1,11 @@
 package hr.fer.zemris.projekt.model.controller.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,77 +26,13 @@ import hr.fer.zemris.projekt.model.objects.impl.Platform;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
 
 public class GameControllerImpl implements GameController, Game2DObjectListener {
-
-	public static class GameParameters {
-		private int tickRatePerSec;
-		private double gravitationalAcceleration;
-		private double barrelLadderProbability;
-
-		private double playerDefaultSpeedGround;
-		private double playerDefaultSpeedLadders;
-		private double playerDefaultSpeedJump;
-		
-		private double otherDefaultSpeedGround;
-		private double otherDefaultSpeedLadders;
-		
-		public GameParameters(int tickRatePerSec, double gravitationalAcceleration, double barrelLadderProbability,
-				double playerDefaultSpeedGround, double playerDefaultSpeedLadders, double playerDefaultSpeedJump,
-				double otherDefaultSpeedGround, double otherDefaultSpeedLadders) {
-			this.tickRatePerSec = tickRatePerSec;
-			this.gravitationalAcceleration = gravitationalAcceleration;
-			this.barrelLadderProbability = barrelLadderProbability;
-			this.playerDefaultSpeedGround = playerDefaultSpeedGround;
-			this.playerDefaultSpeedLadders = playerDefaultSpeedLadders;
-			this.playerDefaultSpeedJump = playerDefaultSpeedJump;
-			this.otherDefaultSpeedGround = otherDefaultSpeedGround;
-			this.otherDefaultSpeedLadders = otherDefaultSpeedLadders;
-		}
-
-		public int getTickRatePerSec() {
-			return tickRatePerSec;
-		}
-
-		public double getGravitationalAcceleration() {
-			return gravitationalAcceleration;
-		}
-
-		public double getBarrelLadderProbability() {
-			return barrelLadderProbability;
-		}
-
-		public double getPlayerDefaultSpeedGround() {
-			return playerDefaultSpeedGround;
-		}
-
-		public double getPlayerDefaultSpeedLadders() {
-			return playerDefaultSpeedLadders;
-		}
-
-		public double getPlayerDefaultSpeedJump() {
-			return playerDefaultSpeedJump;
-		}
-
-		public double getOtherDefaultSpeedGround() {
-			return otherDefaultSpeedGround;
-		}
-
-		public double getOtherDefaultSpeedLadders() {
-			return otherDefaultSpeedLadders;
-		}
-	}
-
-	private static class CollisionCollection {
-		private Platform p;
-		private Ladder l;
-		private Barrel b;
-	}
 	
 	private Random random = new Random(System.currentTimeMillis());
 
 	private List<GameControllerListener> listeners = new ArrayList<>();
 	
 	private Player player;
-	private List<Game2DObject> objects = new ArrayList<>();
+	private List<Game2DObject> objects = new LinkedList<>();
 	private GameParameters params;
 
 	private double tickDelay;
@@ -114,17 +52,30 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		this.tickDelay = 1000.0 / params.tickRatePerSec * 1E-3;
 	}
 	
+	public Player getPlayer() {
+		return player;
+	}
+	
+	@Override
+	public List<Game2DObject> getGameObjects() {
+		return Collections.unmodifiableList(objects);
+	}
+	
 	public GameParameters getGameParameters() {
 		return params;
 	}
 
+	@Override
 	public synchronized void setPlayerAction(PlayerAction action) {
 		actions.add(action);
+		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.playerActionStateChanged(action, true));
 	}
 
+	@Override
 	public synchronized void unsetPlayerAction(PlayerAction action) {
 		actions.remove(action);
+		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.playerActionStateChanged(action, false));
 	}
 
@@ -144,6 +95,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		
 		objects.add(Objects.requireNonNull(object));
 		object.addListener(this);
+		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.gameObjectAdded(object));
 	}
 
@@ -151,18 +103,22 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 	public synchronized void removeGameObject(Game2DObject object) {
 		objects.remove(Objects.requireNonNull(object));
 		object.removeListener(this);
+		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.gameObjectRemoved(object));
 	}
 	
 	@Override
 	public void boundingBoxChanged(Game2DObject source) {
+		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.gameObjectChanged(source));
 	}
 
 	@Override
 	public void objectDestroyed(Game2DObject source) {
+		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.gameObjectDestroyed(source));
 		removeGameObject(source);
+		System.out.println("Object destroyed " + source);
 	}
 	
 	public synchronized void tick() {
@@ -228,6 +184,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			}
 		}
 		
+		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.tickPerformed());
 
 	}
@@ -437,6 +394,70 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			if (!moveObj.isOnGround() && !moveObj.isOnLadders() && !moveObj.isInGround()) // Free fall
 				moveObj.setVelocityY(moveObj.getVelocityY() - params.gravitationalAcceleration * tickDelay);
 		}
+	}
+	
+	public static class GameParameters {
+		private int tickRatePerSec;
+		private double gravitationalAcceleration;
+		private double barrelLadderProbability;
+
+		private double playerDefaultSpeedGround;
+		private double playerDefaultSpeedLadders;
+		private double playerDefaultSpeedJump;
+		
+		private double otherDefaultSpeedGround;
+		private double otherDefaultSpeedLadders;
+		
+		public GameParameters(int tickRatePerSec, double gravitationalAcceleration, double barrelLadderProbability,
+				double playerDefaultSpeedGround, double playerDefaultSpeedLadders, double playerDefaultSpeedJump,
+				double otherDefaultSpeedGround, double otherDefaultSpeedLadders) {
+			this.tickRatePerSec = tickRatePerSec;
+			this.gravitationalAcceleration = gravitationalAcceleration;
+			this.barrelLadderProbability = barrelLadderProbability;
+			this.playerDefaultSpeedGround = playerDefaultSpeedGround;
+			this.playerDefaultSpeedLadders = playerDefaultSpeedLadders;
+			this.playerDefaultSpeedJump = playerDefaultSpeedJump;
+			this.otherDefaultSpeedGround = otherDefaultSpeedGround;
+			this.otherDefaultSpeedLadders = otherDefaultSpeedLadders;
+		}
+
+		public int getTickRatePerSec() {
+			return tickRatePerSec;
+		}
+
+		public double getGravitationalAcceleration() {
+			return gravitationalAcceleration;
+		}
+
+		public double getBarrelLadderProbability() {
+			return barrelLadderProbability;
+		}
+
+		public double getPlayerDefaultSpeedGround() {
+			return playerDefaultSpeedGround;
+		}
+
+		public double getPlayerDefaultSpeedLadders() {
+			return playerDefaultSpeedLadders;
+		}
+
+		public double getPlayerDefaultSpeedJump() {
+			return playerDefaultSpeedJump;
+		}
+
+		public double getOtherDefaultSpeedGround() {
+			return otherDefaultSpeedGround;
+		}
+
+		public double getOtherDefaultSpeedLadders() {
+			return otherDefaultSpeedLadders;
+		}
+	}
+
+	private static class CollisionCollection {
+		private Platform p;
+		private Ladder l;
+		private Barrel b;
 	}
 
 }

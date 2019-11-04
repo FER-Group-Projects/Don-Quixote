@@ -1,6 +1,7 @@
 package hr.fer.zemris.projekt.model.objects;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ public abstract class Game2DObject implements Destroyable {
 	
 	private UnmodifiableBoundingBox boundingBox;
 	
-	private List<Game2DObjectListener> listeners = new ArrayList<>();
+	private List<Game2DObjectListener> listeners = new LinkedList<>();
 	
 	public Game2DObject(BoundingBox2D position) {
 		this.boundingBox = new UnmodifiableBoundingBox(new BoundingBox2DImpl(position.getX(), position.getY(), position.getWidth(), position.getHeight()));
@@ -22,27 +23,27 @@ public abstract class Game2DObject implements Destroyable {
 	
 	public void setX(double x) {
 		boundingBox.boundingBox.setX(x);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void setY(double y) {
 		boundingBox.boundingBox.setY(y);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void setWidth(double w) {
 		boundingBox.boundingBox.setWidth(w);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void setHeight(double h) {
 		boundingBox.boundingBox.setHeight(h);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void setLocation(double x, double y) {
 		boundingBox.boundingBox.setLocation(x, y);
-		notifyAllListeners();
+		notifyAllListenersChanged();
 	}
 	
 	public void addListener(Game2DObjectListener listener) {
@@ -53,13 +54,19 @@ public abstract class Game2DObject implements Destroyable {
 		listeners.remove(Objects.requireNonNull(listener));
 	}
 	
-	private void notifyAllListeners() {
+	private void notifyAllListenersChanged() {
+		var listeners = new ArrayList<>(this.listeners);
 		listeners.forEach(l -> l.boundingBoxChanged(this));
+	}
+	
+	private  void notifyAllListenersDestroyed() {
+		var listeners = new ArrayList<>(this.listeners);
+		listeners.forEach(l -> l.objectDestroyed(this));
 	}
 	
 	@Override
 	public void destroy() {
-		listeners.forEach(l -> l.objectDestroyed(this));
+		notifyAllListenersDestroyed();
 	}
 
 	@Override

@@ -66,7 +66,9 @@ public abstract class MovableGame2DObject extends Game2DObject {
 
 	@Override
 	public String toString() {
-		return "MoveableGame2DObject [velocityX=" + velocityX + ", velocityY=" + velocityY + "]";
+		return "MovableGame2DObject [velocityX=" + velocityX + ", velocityY=" + velocityY + ", isOnGround=" + isOnGround
+				+ ", isOnLadders=" + isOnLadders + ", isAboveLadders=" + isAboveLadders + ", isInGround=" + isInGround
+				+ ", toString()=" + super.toString() + "]";
 	}
 	
 }
