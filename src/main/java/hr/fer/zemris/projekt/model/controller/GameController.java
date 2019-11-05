@@ -16,6 +16,7 @@ public interface GameController {
 	
 	void start();
 	void stop();
+	void tick();
 
 	void addGameObject(Game2DObject object);
 	void removeGameObject(Game2DObject object);

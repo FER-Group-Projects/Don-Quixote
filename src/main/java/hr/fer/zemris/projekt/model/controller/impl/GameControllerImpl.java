@@ -141,7 +141,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		removeGameObject(source);
 	}
 	
-	private synchronized void tick() {
+	public synchronized void tick() {
 
 		if (!player.isAlive())
 			return;
