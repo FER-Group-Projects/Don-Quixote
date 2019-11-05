@@ -11,8 +11,11 @@ public interface GameController {
 
 	void addListener(GameControllerListener listener);
 	void removeListener(GameControllerListener listener);
-
-	void tick();
+	
+	int getTickRatePerSec();
+	
+	void start();
+	void stop();
 
 	void addGameObject(Game2DObject object);
 	void removeGameObject(Game2DObject object);

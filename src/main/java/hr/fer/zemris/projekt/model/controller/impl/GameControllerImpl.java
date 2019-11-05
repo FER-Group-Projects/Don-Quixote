@@ -37,6 +37,9 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 
 	private double tickDelay;
 	private EnumSet<PlayerAction> actions = EnumSet.noneOf(PlayerAction.class);
+	
+	private boolean isRunning = false;
+	private boolean stopReq = false;
 
 	public GameControllerImpl(Player p, List<Game2DObject> otherObjects, GameParameters parameters) {
 		this.player = Objects.requireNonNull(p);
@@ -49,7 +52,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		});
 		this.params = parameters;
 
-		this.tickDelay = 1000.0 / params.tickRatePerSec * 1E-3;
+		this.tickDelay = 1000.0 / params.getTickRatePerSec() * 1E-3;
 	}
 	
 	@Override
@@ -59,8 +62,34 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		return objs;
 	}
 	
-	public GameParameters getGameParameters() {
-		return params;
+	@Override
+	public int getTickRatePerSec() {
+		return params.getTickRatePerSec();
+	}
+	
+	@Override
+	public synchronized void start() {
+		
+		isRunning = true;
+		new Thread(() -> {
+			while(!stopReq) {
+				
+				tick();
+				try {
+					Thread.sleep((long) (1_000.0/params.getTickRatePerSec()));
+				} catch (InterruptedException e) {
+				}
+				
+			}
+			isRunning = false;
+		}).start();
+		
+	}
+	
+	@Override
+	public synchronized void stop() {
+		stopReq = true;
+		while(isRunning);
 	}
 
 	@Override
@@ -112,7 +141,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		removeGameObject(source);
 	}
 	
-	public synchronized void tick() {
+	private synchronized void tick() {
 
 		if (!player.isAlive())
 			return;
@@ -139,7 +168,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			bb.setY(bb.getY() + m.getVelocityY() * tickDelay);
 			moveMap.put(m, bb);
 			
-			if(m instanceof Barrel && !m.isAboveLadders() && random.nextDouble() < params.barrelLadderProbability) {
+			if(m instanceof Barrel && !m.isAboveLadders() && random.nextDouble() < params.getBarrelLadderProbability()) {
 				goDownObjects.add((Barrel) m);
 			}
 
@@ -284,6 +313,11 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 						collisionMap.get(obj1).l = (Ladder) obj2;
 					}
 				} else if (obj2 instanceof Barrel) {
+					if(bb.isAbove(bb2)) {
+						obj1.setVelocityY(0);
+					} else {
+						((Barrel)obj2).setVelocityY(0);
+					}
 					if(bb.getY() == bb2.getY()) {
 						obj1.setVelocityX(-obj1.getVelocityX());
 						((Barrel) obj2).setVelocityX(-((Barrel) obj2).getVelocityX());
@@ -321,16 +355,16 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 	private void updatePlayerVelocity(BoundingBox2D newPlayerBB, CollisionCollection collision) {
 		// Jump
 		if (actions.contains(PlayerAction.JUMP) && !player.isJumping() && player.isOnGround()) {
-			player.setVelocityY(params.playerDefaultSpeedJump);
+			player.setVelocityY(params.getPlayerDefaultSpeedJump());
 			player.setJumping(true);
 		}
 
 		// Left and right movement
 		if (player.isOnGround()) {
 			if (actions.contains(PlayerAction.LEFT) && !actions.contains(PlayerAction.RIGHT)) {
-				player.setVelocityX(-params.playerDefaultSpeedGround);
+				player.setVelocityX(-params.getPlayerDefaultSpeedGround());
 			} else if (!actions.contains(PlayerAction.LEFT) && actions.contains(PlayerAction.RIGHT)) {
-				player.setVelocityX(params.playerDefaultSpeedGround);
+				player.setVelocityX(params.getPlayerDefaultSpeedGround());
 			} else {
 				player.setVelocityX(0);
 			}
@@ -342,9 +376,9 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		// Up and down movement
 		if ((player.isOnLadders() || player.isInGround() || player.isAboveLadders()) && !player.isJumping()) {
 			if (actions.contains(PlayerAction.UP) && !actions.contains(PlayerAction.DOWN)) {
-				player.setVelocityY(params.playerDefaultSpeedLadders);
+				player.setVelocityY(params.getPlayerDefaultSpeedLadders());
 			} else if (!actions.contains(PlayerAction.UP) && actions.contains(PlayerAction.DOWN)) {
-				player.setVelocityY(-params.playerDefaultSpeedLadders);
+				player.setVelocityY(-params.getPlayerDefaultSpeedLadders());
 			} else {
 				player.setVelocityY(0);
 			}
@@ -360,7 +394,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 		
 		// Free fall
 		if (!player.isOnGround() && !player.isOnLadders() && !player.isInGround() || player.isJumping()) 
-			player.setVelocityY(player.getVelocityY() - params.gravitationalAcceleration * tickDelay);
+			player.setVelocityY(player.getVelocityY() - params.getGravitationalAcceleration() * tickDelay);
 	}
 	
 	private void updateOtherVelocity(Map<MovableGame2DObject, BoundingBox2D> moveMap,
@@ -372,16 +406,16 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			if (moveObj.isOnGround()) {
 				if (moveObj.getVelocityX() == 0) {
 					if (random.nextDouble() < 0.5)
-						moveObj.setVelocityX(params.otherDefaultSpeedGround);
+						moveObj.setVelocityX(params.getOtherDefaultSpeedGround());
 					else
-						moveObj.setVelocityX(-params.otherDefaultSpeedGround);
+						moveObj.setVelocityX(-params.getOtherDefaultSpeedGround());
 				}
 				
 				moveObj.setVelocityY(0);
 			}
 
 			if (moveObj.isOnLadders() || moveObj.isInGround() || moveObj.isAboveLadders() && goDownObjects.contains(moveObj)) {
-				moveObj.setVelocityY(-params.otherDefaultSpeedLadders);
+				moveObj.setVelocityY(-params.getOtherDefaultSpeedLadders());
 
 				if (!moveObj.isOnGround())
 					moveObj.setVelocityX(0);
@@ -392,10 +426,10 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			}
 			
 			if (!moveObj.isOnGround() && !moveObj.isOnLadders() && !moveObj.isInGround()) // Free fall
-				moveObj.setVelocityY(moveObj.getVelocityY() - params.gravitationalAcceleration * tickDelay);
+				moveObj.setVelocityY(moveObj.getVelocityY() - params.getGravitationalAcceleration() * tickDelay);
 		}
 	}
-	
+
 	public static class GameParameters {
 		private int tickRatePerSec;
 		private double gravitationalAcceleration;
@@ -463,7 +497,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 					+ otherDefaultSpeedLadders + "]";
 		}
 	}
-
+	
 	private static class CollisionCollection {
 		private Platform p;
 		private Ladder l;

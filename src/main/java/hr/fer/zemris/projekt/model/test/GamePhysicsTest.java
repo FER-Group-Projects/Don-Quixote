@@ -89,7 +89,7 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 480;
-	private static final int FPS = 60;
+	
 
 	private Player p;
 	private List<Game2DObject> objects;
@@ -121,35 +121,24 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 		gc.addListener(this);
 		convertor = new ModelToScreenCoordinateConvertor(0, WIDTH, 0,
 				HEIGHT, 0, WIDTH, 0, HEIGHT);
-
-		new Thread(() -> {
-			while (true) {
-				gc.tick();
-				try {
-					Thread.sleep((long) (1000.0/FPS));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		}).start();
 		
 		new Thread(() -> {
 			try {
-			Thread.sleep((long) (2_000.0));
+			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 175, 420, 20)));
-			Thread.sleep((long) (2_000.0));
+			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 300, 420, 20)));
-			Thread.sleep((long) (2_000.0));
+			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 425, 420, 20)));
-			Thread.sleep((long) (2_000.0));
+			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Ladder(new BoundingBox2DImpl(150, 155, 35, 105)));
-			Thread.sleep((long) (2_000.0));
+			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Ladder(new BoundingBox2DImpl(400, 155, 35, 105)));
-			Thread.sleep((long) (2_000.0));
+			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Ladder(new BoundingBox2DImpl(220, 280, 35, 105)));
-			Thread.sleep((long) (2_000.0));
+			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Ladder(new BoundingBox2DImpl(245, 405, 35, 105)));
-			Thread.sleep((long) (2_000.0));
+			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(320, 320, 20, 20), -75, 0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 320, 20, 20), 75, 0));
 			} catch(InterruptedException ex) {
@@ -157,18 +146,28 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 			
 			while (true) {
 				try {
-					Thread.sleep((long) (5_000.0));
+					Thread.sleep((long) (3_000.0));
 				} catch (InterruptedException ex) {
 				}
 				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 380, 20, 20), 0, 0));
 				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 270, 20, 20), 0, 0));
 				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 380, 20, 20), 0, 0));
 				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 270, 20, 20), 0, 0));
+				try {
+					Thread.sleep((long) (0_500.0));
+				} catch (InterruptedException ex) {
+				}
+				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 280, 20, 20), 0, 0));
+				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 170, 20, 20), 0, 0));
+				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 280, 20, 20), 0, 0));
+				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 170, 20, 20), 0, 0));
 			}
 		}).start();
 		
 		System.out.println("Game started with parameters: ");
 		System.out.println(params);
+		
+		gc.start();  
 	}
 	
 	@Override
