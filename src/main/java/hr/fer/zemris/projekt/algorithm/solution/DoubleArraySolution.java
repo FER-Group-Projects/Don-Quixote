@@ -1,31 +1,39 @@
 package hr.fer.zemris.projekt.algorithm.solution;
 
 import java.util.Arrays;
-import java.util.OptionalDouble;
 
 public class DoubleArraySolution implements Solution<Double> {
 
     private double[] genes;
-    private OptionalDouble fitness;
+    private double fitness;
+    private boolean isEvaluated;
 
     public DoubleArraySolution(int numberOfGenes) {
         this.genes = new double[numberOfGenes];
-        this.fitness = OptionalDouble.empty();
     }
 
     public DoubleArraySolution(double[] genes) {
         this.genes = Arrays.copyOf(genes, genes.length);
-        this.fitness = OptionalDouble.empty();
     }
 
     @Override
     public double getFitness() {
-        return fitness.getAsDouble();
+        if (!isEvaluated) {
+            throw new IllegalStateException("Solution has not been evaluated.");
+        }
+
+        return fitness;
     }
 
     @Override
     public void setFitness(double newFitness) {
-        fitness = OptionalDouble.of(newFitness);
+        fitness = newFitness;
+        isEvaluated = true;
+    }
+
+    @Override
+    public boolean isEvaluated() {
+        return isEvaluated;
     }
 
     @Override
@@ -41,7 +49,7 @@ public class DoubleArraySolution implements Solution<Double> {
     @Override
     public void setGeneAt(int index, Double newValue) {
         genes[index] = newValue;
-        fitness = OptionalDouble.empty();
+        isEvaluated = false;
     }
 
     @Override
