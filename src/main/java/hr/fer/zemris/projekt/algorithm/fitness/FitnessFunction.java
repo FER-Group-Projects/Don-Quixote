@@ -1,7 +1,9 @@
 package hr.fer.zemris.projekt.algorithm.fitness;
 
-public interface FitnessFunction<T> {
+import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
-    double calculateFitness(T solution);
+public interface FitnessFunction<S extends Solution<?>> {
+
+    double calculateFitness(S solution);
 
 }

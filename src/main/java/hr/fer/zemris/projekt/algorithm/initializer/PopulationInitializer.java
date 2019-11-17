@@ -1,9 +1,11 @@
 package hr.fer.zemris.projekt.algorithm.initializer;
 
+import hr.fer.zemris.projekt.algorithm.solution.Solution;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public interface PopulationInitializer<S> {
+public interface PopulationInitializer<S extends Solution<?>> {
 
     S generateSolution();
 

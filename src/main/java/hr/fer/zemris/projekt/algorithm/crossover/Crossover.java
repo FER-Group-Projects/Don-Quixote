@@ -1,7 +1,9 @@
 package hr.fer.zemris.projekt.algorithm.crossover;
 
-public interface Crossover<T> {
+import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
-    T crossover(T firstParent, T secondParent);
+public interface Crossover<S extends Solution<?>> {
+
+    S crossover(S firstParent, S secondParent);
 
 }

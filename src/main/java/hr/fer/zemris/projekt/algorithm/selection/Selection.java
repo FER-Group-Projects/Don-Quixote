@@ -1,9 +1,11 @@
 package hr.fer.zemris.projekt.algorithm.selection;
 
+import hr.fer.zemris.projekt.algorithm.solution.Solution;
+
 import java.util.Collection;
 
-public interface Selection<T> {
+public interface Selection<S extends Solution<?>> {
 
-    T selectFromPopulation(Collection<? extends T> population);
+    S selectFromPopulation(Collection<? extends S> population);
 
 }

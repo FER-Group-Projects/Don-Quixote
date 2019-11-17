@@ -1,7 +1,9 @@
 package hr.fer.zemris.projekt.algorithm.mutation;
 
-public interface Mutation<T> {
+import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
-    T mutate(T solutionToMutate);
+public interface Mutation<S extends Solution<?>> {
+
+    S mutate(S solutionToMutate);
 
 }
