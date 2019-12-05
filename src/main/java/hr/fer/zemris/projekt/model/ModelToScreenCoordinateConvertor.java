@@ -56,6 +56,14 @@ public class ModelToScreenCoordinateConvertor {
 		point.y = maxYS-Math.round(dp.y * scaleY);
 		return point;
 	}
+	
+	public double scaleWidth(double width) {
+		return width * this.scaleX;
+	}
+	
+	public double scaleHeight(double height) {
+		return height * this.scaleY;
+	}
 
 	public double getMinXM() {
 		return minXM;
