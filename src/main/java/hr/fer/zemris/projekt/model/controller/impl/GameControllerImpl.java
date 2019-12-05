@@ -94,13 +94,29 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 
 	@Override
 	public synchronized void setPlayerAction(PlayerAction action) {
-		actions.add(action);
+		if(action == PlayerAction.JUMP_LEFT) {
+			actions.add(PlayerAction.JUMP);
+			actions.add(PlayerAction.LEFT);
+		} else if(action == PlayerAction.JUMP_RIGHT) {
+			actions.add(PlayerAction.JUMP);
+			actions.add(PlayerAction.RIGHT);
+		} else {
+			actions.add(action);
+		}
 		listeners.forEach(l -> l.playerActionStateChanged(action, true));
 	}
 
 	@Override
 	public synchronized void unsetPlayerAction(PlayerAction action) {
-		actions.remove(action);
+		if(action == PlayerAction.JUMP_LEFT) {
+			actions.remove(PlayerAction.JUMP);
+			actions.remove(PlayerAction.LEFT);
+		} else if(action == PlayerAction.JUMP_RIGHT) {
+			actions.remove(PlayerAction.JUMP);
+			actions.remove(PlayerAction.RIGHT);
+		} else {
+			actions.remove(action);
+		}
 		listeners.forEach(l -> l.playerActionStateChanged(action, false));
 	}
 
