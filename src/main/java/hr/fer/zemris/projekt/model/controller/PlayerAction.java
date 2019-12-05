@@ -5,5 +5,7 @@ public enum PlayerAction {
 	LEFT,
 	UP,
 	DOWN,
-	JUMP;
+	JUMP,
+	JUMP_LEFT,
+	JUMP_RIGHT;
 }

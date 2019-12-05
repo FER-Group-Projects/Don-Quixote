@@ -94,13 +94,29 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 
 	@Override
 	public synchronized void setPlayerAction(PlayerAction action) {
-		actions.add(action);
+		if(action == PlayerAction.JUMP_LEFT) {
+			actions.add(PlayerAction.JUMP);
+			actions.add(PlayerAction.LEFT);
+		} else if(action == PlayerAction.JUMP_RIGHT) {
+			actions.add(PlayerAction.JUMP);
+			actions.add(PlayerAction.RIGHT);
+		} else {
+			actions.add(action);
+		}
 		listeners.forEach(l -> l.playerActionStateChanged(action, true));
 	}
 
 	@Override
 	public synchronized void unsetPlayerAction(PlayerAction action) {
-		actions.remove(action);
+		if(action == PlayerAction.JUMP_LEFT) {
+			actions.remove(PlayerAction.JUMP);
+			actions.remove(PlayerAction.LEFT);
+		} else if(action == PlayerAction.JUMP_RIGHT) {
+			actions.remove(PlayerAction.JUMP);
+			actions.remove(PlayerAction.RIGHT);
+		} else {
+			actions.remove(action);
+		}
 		listeners.forEach(l -> l.playerActionStateChanged(action, false));
 	}
 
@@ -225,10 +241,10 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				if (oldBBPlayer.isAbove(g2o.getBoundingBox()) && !oldBBPlayer.isOnTopOf(g2o.getBoundingBox()) || newBBPlayer.isOnTopOf(g2o.getBoundingBox())) { // Player is on platform only if it approaches it from the top or was already on platform
 					player.setOnGround(true);
 					player.setJumping(false);
-				} else if (newBBPlayer.intersects(g2o.getBoundingBox())){										// Else, player is (in 3D space) hanging on the edge
+				} else if (newBBPlayer.intersects(g2o.getBoundingBox())){ // Else, player is (in 3D space) hanging on the edge
 					player.setInGround(true);
 				} // else it is a corner touch
-				collision.p = (Platform) g2o ; 
+				collision.p = (Platform) g2o;
 			} else if (g2o instanceof Ladder) {
 				if (newBBPlayer.isBetweenVerticalBoundariesOf(g2o.getBoundingBox())) { // Player is on ladder only if his whole bounding box is within left and right ladder boundary
 					player.setOnLadders(true);
@@ -298,6 +314,8 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 
 				if (!collisionMap.containsKey(obj1))
 					collisionMap.put(obj1, new CollisionCollection());
+				if (obj2 instanceof MovableGame2DObject && !collisionMap.containsKey(obj2))
+					collisionMap.put((MovableGame2DObject) obj2, new CollisionCollection());
 
 				if (obj2 instanceof Platform) {
 					if (obj1.getBoundingBox().isAbove(obj2.getBoundingBox()) && !obj1.getBoundingBox().isOnTopOf(obj2.getBoundingBox()) || bb.isOnTopOf(obj2.getBoundingBox())) {
@@ -313,17 +331,23 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 						collisionMap.get(obj1).l = (Ladder) obj2;
 					}
 				} else if (obj2 instanceof Barrel) {
-					if(bb.isAbove(bb2)) {
+					collisionMap.get(obj1).b = (Barrel) obj2;
+					collisionMap.get(obj2).b = (Barrel) obj1;
+					//One barrel above the other
+					if(bb.getY() > bb2.getY()) {
 						obj1.setVelocityY(0);
-					} else {
+						bb.setY(bb2.getY() + bb.getHeight());
+					} else if (bb.getY() < bb2.getY()) {
 						((Barrel)obj2).setVelocityY(0);
-					}
-					if(bb.getY() == bb2.getY()) {
-						obj1.setVelocityX(-obj1.getVelocityX());
-						((Barrel) obj2).setVelocityX(-((Barrel) obj2).getVelocityX());
-						collisionMap.get(obj1).b = (Barrel) obj2;
-						if(obj1.getVelocityX() < 0) bb.setX(bb2.getX() - bb.getWidth() - 1);
-						else bb2.setX(bb.getX() - bb2.getWidth() - 1);
+						bb2.setY(bb.getY() + bb2.getHeight());
+					} else {
+					//One barrel beside the other
+						double newVelocity = -obj1.getVelocityX();
+						obj1.setVelocityX(newVelocity);
+						((Barrel) obj2).setVelocityX(-newVelocity);
+						
+						if(obj1.getVelocityX() < 0) bb.setX(bb2.getX() - bb.getWidth() - Double.MIN_VALUE);
+						else bb2.setX(bb.getX() - bb2.getWidth() - Double.MIN_VALUE);
 					}
 				}
 
@@ -345,7 +369,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				
 				// Location correction
 				if(!( entry.getKey().isAboveLadders() && goDownObjects.contains(entry.getKey()) ))
-					moveMap.get(entry.getKey()).setY(collisionMap.get(entry.getKey()).p.getBoundingBox().getY() + moveMap.get(entry.getKey()).getHeight());
+					moveMap.get(entry.getKey()).setY (collisionMap.get(entry.getKey()).p.getBoundingBox().getY() + moveMap.get(entry.getKey()).getHeight());
 			}
 		}
 
@@ -427,6 +451,9 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			
 			if (!moveObj.isOnGround() && !moveObj.isOnLadders() && !moveObj.isInGround()) // Free fall
 				moveObj.setVelocityY(moveObj.getVelocityY() - params.getGravitationalAcceleration() * tickDelay);
+		
+			if(collisionMap.containsKey(moveObj) && collisionMap.get(moveObj).b != null && moveObj.getBoundingBox().getY() > collisionMap.get(moveObj).b.getBoundingBox().getY())
+				moveObj.setVelocityY(0);
 		}
 	}
 

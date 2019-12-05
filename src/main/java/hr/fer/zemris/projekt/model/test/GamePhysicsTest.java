@@ -111,7 +111,7 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 	private void init() {
 		params = new GameParameters(60, 1000, 0.5, 100, 100, 300, 75, 75);
 
-		p = new Player(new BoundingBox2DImpl(250, 150, playerWidth, playerHeight), 0, 0, "Player1");
+		p = new Player(new BoundingBox2DImpl(250, 480, playerWidth, playerHeight), 0, 0, "Player1");
 
 		objects = new ArrayList<>();
 		objects.add(new Platform(new BoundingBox2DImpl(100, 50, 420, 20)));		
@@ -141,6 +141,7 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(320, 320, 20, 20), -75, 0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 320, 20, 20), 75, 0));
+			p.setY(480);
 			} catch(InterruptedException ex) {
 			}
 			
@@ -200,11 +201,11 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 			}
 			
 			g2d.setColor(inner);
-			g2d.fillRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
-					(int) obj.getBoundingBox().getHeight());
+			g2d.fillRect((int) newScreen.x, (int) newScreen.y, (int) convertor.scaleWidth(obj.getBoundingBox().getWidth()),
+					(int) convertor.scaleHeight(obj.getBoundingBox().getHeight()));
 			g2d.setColor(outer);
-			g2d.drawRect((int) newScreen.x, (int) newScreen.y, (int) obj.getBoundingBox().getWidth(),
-					(int) obj.getBoundingBox().getHeight());
+			g2d.drawRect((int) newScreen.x, (int) newScreen.y, (int) convertor.scaleWidth(obj.getBoundingBox().getWidth()),
+					(int) convertor.scaleHeight(obj.getBoundingBox().getHeight()));
 		}
 	}
 
