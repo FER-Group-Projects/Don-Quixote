@@ -56,10 +56,10 @@ public class BoundingBox2DImpl implements BoundingBox2D {
 	
 	@Override
 	public boolean collidesWith(BoundingBox2D r) {
-		double tw = this.width + 1;
-		double th = this.height + 1;
-		double rw = r.getWidth() + 1;
-		double rh = r.getHeight() + 1;
+		double tw = this.width;
+		double th = this.height;
+		double rw = r.getWidth();
+		double rh = r.getHeight();
 
 		double tx = this.x;
 		double ty = this.y - th;
@@ -70,10 +70,10 @@ public class BoundingBox2DImpl implements BoundingBox2D {
         tw += tx;
         th += ty;
         //      overflow || intersect
-        return ((rw < rx || rw > tx) &&
-                (rh < ry || rh > ty) &&
-                (tw < tx || tw > rx) &&
-                (th < ty || th > ry));
+        return ((rw <= rx || rw >= tx) &&
+                (rh <= ry || rh >= ty) &&
+                (tw <= tx || tw >= rx) &&
+                (th <= ty || th >= ry));
 	}
 	
 	@Override
@@ -118,8 +118,8 @@ public class BoundingBox2DImpl implements BoundingBox2D {
 	
 	@Override
 	public boolean isBetweenVerticalBoundariesOf(BoundingBox2D other) {
-		return (this.x > other.getX()) && (this.x < other.getX() + other.getWidth() - 1) &&
-				(this.x + this.width - 1 > other.getX()) && (this.x + this.width - 1 < other.getX() + other.getWidth() - 1);
+		return (this.x > other.getX()) && (this.x < other.getX() + other.getWidth()) &&
+				(this.x + this.width > other.getX()) && (this.x + this.width < other.getX() + other.getWidth());
 	}
 
 	@Override
