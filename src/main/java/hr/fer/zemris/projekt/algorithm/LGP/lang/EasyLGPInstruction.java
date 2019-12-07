@@ -1,9 +1,9 @@
 package hr.fer.zemris.projekt.algorithm.LGP.lang;
 
 @FunctionalInterface
-public interface EasyLGPInstructionExecutor {
+public interface EasyLGPInstruction {
 	
-	InstructionResult execute(String instruction, EasyLGPContext context);
+	InstructionResult execute(EasyLGPContext context);
 	
 	public static class InstructionResult {
 		public InstructionResultStatus status;
