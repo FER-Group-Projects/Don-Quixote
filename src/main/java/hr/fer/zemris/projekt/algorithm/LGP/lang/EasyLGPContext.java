@@ -36,8 +36,8 @@ public class EasyLGPContext {
 		memory.put(memAddress, value);
 	}
 	
-	public void getMemory(long memAddress) {
-		memory.getOrDefault(memAddress, 0L);
+	public long getMemory(long memAddress) {
+		return memory.getOrDefault(memAddress, 0L);
 	}
 	
 	public boolean isNegative() {

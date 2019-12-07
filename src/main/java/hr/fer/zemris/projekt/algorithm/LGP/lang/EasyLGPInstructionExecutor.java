@@ -13,6 +13,10 @@ public interface EasyLGPInstructionExecutor {
 			this.status = status;
 			this.number = number;
 		}
+		
+		public InstructionResult(InstructionResultStatus status) {
+			this.status = status;
+		}
 	}
 	
 	public static enum InstructionResultStatus {

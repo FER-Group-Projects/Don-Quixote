@@ -20,7 +20,8 @@ import hr.fer.zemris.projekt.algorithm.LGP.lang.EasyLGPInstructionExecutor.Instr
  *  - Memory address is a 64 bit number (from Long.MIN_VALUE to Long.MAX_VALUE) <br>
  *  - Program instructions are in a separate memory (Harvard architecture) <br>
  *  - Instructions always start with the instruction name and optionally : 
- *    followed by one or more spaces and then by zero or more arguments separated by comma
+ *    followed by one or more spaces and then by zero or more arguments separated by (comma
+ *    and one or more spaces)
  *  <br>
  *  Rx - register Rx (R0, R1, R2...) <br>
  *  [Rx] - value in the register Rx <br>
@@ -122,16 +123,9 @@ public class EasyLGPEngine {
 		instructions.put("MOV R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> mov(instr, context));
 		instructions.put("MOV R([0-9]|[1-9][0-9]*), -?([0-9]|[1-9][0-9]*)", (instr, context) -> movConst(instr, context));
 		instructions.put("JP ([0-9]|[1-9][0-9]*)", (instr, context) -> jp(instr, context));
-		instructions.put("JP(_N|_NN|_Z|_NZ|_EQ|_NEQ|_LEQ|_GEQ) ([0-9]|[1-9][0-9]*)", (instr, context) -> jpCond(instr, context));
-		instructions.put("ADD R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
-		instructions.put("SUB R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
-		instructions.put("MUL R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
-		instructions.put("DIV R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
-		instructions.put("MOD R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
-		instructions.put("AND R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
-		instructions.put("OR R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
-		instructions.put("XOR R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
-		instructions.put("CMP R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
+		instructions.put("JP_(N|NN|Z|NZ|EQ|NEQ|LEQ|GEQ) ([0-9]|[1-9][0-9]*)", (instr, context) -> jpCond(instr, context));
+		instructions.put("(ADD|SUB|MUL|DIV|MOD|AND|OR|XOR) R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> arithmLogic(instr, context));
+		instructions.put("CMP R([0-9]|[1-9][0-9]*), R([0-9]|[1-9][0-9]*)", (instr, context) -> cmp(instr, context));
 		instructions.put("HALT", (instr, context) -> halt(instr, context));
 	}
 	
@@ -143,12 +137,13 @@ public class EasyLGPEngine {
 		
 		while(pc < lines.length) {
 			
-			String nextLine = lines[pc];
+			String nextLine = lines[pc].trim();
 			
 			InstructionResult ir = null;
 			for(var entry : instructions.entrySet()) {
 				if(!Pattern.matches(entry.getKey(), nextLine)) continue;
 				ir = entry.getValue().execute(nextLine, context);
+				break;
 			}
 			
 			if(ir==null) {
@@ -168,31 +163,120 @@ public class EasyLGPEngine {
 	}
 	
 	private static InstructionResult ldrstr(String instr, EasyLGPContext context) {
-		return null;
+		String s[] = instr.split("\\s+");
+		long valueReg = Long.parseLong(s[1].substring(1, s[1].length()-1));
+		long addressReg = Long.parseLong(s[2].substring(2, s[2].length()-1));
+		long memAddress = context.getRegister(addressReg);
+		
+		if(s[0].equals("LDR")) {
+			context.setRegister(valueReg, context.getMemory(memAddress));
+		} else {
+			context.setMemory(memAddress, context.getRegister(valueReg));
+		}
+		
+		return new InstructionResult(InstructionResultStatus.CONTINUE);
 	}
 	
 	private static InstructionResult mov(String instr, EasyLGPContext context) {
-		return null;
+		String s[] = instr.split("\\s+");
+		long regTo = Long.parseLong(s[1].substring(1, s[1].length()-1));
+		long regFrom = Long.parseLong(s[2].substring(1));
+		
+		context.setRegister(regTo, context.getRegister(regFrom));
+		
+		return new InstructionResult(InstructionResultStatus.CONTINUE);
 	}
 	
 	private static InstructionResult movConst(String instr, EasyLGPContext context) {
-		return null;
+		String s[] = instr.split("\\s+");
+		long regTo = Long.parseLong(s[1].substring(1, s[1].length()-1));
+		long constant = Long.parseLong(s[2]);
+		
+		context.setRegister(regTo, constant);
+		
+		return new InstructionResult(InstructionResultStatus.CONTINUE);
 	}
 	
 	private static InstructionResult jp(String instr, EasyLGPContext context) {
-		return null;
+		String s[] = instr.split("\\s+");
+		int address = Integer.parseInt(s[1]);
+		
+		return new InstructionResult(InstructionResultStatus.JUMP, address);
 	}
 	
 	private static InstructionResult jpCond(String instr, EasyLGPContext context) {
-		return null;
+		String s[] = instr.split("\\s+");
+		String condition = s[0].substring(3);
+		int address = Integer.parseInt(s[1]);
+		
+		boolean conditionMet = condition.equals("N") && context.isNegative() ||
+							   condition.equals("NN") && !context.isNegative() ||
+							   condition.equals("Z") && context.isZero() ||
+							   condition.equals("NZ") && !context.isZero() ||
+							   condition.equals("EQ") && context.isZero() ||
+							   condition.equals("NEQ") && !context.isZero() ||
+							   condition.equals("LEQ") && (context.isNegative() || context.isZero()) ||
+							   condition.equals("GEQ") && (!context.isNegative() || context.isZero());
+		
+		if(conditionMet) {
+			return new InstructionResult(InstructionResultStatus.JUMP, address);
+		} else {
+			return new InstructionResult(InstructionResultStatus.CONTINUE);
+		}
 	}
 	
 	private static InstructionResult arithmLogic(String instr, EasyLGPContext context) {
-		return null;
+		String s[] = instr.split("\\s+");
+		long op1Reg = Long.parseLong(s[1].substring(1, s[1].length()-1));
+		long op2Reg = Long.parseLong(s[2].substring(1, s[2].length()-1));
+		long resReg = Long.parseLong(s[3].substring(1));
+		
+		long op1 = context.getRegister(op1Reg);
+		long op2 = context.getRegister(op2Reg);
+		long res = 0;
+		
+		if(s[0].equals("ADD")) {
+			res = op1 + op2;
+		} else if(s[0].equals("SUB")) {
+			res = op1 - op2;
+		} else if(s[0].equals("MUL")) {
+			res = op1 * op2;
+		} else if(s[0].equals("DIV")) {
+			res = op1 / op2;
+		} else if(s[0].equals("MOD")) {
+			res = op1 % op2;
+		} else if(s[0].equals("AND")) {
+			res = op1 & op2;
+		} else if(s[0].equals("OR")) {
+			res = op1 | op2;
+		} else if(s[0].equals("XOR")) {
+			res = op1 ^ op2;
+		}
+		
+		context.setRegister(resReg, res);
+		context.setNegative(res < 0);
+		context.setZero(res == 0);
+		
+		return new InstructionResult(InstructionResultStatus.CONTINUE);
+	}
+	
+	private static InstructionResult cmp(String instr, EasyLGPContext context) {
+		String s[] = instr.split("\\s+");
+		long op1Reg = Long.parseLong(s[1].substring(1, s[1].length()-1));
+		long op2Reg = Long.parseLong(s[2].substring(1));
+		
+		long op1 = context.getRegister(op1Reg);
+		long op2 = context.getRegister(op2Reg);
+		long res = op1 - op2;
+		
+		context.setNegative(res < 0);
+		context.setZero(res == 0);
+		
+		return new InstructionResult(InstructionResultStatus.CONTINUE);
 	}
 	
 	private static InstructionResult halt(String instr, EasyLGPContext context) {
-		return null;
+		return new InstructionResult(InstructionResultStatus.HALT);
 	}
 
 }
