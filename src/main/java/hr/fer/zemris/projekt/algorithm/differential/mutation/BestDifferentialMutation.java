@@ -7,25 +7,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class RandomDifferentialMutation extends AbstractDifferentialMutation {
+public class BestDifferentialMutation extends AbstractDifferentialMutation {
 
-    public RandomDifferentialMutation(double scalingFactor, int numberOfLinearCombinations) {
+    public BestDifferentialMutation(double scalingFactor, int numberOfLinearCombinations) {
         super(scalingFactor, numberOfLinearCombinations);
     }
 
     @Override
     protected List<Solution<Double>> pickLinearCombinations(List<Solution<Double>> population, int currentIndex) {
+        int indexOfBestSolution = indexOfBestSolution(population);
         List<Solution<Double>> linearCombinations = new ArrayList<>();
         Set<Integer> usedIndexes = new HashSet<>();
 
-        usedIndexes.add(currentIndex);
-        addRandomUnusedSolutions(population, linearCombinations, usedIndexes, 2 * numberOfLinearCombinations + 1);
+        usedIndexes.add(indexOfBestSolution);
+        linearCombinations.add(population.get(indexOfBestSolution));
+        addRandomUnusedSolutions(population, linearCombinations, usedIndexes, 2 * numberOfLinearCombinations);
 
         return linearCombinations;
     }
 
     @Override
     protected double getScalingFactor() {
-        return scalingFactor;
+        return scalingFactor + 0.001 * (random.nextDouble() - 0.5);
     }
+
 }
