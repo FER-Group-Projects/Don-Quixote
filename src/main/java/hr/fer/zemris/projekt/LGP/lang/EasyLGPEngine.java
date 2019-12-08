@@ -1,4 +1,4 @@
-package hr.fer.zemris.projekt.algorithm.LGP.lang;
+package hr.fer.zemris.projekt.LGP.lang;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
-import hr.fer.zemris.projekt.algorithm.LGP.lang.EasyLGPInstruction.InstructionResult;
-import hr.fer.zemris.projekt.algorithm.LGP.lang.EasyLGPInstruction.InstructionResultStatus;
+import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction.InstructionResult;
+import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction.InstructionResultStatus;
 
 /**
  * 
@@ -130,11 +130,14 @@ public class EasyLGPEngine {
 		instructions.put("HALT", (instr, context) -> halt(instr, context));
 	}
 	
-	public static void execute(List<EasyLGPInstruction> program, EasyLGPContext context) {
+	public static void execute(List<EasyLGPInstruction> program, EasyLGPContext context, long maxSteps) {
 		
+		long step = 0;
 		int pc = 0;
 		
 		while(pc < program.size()) {
+			
+			if(step==maxSteps) throw new EasyLGPException("MaxSteps has been reached!");
 			
 			EasyLGPInstruction next = program.get(pc);
 			
@@ -150,19 +153,24 @@ public class EasyLGPEngine {
 				pc++;
 			}
 			
+			step++;
+			
 		}
 		
 		throw new EasyLGPException("RuntimeException : Instruction on line " + pc + " does not exist!");
 		
 	}
 	
-	public static void execute(String program, EasyLGPContext context) {
+	public static void execute(String program, EasyLGPContext context, long maxSteps) {
 		
 		String[] lines = program.split("\n");
 		
+		long step = 0;
 		int pc = 0;
 		
 		while(pc < lines.length) {
+			
+			if(step==maxSteps) throw new EasyLGPException("MaxSteps has been reached!");
 			
 			String nextLine = lines[pc].trim();
 			
@@ -182,6 +190,8 @@ public class EasyLGPEngine {
 			} else {
 				pc++;
 			}
+			
+			step++;
 			
 		}
 		

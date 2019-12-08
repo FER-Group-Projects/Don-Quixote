@@ -1,4 +1,4 @@
-package hr.fer.zemris.projekt.algorithm.LGP.lang;
+package hr.fer.zemris.projekt.LGP.lang;
 
 @SuppressWarnings("serial")
 public class EasyLGPException extends RuntimeException {

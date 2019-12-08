@@ -1,4 +1,4 @@
-package hr.fer.zemris.projekt.algorithm.LGP.lang;
+package hr.fer.zemris.projekt.LGP.lang;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +54,10 @@ public class EasyLGPContext {
 
 	public void setZero(boolean zero) {
 		this.zero = zero;
+	}
+
+	public long getNumberOfRegisters() {
+		return numberOfRegisters;
 	}
 	
 }
