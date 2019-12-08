@@ -1,6 +1,7 @@
 package hr.fer.zemris.projekt.LGP;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,6 +16,14 @@ public class LGPSolution implements Solution<EasyLGPInstruction> {
 	
 	public LGPSolution() {
 		
+	}
+	
+	public List<EasyLGPInstruction> getInstructions() {
+		return Collections.unmodifiableList(instructions);
+	}
+	
+	public void setInstructions(List<EasyLGPInstruction> instructions) {
+		this.instructions = new ArrayList<EasyLGPInstruction>(instructions);
 	}
 
 	@Override
@@ -48,9 +57,13 @@ public class LGPSolution implements Solution<EasyLGPInstruction> {
 
 	@Override
 	public void setGeneAt(int index, EasyLGPInstruction newValue) {
-		if(index < 0 || index >= instructions.size())
+		if(index < 0 || index > instructions.size())
 			throw new IllegalArgumentException();
-		instructions.set(index, Objects.requireNonNull(newValue));
+		
+		if(index == instructions.size())
+			instructions.add(Objects.requireNonNull(newValue));
+		else
+			instructions.set(index, Objects.requireNonNull(newValue));
 	}
 
 	@Override

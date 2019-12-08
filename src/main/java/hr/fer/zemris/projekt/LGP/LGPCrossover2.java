@@ -22,23 +22,23 @@ public class LGPCrossover2 implements Crossover<Solution<EasyLGPInstruction>> {
 		LGPSolution child = new LGPSolution();
 		
 		int start1 = random.nextInt(firstParent.getNumberOfGenes());		
-		int end1 = start1 + random.nextInt(firstParent.getNumberOfGenes() - start1);
+		int size1 = 1 + random.nextInt(Math.min(maxChildLength, firstParent.getNumberOfGenes() - start1));
 		
 		int start2 = random.nextInt(secondParent.getNumberOfGenes());
-		int end2 = start2 + random.nextInt(Math.min(secondParent.getNumberOfGenes(), maxChildLength) - start2);
+		int size2 = size1 == maxChildLength ? 0 : 1 + random.nextInt(Math.min(maxChildLength - size1, secondParent.getNumberOfGenes() - start2));
 		
 		int i = 0;
-		int ptr = start1;
-		while(ptr <= end1) {
-			child.setGeneAt(i, firstParent.getGeneAt(ptr));
-			ptr++;
+		int offset = 0;
+		while(offset < size1) {
+			child.setGeneAt(i, firstParent.getGeneAt(start1 + offset));
+			offset++;
 			i++;
 		}
 		
-		ptr = start2;
-		while(ptr <= end2) {
-			child.setGeneAt(i, secondParent.getGeneAt(ptr));
-			ptr++;
+		offset = 0;
+		while(offset < size2) {
+			child.setGeneAt(i, secondParent.getGeneAt(start2 + offset));
+			offset++;
 			i++;
 		}
 		

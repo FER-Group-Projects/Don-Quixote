@@ -22,7 +22,8 @@ public class LGPPopulationInitializer implements PopulationInitializer<Solution<
 		
 		LGPSolution solution = new LGPSolution();
 		for(int i=0; i<length; i++) {
-			solution.setGeneAt(i, RandomInstructionUtility.generateRandomLGPInstruction());
+			var instr = RandomInstructionUtility.generateRandomLGPInstruction();
+			solution.setGeneAt(i, instr);
 		}
 		
 		return solution;

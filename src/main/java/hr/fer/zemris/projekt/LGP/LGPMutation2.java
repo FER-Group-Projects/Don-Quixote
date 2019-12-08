@@ -10,17 +10,9 @@ import hr.fer.zemris.projekt.algorithm.solution.Solution;
 public class LGPMutation2 implements Mutation<Solution<EasyLGPInstruction>>{
 
 	private Random random = new Random();
-	
-	private double mutationRate;
-	
-	public LGPMutation2(double mutationRate) {
-		if(mutationRate<0 || mutationRate>1) throw new IllegalArgumentException("Mutation rate " + mutationRate + "is not element of [0,1]!");
-		this.mutationRate = mutationRate;
-	}
 
 	@Override
 	public Solution<EasyLGPInstruction> mutate(Solution<EasyLGPInstruction> solutionToMutate) {
-		if(random.nextDouble() >= mutationRate) return solutionToMutate;
 		var mutatedSolution = solutionToMutate.copy();
 		
 		int blockStart = random.nextInt(mutatedSolution.getNumberOfGenes());
