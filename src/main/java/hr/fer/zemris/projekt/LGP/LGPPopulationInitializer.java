@@ -9,11 +9,13 @@ import hr.fer.zemris.projekt.algorithm.solution.Solution;
 public class LGPPopulationInitializer implements PopulationInitializer<Solution<EasyLGPInstruction>> {
 
 	private int maxLength;
+	private long numOfRegisters;
 	
 	private Random random = new Random();
 	
-	public LGPPopulationInitializer(int maxLength) {
+	public LGPPopulationInitializer(int maxLength, long numOfRegisters) {
 		this.maxLength = maxLength;
+		this.numOfRegisters = numOfRegisters;
 	}
 
 	@Override
@@ -22,7 +24,7 @@ public class LGPPopulationInitializer implements PopulationInitializer<Solution<
 		
 		LGPSolution solution = new LGPSolution();
 		for(int i=0; i<length; i++) {
-			var instr = RandomInstructionUtility.generateRandomLGPInstruction();
+			var instr = RandomInstructionUtility.generateRandomLGPInstruction(numOfRegisters);
 			solution.setGeneAt(i, instr);
 		}
 		

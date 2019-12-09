@@ -10,13 +10,19 @@ import hr.fer.zemris.projekt.algorithm.solution.Solution;
 public class LGPMutation implements Mutation<Solution<EasyLGPInstruction>>{
 
 	private Random random = new Random();
+	
+	private long numOfRegisters;
+
+	public LGPMutation(long numOfRegisters) {
+		this.numOfRegisters = numOfRegisters;
+	}
 
 	@Override
 	public Solution<EasyLGPInstruction> mutate(Solution<EasyLGPInstruction> solutionToMutate) {
 		var mutatedSolution = solutionToMutate.copy();
 		
 		int instructionIndex = random.nextInt(mutatedSolution.getNumberOfGenes());
-		mutatedSolution.setGeneAt(instructionIndex, RandomInstructionUtility.generateRandomLGPInstruction());
+		mutatedSolution.setGeneAt(instructionIndex, RandomInstructionUtility.generateRandomLGPInstruction(numOfRegisters));
 		
 		return mutatedSolution;
 	}

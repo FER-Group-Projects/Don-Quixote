@@ -24,25 +24,25 @@ public class RandomInstructionUtility {
 	
 	private static Random random = new Random();
 	
-	public static EasyLGPInstruction generateRandomLGPInstruction() {
+	public static EasyLGPInstruction generateRandomLGPInstruction(long numOfRegisters) {
 		
 		int rnd = random.nextInt(15);
 		
 		switch(rnd) {
 		
-			case 0 : return new LdrInstruction(generateRandomRegNumber(), generateRandomRegNumber());
-			case 1 : return new StrInstruction(generateRandomRegNumber(), generateRandomRegNumber());
-			case 2 : return new MovInstruction(generateRandomRegNumber(), generateRandomRegNumber());
-			case 3 : return new MovConstInstruction(generateRandomRegNumber(), random.nextLong());
-			case 4 : return new AddInstruction(generateRandomRegNumber(), generateRandomRegNumber(), generateRandomRegNumber());
-			case 5 : return new SubInstruction(generateRandomRegNumber(), generateRandomRegNumber(), generateRandomRegNumber());
-			case 6 : return new MulInstruction(generateRandomRegNumber(), generateRandomRegNumber(), generateRandomRegNumber());
-			case 7 : return new DivInstruction(generateRandomRegNumber(), generateRandomRegNumber(), generateRandomRegNumber());
-			case 8 : return new ModInstruction(generateRandomRegNumber(), generateRandomRegNumber(), generateRandomRegNumber());
-			case 9 : return new AndInstruction(generateRandomRegNumber(), generateRandomRegNumber(), generateRandomRegNumber());
-			case 10 : return new OrInstruction(generateRandomRegNumber(), generateRandomRegNumber(), generateRandomRegNumber());
-			case 11 : return new XorInstruction(generateRandomRegNumber(), generateRandomRegNumber(), generateRandomRegNumber());
-			case 12 : return new CmpInstruction(generateRandomRegNumber(), generateRandomRegNumber());
+			case 0 : return new LdrInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 1 : return new StrInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 2 : return new MovInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 3 : return new MovConstInstruction(generateRandomRegNumber(numOfRegisters), random.nextInt());
+			case 4 : return new AddInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 5 : return new SubInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 6 : return new MulInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 7 : return new DivInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 8 : return new ModInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 9 : return new AndInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 10 : return new OrInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 11 : return new XorInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
+			case 12 : return new CmpInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
 			case 13 : return new JpInstruction(generateRandomJpCondition(), random.nextInt(Integer.MAX_VALUE));
 			case 14 : return new HaltInstruction();
 			default : return null; // Never
@@ -51,8 +51,8 @@ public class RandomInstructionUtility {
 		
 	}
 
-	private static long generateRandomRegNumber() {
-		return (long) (random.nextDouble() * Long.MAX_VALUE);
+	private static long generateRandomRegNumber(long numOfRegisters) {
+		return (long) (random.nextDouble() * numOfRegisters);
 	}
 
 	private static Condition generateRandomJpCondition() {

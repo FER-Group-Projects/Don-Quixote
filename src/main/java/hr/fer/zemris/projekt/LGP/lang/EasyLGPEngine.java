@@ -19,7 +19,7 @@ import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction.InstructionResultStatus
  *  - All registers hold 64-bit whole number values <br>
  *  - There is a status register which holds 2 flags (N - negative, Z - zero) <br>
  *  - Memory is an array of 64 bit whole number values (initially set to 0) <br>
- *  - Memory address is a 64 bit number (from Long.MIN_VALUE to Long.MAX_VALUE) <br>
+ *  - Memory address is a 64 bit number (from -Long.MAX_VALUE-1 to Long.MAX_VALUE) <br>
  *  - Program instructions are in a separate memory (Harvard architecture) <br>
  *  - Instructions always start with the instruction name and optionally : 
  *    followed by one space and then by zero or more arguments each separated by one space

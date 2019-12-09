@@ -11,6 +11,12 @@ public class LGPMutation2 implements Mutation<Solution<EasyLGPInstruction>>{
 
 	private Random random = new Random();
 
+	private long numOfRegisters;
+
+	public LGPMutation2(long numOfRegisters) {
+		this.numOfRegisters = numOfRegisters;
+	}
+	
 	@Override
 	public Solution<EasyLGPInstruction> mutate(Solution<EasyLGPInstruction> solutionToMutate) {
 		var mutatedSolution = solutionToMutate.copy();
@@ -19,7 +25,7 @@ public class LGPMutation2 implements Mutation<Solution<EasyLGPInstruction>>{
 		int blockEnd = blockStart + random.nextInt(mutatedSolution.getNumberOfGenes() - blockStart);
 		
 		for(int i=blockStart; i<=blockEnd; i++) {
-			mutatedSolution.setGeneAt(i, RandomInstructionUtility.generateRandomLGPInstruction());
+			mutatedSolution.setGeneAt(i, RandomInstructionUtility.generateRandomLGPInstruction(numOfRegisters));
 		}
 		
 		return mutatedSolution;

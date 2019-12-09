@@ -49,7 +49,7 @@ public class ArraySortingFitnessFunction implements FitnessFunction<Solution<Eas
 			long[] arrayAfter = getArrayFromContext(context, array.length);
 			if(!isPermutation(arrayAfter, array)) continue;
 			int invAfter = calculateNumberOfInverses(arrayAfter);
-			fitness += (inv - invAfter) / inv;
+			fitness += (inv - invAfter) / (double) inv;
 		}
 		
 		return fitness;
@@ -60,8 +60,8 @@ public class ArraySortingFitnessFunction implements FitnessFunction<Solution<Eas
 		
 		if(array.length != arrayAfter.length) return false;
 		
-		Set<Long> arraySet = new HashSet<Long>();
-		Set<Long> arrayAfterSet = new HashSet<Long>();
+		Set<Long> arraySet = new HashSet<>();
+		Set<Long> arrayAfterSet = new HashSet<>();
 		
 		for(long l : array) arraySet.add(l);
 		for(long l : arrayAfter) arrayAfterSet.add(l);

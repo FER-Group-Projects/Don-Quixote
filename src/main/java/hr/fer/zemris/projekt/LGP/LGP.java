@@ -17,7 +17,7 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 	
 	private int populationSize;
 	private double fitnessThreshold;
-	private int maxGenerations;
+	private long maxGenerations;
 	private double mutationRate;
 	
 	private FitnessFunction<Solution<EasyLGPInstruction>> fitnessFunction;
@@ -28,7 +28,7 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 	private Comparator<Solution<?>> cmpRev = (s1, s2) -> Double.compare(s2.getFitness(), s1.getFitness());
 	private Random random = new Random();
 
-	public LGP(int populationSize, double fitnessThreshold, int maxGenerations, double mutationRate,
+	public LGP(int populationSize, double fitnessThreshold, long maxGenerations, double mutationRate,
 			FitnessFunction<Solution<EasyLGPInstruction>> fitnessFunction,
 			Crossover<Solution<EasyLGPInstruction>> crossoverOperator,
 			Mutation<Solution<EasyLGPInstruction>> mutationOperator,
@@ -49,7 +49,7 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 		List<Solution<EasyLGPInstruction>> population = populationInitializer.generatePopulation(populationSize);
 		populationSort(population);
 		
-		int iter=0;
+		long iter=0;
 		while(iter<maxGenerations && population.get(0).getFitness()<fitnessThreshold) {
 			List<Solution<EasyLGPInstruction>> newPopulation = new ArrayList<>();
 			
