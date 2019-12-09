@@ -10,12 +10,14 @@ public class LGPPopulationInitializer implements PopulationInitializer<Solution<
 
 	private int maxLength;
 	private long numOfRegisters;
+	private long maxAbsMovConstant;
 	
 	private Random random = new Random();
 	
-	public LGPPopulationInitializer(int maxLength, long numOfRegisters) {
+	public LGPPopulationInitializer(int maxLength, long numOfRegisters, long maxAbsMovConstant) {
 		this.maxLength = maxLength;
 		this.numOfRegisters = numOfRegisters;
+		this.maxAbsMovConstant = maxAbsMovConstant;
 	}
 
 	@Override
@@ -24,7 +26,7 @@ public class LGPPopulationInitializer implements PopulationInitializer<Solution<
 		
 		LGPSolution solution = new LGPSolution();
 		for(int i=0; i<length; i++) {
-			var instr = RandomInstructionUtility.generateRandomLGPInstruction(numOfRegisters);
+			var instr = RandomInstructionUtility.generateRandomLGPInstruction(numOfRegisters, length, maxAbsMovConstant);
 			solution.setGeneAt(i, instr);
 		}
 		

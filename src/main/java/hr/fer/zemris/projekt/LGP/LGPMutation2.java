@@ -12,9 +12,11 @@ public class LGPMutation2 implements Mutation<Solution<EasyLGPInstruction>>{
 	private Random random = new Random();
 
 	private long numOfRegisters;
+	private long maxAbsMovConstant;
 
-	public LGPMutation2(long numOfRegisters) {
+	public LGPMutation2(long numOfRegisters, long maxAbsMovConstant) {
 		this.numOfRegisters = numOfRegisters;
+		this.maxAbsMovConstant = maxAbsMovConstant;
 	}
 	
 	@Override
@@ -25,7 +27,7 @@ public class LGPMutation2 implements Mutation<Solution<EasyLGPInstruction>>{
 		int blockEnd = blockStart + random.nextInt(mutatedSolution.getNumberOfGenes() - blockStart);
 		
 		for(int i=blockStart; i<=blockEnd; i++) {
-			mutatedSolution.setGeneAt(i, RandomInstructionUtility.generateRandomLGPInstruction(numOfRegisters));
+			mutatedSolution.setGeneAt(i, RandomInstructionUtility.generateRandomLGPInstruction(numOfRegisters, solutionToMutate.getNumberOfGenes(), maxAbsMovConstant));
 		}
 		
 		return mutatedSolution;

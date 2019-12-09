@@ -27,12 +27,14 @@ public class ArraySortingFitnessFunction implements FitnessFunction<Solution<Eas
 		
 		LGPSolution sln = (LGPSolution) solution;
 		
+		if(sln.getGeneAt(0).toString().equals("HALT")) return Double.NEGATIVE_INFINITY;
+		
 		long[][] arrays = {
 				{10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
 				{5, 7, 3, 4, 10, 2, 1},
 				{15, 17, 18, 20, 11, 7, 21, 3}
 		};
-		
+
 		double fitness = 0;
 		
 		for(long[] array : arrays) {
