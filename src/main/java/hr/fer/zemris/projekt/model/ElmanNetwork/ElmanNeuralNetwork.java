@@ -1,4 +1,4 @@
-package hr.fer.zemris.projekt.model.elman;
+package hr.fer.zemris.projekt.model.ElmanNetwork;
 
 public class ElmanNeuralNetwork {
     private int[] layout;
@@ -9,31 +9,7 @@ public class ElmanNeuralNetwork {
         context_layer = new double[layout[1]];
         layout[0]+=context_layer.length;
     }
-    //testing the neural network
-    public static void main(String[] args) {
-        double[] inputs={100,-100};
-        double[] weigths={0.5, 0.25,
-                        0.5, 0.25,
-                        0.5, 0.25,
-                        0.5, 0.25,
-                        0.5, 0.5
-        };
 
-        int[] layout={2,2,1};
-        ElmanNeuralNetwork network = new ElmanNeuralNetwork(layout);
-        double[] output;
-        output=network.calcOutput(inputs,weigths);
-        System.out.print("The output is:");
-        for(int i=0; i<output.length; i++){
-            System.out.println(output[i]);
-        }
-
-        output=network.calcOutput(inputs,weigths);
-        System.out.print("The output is:");
-        for(int i=0; i<output.length; i++){
-            System.out.println(output[i]);
-        }
-    }
     //calculate the output of the neural network
     public double[] calcOutput(double[] inputs, double[] weights ){
 
@@ -48,7 +24,7 @@ public class ElmanNeuralNetwork {
         for(int i=1; i<layout.length; i++){
 
             for(int j=0; j<layout[i]; j++){
-                int bias=0;
+                int bias=1;
                 double sum=0;
 
                 for(int k=0; k<layer_input.length; k++){
@@ -76,13 +52,9 @@ public class ElmanNeuralNetwork {
         return layer_output.clone();
     }
 
-    public int getFitness(){
-        return 0;
-    }
-
     //need to add the transfer fuction, for now it just returns the sum
     private double transfer_function(double sum){
-        return sum;
+        return (1/( 1 + Math.pow(Math.E,(-1*sum))));
     }
 
     //check that the args are valid
