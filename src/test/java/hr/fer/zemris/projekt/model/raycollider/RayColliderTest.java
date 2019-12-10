@@ -37,6 +37,8 @@ class RayColliderTest {
 		
 		objs.add(new Ladder(new BoundingBox2DImpl(150, 150, 10, 10)));
 		
+		objs.add(new Ladder(new BoundingBox2DImpl(145, 55, 20, 20)));
+		
 		gc = new GameControllerImpl(new Player(new BoundingBox2DImpl(50, 50, 20, 20), 0, 0, "Player1"), 
 				objs, new GameControllerImpl.GameParameters(60, 100, 0.5, 10, 10, 10, 10, 10));
 	}

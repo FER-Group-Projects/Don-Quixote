@@ -22,6 +22,8 @@ public interface BoundingBox2D {
 	
 	void setLocation(double x, double y);
 	
+	boolean isInBoundingBox(double x, double y);
+	
 	boolean collidesWith(BoundingBox2D other);
 	
 	boolean isOnTopOf(BoundingBox2D other);
