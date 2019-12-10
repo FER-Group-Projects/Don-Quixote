@@ -14,7 +14,7 @@ import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
 import hr.fer.zemris.projekt.model.objects.impl.Ladder;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
-import hr.fer.zemris.projekt.model.raycollider.RayCollider.Collider;
+import hr.fer.zemris.projekt.model.raycollider.RayCollider.Collision;
 
 class RayColliderTest {
 	
@@ -37,19 +37,21 @@ class RayColliderTest {
 		
 		objs.add(new Ladder(new BoundingBox2DImpl(150, 150, 10, 10)));
 		
+		objs.add(new Ladder(new BoundingBox2DImpl(145, 55, 20, 20)));
+		
 		gc = new GameControllerImpl(new Player(new BoundingBox2DImpl(50, 50, 20, 20), 0, 0, "Player1"), 
 				objs, new GameControllerImpl.GameParameters(60, 100, 0.5, 10, 10, 10, 10, 10));
 	}
 
 	@Test
 	void testCollinearDistanceTooShort() {
-		Collider c = RayCollider.raycast(gc, new Vector2D(150, 50), new Vector2D(0, 1), 39);
+		Collision c = RayCollider.raycast(gc, new Vector2D(150, 50), new Vector2D(0, 1), 39);
 		assertNull(c);
 	}
 	
 	@Test
 	void testCollinear() {
-		Collider c = RayCollider.raycast(gc, new Vector2D(150, 50), new Vector2D(0, 1), 50);
+		Collision c = RayCollider.raycast(gc, new Vector2D(150, 50), new Vector2D(0, 1), 50);
 		assertEquals(40, c.getDistance());
 		assertEquals(150, c.getObject().getBoundingBox().getX());
 		assertEquals(100, c.getObject().getBoundingBox().getY());
@@ -57,7 +59,7 @@ class RayColliderTest {
 	
 	@Test
 	void testTwoCollisions() {
-		Collider c = RayCollider.raycast(gc, new Vector2D(155, 50), new Vector2D(0, 0.5), 1000);
+		Collision c = RayCollider.raycast(gc, new Vector2D(155, 50), new Vector2D(0, 0.5), 1000);
 		assertEquals(40, c.getDistance());
 		assertEquals(150, c.getObject().getBoundingBox().getX());
 		assertEquals(100, c.getObject().getBoundingBox().getY());
@@ -65,7 +67,7 @@ class RayColliderTest {
 	
 	@Test
 	void testOneCollisionAngle() {
-		Collider c = RayCollider.raycast(gc, new Vector2D(155, 50), new Vector2D(0.5, -0.5), 1000);
+		Collision c = RayCollider.raycast(gc, new Vector2D(155, 50), new Vector2D(0.5, -0.5), 1000);
 		assertEquals(50*Math.sqrt(2), c.getDistance());
 		assertEquals(200, c.getObject().getBoundingBox().getX());
 		assertEquals(0, c.getObject().getBoundingBox().getY());

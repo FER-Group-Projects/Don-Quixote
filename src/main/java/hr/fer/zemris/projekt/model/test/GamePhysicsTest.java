@@ -7,7 +7,9 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -29,6 +31,7 @@ import hr.fer.zemris.projekt.model.objects.impl.Ladder;
 import hr.fer.zemris.projekt.model.objects.impl.Platform;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
 import hr.fer.zemris.projekt.model.raycollider.RayCollider;
+import hr.fer.zemris.projekt.model.raycollider.RayCollider.Collision;
 
 @SuppressWarnings("serial")
 public class GamePhysicsTest extends JPanel implements GameControllerListener {
@@ -143,7 +146,7 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(320, 320, 20, 20), -75, 0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 320, 20, 20), 75, 0));
-			p.setY(480);
+//			p.setY(480);
 			} catch(InterruptedException ex) {
 			}
 			
@@ -212,18 +215,39 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 
 		RayColliderInputExtractor inputExtractor = new RayColliderInputExtractor(16);
 
-		List<RayCollider.Collider> colliders = inputExtractor.calculateColliders(gc);
+		List<RayCollider.Collision> allCollisions = inputExtractor.calculateColliders(gc);
+		
+		// Map : object with which any ray collides -> collisionDescriptor
+        Map<Game2DObject, Collision> filteredClosestCollisions = new HashMap<>();
+        
+        for(var collision : allCollisions) {
+        	if(collision==null) continue;
+        	Collision oldC = filteredClosestCollisions.get(collision.getObject());
+            if(oldC==null || oldC!=null && collision.getDistance() < oldC.getDistance())
+            	filteredClosestCollisions.put(collision.getObject(), collision);
+        }
 
-		for (RayCollider.Collider collider : colliders) {
-			if (collider == null) continue;
+		for (RayCollider.Collision collision : filteredClosestCollisions.values()) {
+			if (collision == null) continue;
 
-			Game2DObject obj = collider.getObject();
+			Game2DObject obj = collision.getObject();
 			DoublePoint newPosition = new DoublePoint();
 			newPosition.x = obj.getBoundingBox().getX();
 			newPosition.y = obj.getBoundingBox().getY();
 			LongPoint newScreen = convertor.convert(newPosition);
+			g2d.setColor(Color.BLACK);
+			g2d.drawString(String.valueOf((int) collision.getDistance()), (int) newScreen.x, (int) newScreen.y);
 
-			g2d.drawString(String.valueOf((int) collider.getDistance()), (int) newScreen.x, (int) newScreen.y);
+			DoublePoint origin = new DoublePoint();
+			origin.x = collision.getRayOrigin().getX();
+			origin.y = collision.getRayOrigin().getY();
+			LongPoint originL = convertor.convert(origin);
+			DoublePoint collisionPoint = new DoublePoint();
+			collisionPoint.x = collision.getPoint().getX();
+			collisionPoint.y = collision.getPoint().getY();
+			LongPoint collisionPointL = convertor.convert(collisionPoint);
+			g2d.setColor(Color.PINK);
+			g2d.drawLine((int)originL.x, (int)originL.y, (int)collisionPointL.x, (int)collisionPointL.y);
 
 		}
 	}

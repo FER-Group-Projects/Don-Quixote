@@ -32,7 +32,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 	private List<GameControllerListener> listeners = new CopyOnWriteArrayList<>();
 	
 	private Player player;
-	private List<Game2DObject> objects = new LinkedList<>();
+	private List<Game2DObject> objects = new CopyOnWriteArrayList<>();
 	private GameParameters params;
 
 	private double tickDelay;
