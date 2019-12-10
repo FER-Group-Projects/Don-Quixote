@@ -36,7 +36,7 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 		var gpt = new GamePhysicsTest();
 		JFrame frame = new JFrame();		
 		GameController gc = gpt.gc;
-		frame.addKeyListener(new KeyListener() {
+		frame.addKeyListener(new KeyListener() { 
 
 			@Override
 			public void keyTyped(KeyEvent e) {
