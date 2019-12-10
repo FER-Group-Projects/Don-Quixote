@@ -78,16 +78,16 @@ public class ArraySortingFitnessFunction implements FitnessFunction<Solution<Eas
 	}
 
 	private void setupContext(EasyLGPContext context, long[] array) {
-		for(int i=0; i<array.length; i++) {
-			context.setMemory(i, array[i]);
-		}
 		context.setRegister(0, array.length);
+		for(int i=1; i<array.length+1; i++) {
+			context.setRegister(i, array[i-1]);
+		}
 	}
 	
 	private long[] getArrayFromContext(EasyLGPContext context, int length) {
 		long[] array = new long[length];
-		for(int i=0; i<array.length; i++) {
-			array[i] = context.getMemory(i);
+		for(int i=1; i<array.length+1; i++) {
+			array[i-1] = context.getRegister(i);
 		}
 		return array;
 	}
