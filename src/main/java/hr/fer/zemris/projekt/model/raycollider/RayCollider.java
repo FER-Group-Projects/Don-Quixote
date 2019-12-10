@@ -2,6 +2,7 @@ package hr.fer.zemris.projekt.model.raycollider;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import hr.fer.zemris.projekt.model.controller.GameController;
 import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
@@ -23,21 +24,28 @@ public class RayCollider {
 		if(maxDistance == Double.POSITIVE_INFINITY || maxDistance <= 0)
 			throw new IllegalArgumentException();
 		
-		List<Collision> colliders = new ArrayList<>();
+		List<Game2DObject> objects = gc.getGameObjects();
+		
+		Game2DObject originObject = null;
+		if(ignoreOriginCollider) {
+			originObject = calculateOriginObject(objects, origin);
+		}
+		
+		List<Collision> collisions = new ArrayList<>();
 		
 		Vector2D p = origin; // point1 of ray
 		Vector2D r = direction.normalized().scale(maxDistance); // direction of ray
 		
-		List<Game2DObject> objects = gc.getGameObjects();
-		
 		for(Game2DObject obj : objects) {
+			
+			if(obj == originObject) continue;
 			
 			BoundingBox2D bb = obj.getBoundingBox();
 			
 			double distance = Double.POSITIVE_INFINITY;
 			Vector2D point = null;
 			
-			if(bb.isInBoundingBox(origin.getX(), origin.getY())) {
+			if(bb.containsPoint(origin.getX(), origin.getY())) {
 				
 				distance = 0;
 				point = origin;
@@ -82,28 +90,44 @@ public class RayCollider {
 			
 			}
 			
-			if(distance == 0 && !ignoreOriginCollider || distance != 0 && distance != Double.POSITIVE_INFINITY) {
-				colliders.add(new Collision(obj, distance, point, origin, direction));
+			if(distance != Double.POSITIVE_INFINITY) {
+				collisions.add(new Collision(obj, distance, point, origin, direction));
 			}
 			
 		}
 		
-		return colliders;
+		return collisions;
 		
 	}
 	
+	private static Game2DObject calculateOriginObject(List<Game2DObject> gameObjects, Vector2D origin) {
+		
+		Game2DObject originObj = null;
+		double originObjArea = Double.POSITIVE_INFINITY;
+		
+		for(var obj : gameObjects) {
+			double area = obj.getBoundingBox().getWidth() * obj.getBoundingBox().getHeight();
+			if(obj.getBoundingBox().containsPoint(origin.getX(), origin.getY()) && area < originObjArea) {
+				originObj = obj;
+				originObjArea = area;
+			}
+		}
+		
+		return originObj;
+	}
+
 	public static Collision raycast(GameController gc, Vector2D origin, Vector2D direction, double maxDistance) {
 		return raycast(gc, origin, direction, maxDistance, true);
 	}
 	
 	public static Collision raycast(GameController gc, Vector2D origin, Vector2D direction, double maxDistance, boolean ignoreOriginCollider) {
 		
-		List<Collision> colliders = raycastAll(gc, origin, direction, maxDistance, ignoreOriginCollider);
-		if(colliders.size() == 0) return null;
+		List<Collision> collisions = raycastAll(gc, origin, direction, maxDistance, ignoreOriginCollider);
+		if(collisions.size() == 0) return null;
 		
-		Collision closest = colliders.get(0);
+		Collision closest = collisions.get(0);
 		
-		for(Collision c : colliders) {
+		for(Collision c : collisions) {
 			if(c.getDistance() < closest.getDistance())
 				closest = c;
 		}

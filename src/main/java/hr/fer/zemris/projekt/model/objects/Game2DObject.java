@@ -125,8 +125,8 @@ public abstract class Game2DObject implements Destroyable {
 		}
 		
 		@Override
-		public boolean isInBoundingBox(double x, double y) {
-			return boundingBox.isInBoundingBox(x, y);
+		public boolean containsPoint(double x, double y) {
+			return boundingBox.containsPoint(x, y);
 		}
 		
 		@Override

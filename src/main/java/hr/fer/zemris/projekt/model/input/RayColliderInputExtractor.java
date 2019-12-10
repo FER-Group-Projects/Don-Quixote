@@ -34,13 +34,13 @@ public class RayColliderInputExtractor implements GameInputExtractor {
             throw new IllegalArgumentException("Invalid size of argument array.");
         }
 
-        List<RayCollider.Collision> colliders = calculateColliders(controller);
+        List<RayCollider.Collision> collisions = calculateColliders(controller);
         int inputIndex = 0;
 
-        for (RayCollider.Collision collider : colliders) {
-            if (collider != null) {
-                extractToThis[inputIndex] = getOrdinalNumberOfGameObject(collider.getObject());
-                extractToThis[inputIndex] = collider.getDistance();
+        for (RayCollider.Collision collision : collisions) {
+            if (collision != null) {
+                extractToThis[inputIndex] = getOrdinalNumberOfGameObject(collision.getObject());
+                extractToThis[inputIndex] = collision.getDistance();
             }
 
             inputIndex += 2;
@@ -64,15 +64,15 @@ public class RayColliderInputExtractor implements GameInputExtractor {
 
         double angleBetweenRays = 2 * Math.PI / numberOfRays;
 
-        List<RayCollider.Collision> colliders = new ArrayList<>();
+        List<RayCollider.Collision> collisions = new ArrayList<>();
 
         for (int rayIndex = 0; rayIndex < numberOfRays; rayIndex++) {
             Vector2D rayVector = new Vector2D(Math.cos(rayIndex * angleBetweenRays), Math.sin(rayIndex * angleBetweenRays));
 
-            colliders.add(RayCollider.raycast(controller, playersCenter, rayVector, MAX_DISTANCE, true));
+            collisions.add(RayCollider.raycast(controller, playersCenter, rayVector, MAX_DISTANCE, true));
         }
 
-        return colliders;
+        return collisions;
     }
 
     private double getOrdinalNumberOfGameObject(Game2DObject object) {

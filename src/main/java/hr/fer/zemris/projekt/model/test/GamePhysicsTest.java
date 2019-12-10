@@ -31,7 +31,6 @@ import hr.fer.zemris.projekt.model.objects.impl.Ladder;
 import hr.fer.zemris.projekt.model.objects.impl.Platform;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
 import hr.fer.zemris.projekt.model.raycollider.RayCollider;
-import hr.fer.zemris.projekt.model.raycollider.Vector2D;
 import hr.fer.zemris.projekt.model.raycollider.RayCollider.Collision;
 
 @SuppressWarnings("serial")
@@ -216,38 +215,36 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 
 		RayColliderInputExtractor inputExtractor = new RayColliderInputExtractor(16);
 
-		List<RayCollider.Collision> allColliders = inputExtractor.calculateColliders(gc);
+		List<RayCollider.Collision> allCollisions = inputExtractor.calculateColliders(gc);
 		
 		// Map : object with which any ray collides -> collisionDescriptor
-        Map<Game2DObject, Collision> objects = new HashMap<>();
+        Map<Game2DObject, Collision> filteredClosestCollisions = new HashMap<>();
         
-        for(var collision : allColliders) {
+        for(var collision : allCollisions) {
         	if(collision==null) continue;
-        	Collision oldC = objects.get(collision.getObject());
-            if(oldC==null || oldC!=null && collision.getDistance()<oldC.getDistance()) {
-            	objects.remove(oldC);
-            	objects.put(collision.getObject(), collision);
-            }
+        	Collision oldC = filteredClosestCollisions.get(collision.getObject());
+            if(oldC==null || oldC!=null && collision.getDistance() < oldC.getDistance())
+            	filteredClosestCollisions.put(collision.getObject(), collision);
         }
 
-		for (RayCollider.Collision collider : objects.values()) {
-			if (collider == null) continue;
+		for (RayCollider.Collision collision : filteredClosestCollisions.values()) {
+			if (collision == null) continue;
 
-			Game2DObject obj = collider.getObject();
+			Game2DObject obj = collision.getObject();
 			DoublePoint newPosition = new DoublePoint();
 			newPosition.x = obj.getBoundingBox().getX();
 			newPosition.y = obj.getBoundingBox().getY();
 			LongPoint newScreen = convertor.convert(newPosition);
 			g2d.setColor(Color.BLACK);
-			g2d.drawString(String.valueOf((int) collider.getDistance()), (int) newScreen.x, (int) newScreen.y);
+			g2d.drawString(String.valueOf((int) collision.getDistance()), (int) newScreen.x, (int) newScreen.y);
 
 			DoublePoint origin = new DoublePoint();
-			origin.x = collider.getRayOrigin().getX();
-			origin.y = collider.getRayOrigin().getY();
+			origin.x = collision.getRayOrigin().getX();
+			origin.y = collision.getRayOrigin().getY();
 			LongPoint originL = convertor.convert(origin);
 			DoublePoint collisionPoint = new DoublePoint();
-			collisionPoint.x = collider.getPoint().getX();
-			collisionPoint.y = collider.getPoint().getY();
+			collisionPoint.x = collision.getPoint().getX();
+			collisionPoint.y = collision.getPoint().getY();
 			LongPoint collisionPointL = convertor.convert(collisionPoint);
 			g2d.setColor(Color.PINK);
 			g2d.drawLine((int)originL.x, (int)originL.y, (int)collisionPointL.x, (int)collisionPointL.y);

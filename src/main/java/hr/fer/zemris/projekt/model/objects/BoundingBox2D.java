@@ -22,7 +22,7 @@ public interface BoundingBox2D {
 	
 	void setLocation(double x, double y);
 	
-	boolean isInBoundingBox(double x, double y);
+	boolean containsPoint(double x, double y);
 	
 	boolean collidesWith(BoundingBox2D other);
 	
