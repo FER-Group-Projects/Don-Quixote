@@ -7,6 +7,10 @@ import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction;
 
 public class MovInstruction implements EasyLGPInstruction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 58964316451867475L;
 	private long regTo;
 	private long regFrom;
 	

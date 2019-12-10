@@ -7,6 +7,10 @@ import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction;
 
 public class MulInstruction implements EasyLGPInstruction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6659488859811662162L;
 	private long op1Register;
 	private long op2Register;
 	private long resRegister;

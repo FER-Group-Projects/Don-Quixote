@@ -25,6 +25,9 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 	private Mutation<Solution<EasyLGPInstruction>> mutationOperator;
 	private PopulationInitializer<Solution<EasyLGPInstruction>> populationInitializer;
 	
+	private double totalPopulationShiftedFitness;
+	private double minimalPopulationFitness;
+	
 	private Comparator<Solution<?>> cmpRev = (s1, s2) -> Double.compare(s2.getFitness(), s1.getFitness());
 	private Random random = new Random();
 
@@ -44,7 +47,7 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 	}
 
 	@Override
-	public Solution<EasyLGPInstruction> run() {
+	public Solution<EasyLGPInstruction> run() {		
 		// Initialization
 		List<Solution<EasyLGPInstruction>> population = populationInitializer.generatePopulation(populationSize);
 		populationSort(population);
@@ -54,14 +57,13 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 			List<Solution<EasyLGPInstruction>> newPopulation = new ArrayList<>();
 			
 			// Selection, crossover and mutation
-	outer:	for(int i=1; i<population.size(); i++) {
-				for(int j=0; j<i; j++) {
-					var newSolution = crossoverOperator.crossover(population.get(j), population.get(i));
-					if(random.nextDouble() < mutationRate)
-						newSolution = mutationOperator.mutate(newSolution);
-					newPopulation.add(newSolution);
-					if(newPopulation.size()==populationSize) break outer;
-				}
+			while(newPopulation.size() != populationSize) {
+				var parent1 = selection(population);
+				var parent2 = selection(population);
+				var newSolution = crossoverOperator.crossover(parent1, parent2);
+				if(random.nextDouble() < mutationRate)
+					newSolution = mutationOperator.mutate(newSolution);
+				newPopulation.add(newSolution);
 			}
 			
 			// Fitness calculation
@@ -74,9 +76,38 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 		return population.get(0);
 	}
 	
+	private Solution<EasyLGPInstruction> selection(List<Solution<EasyLGPInstruction>> population) {
+		double rnd = random.nextDouble();
+		
+		double increment = 0;
+		for(var solution : population) {
+			double shiftedFitness = solution.getFitness() - minimalPopulationFitness;
+			double probabilityInterval = shiftedFitness/totalPopulationShiftedFitness + increment;
+			if(rnd < probabilityInterval)
+				return solution;
+			increment+=probabilityInterval;
+		}
+		
+		return null; // Never
+	}
+	
 	private void populationSort(List<Solution<EasyLGPInstruction>> population) {
-		for(var solution : population) solution.setFitness(fitnessFunction.calculateFitness(solution));
+		double totalShiftedFitness = 0;
+		double minValue = Double.MAX_VALUE;
+		for(var solution : population) {
+			double fitness = fitnessFunction.calculateFitness(solution);
+			solution.setFitness(fitness);
+			if(fitness < minValue)
+				minValue = fitness;
+		}
+		for(var solution : population) {
+			totalShiftedFitness += solution.getFitness() - minValue;
+		}
+		
 		population.sort(cmpRev);
+		
+		this.totalPopulationShiftedFitness = totalShiftedFitness;
+		this.minimalPopulationFitness = minValue;
 	}
 	
 }

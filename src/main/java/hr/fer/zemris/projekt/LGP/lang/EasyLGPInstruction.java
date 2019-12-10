@@ -1,7 +1,9 @@
 package hr.fer.zemris.projekt.LGP.lang;
 
+import java.io.Serializable;
+
 @FunctionalInterface
-public interface EasyLGPInstruction {
+public interface EasyLGPInstruction extends Serializable {
 	
 	InstructionResult execute(EasyLGPContext context);
 	

@@ -1,6 +1,7 @@
 package hr.fer.zemris.projekt.LGP;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import hr.fer.zemris.projekt.LGP.lang.EasyLGPContext;
@@ -12,12 +13,20 @@ import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
 public class ArraySortingFitnessFunction implements FitnessFunction<Solution<EasyLGPInstruction>> {
 	
+	long[][] arrays;
 	long numberOfRegisters;
 	long maxSteps;
+	double minimalFitness;
 
-	public ArraySortingFitnessFunction(long numberOfRegisters, long maxSteps) {
+	public ArraySortingFitnessFunction(long[][] arraysToSort, long numberOfRegisters, long maxSteps) {
+		this.arrays = Objects.requireNonNull(arraysToSort);
 		this.numberOfRegisters = numberOfRegisters;
 		this.maxSteps = maxSteps;
+		
+		this.minimalFitness = 0;
+		for(int i=0; i<arrays.length; i++) {
+			minimalFitness -= arrays[i].length * (arrays[i].length - 1);
+		}
 	}
 
 	@Override
@@ -27,13 +36,7 @@ public class ArraySortingFitnessFunction implements FitnessFunction<Solution<Eas
 		
 		LGPSolution sln = (LGPSolution) solution;
 		
-		if(sln.getGeneAt(0).toString().equals("HALT")) return Double.NEGATIVE_INFINITY;
-		
-		long[][] arrays = {
-				{10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
-				{5, 7, 3, 4, 10, 2, 1},
-				{15, 17, 18, 20, 11, 7, 21, 3}
-		};
+		if(sln.getGeneAt(0).toString().equals("HALT")) return minimalFitness;
 
 		double fitness = 0;
 		
@@ -45,7 +48,7 @@ public class ArraySortingFitnessFunction implements FitnessFunction<Solution<Eas
 			try {
 				EasyLGPEngine.execute(sln.getInstructions(), context, maxSteps);
 			} catch (EasyLGPException | ArithmeticException ex) {
-				return Double.NEGATIVE_INFINITY;
+				return minimalFitness;
 			}
 			
 			long[] arrayAfter = getArrayFromContext(context, array.length);

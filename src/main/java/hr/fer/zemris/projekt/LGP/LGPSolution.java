@@ -10,6 +10,11 @@ import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
 public class LGPSolution implements Solution<EasyLGPInstruction> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4277157970905144379L;
+	
 	private List<EasyLGPInstruction> instructions = new ArrayList<>();
 	private double fitness;
 	private boolean evaluated;

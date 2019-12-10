@@ -7,6 +7,11 @@ import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction;
 
 public class HaltInstruction implements EasyLGPInstruction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6574043770944133591L;
+
 	@Override
 	public InstructionResult execute(EasyLGPContext context) {
 		return new InstructionResult(InstructionResultStatus.HALT);

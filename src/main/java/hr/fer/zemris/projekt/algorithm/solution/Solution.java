@@ -1,6 +1,8 @@
 package hr.fer.zemris.projekt.algorithm.solution;
 
-public interface Solution<G> {
+import java.io.Serializable;
+
+public interface Solution<G> extends Serializable {
 
     double getFitness();
     void setFitness(double newFitness);

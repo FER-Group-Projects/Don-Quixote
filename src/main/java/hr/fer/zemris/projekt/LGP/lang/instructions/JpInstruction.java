@@ -7,6 +7,11 @@ import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction;
 
 public class JpInstruction implements EasyLGPInstruction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6716482207590808765L;
+
 	public enum Condition {
 		NEGATIVE("_N"),
 		NON_NEGATIVE("_NN"),
