@@ -1,6 +1,7 @@
 package hr.fer.zemris.projekt.algorithm.solution;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class DoubleArraySolution implements Solution<Double> {
 
@@ -59,6 +60,32 @@ public class DoubleArraySolution implements Solution<Double> {
         copy.setFitness(getFitness());
 
         return copy;
+    }
+
+    @Override
+    public String toString() {
+        return "DoubleArraySolution{" +
+                "genes=" + Arrays.toString(genes) +
+                ", fitness=" + fitness +
+                ", isEvaluated=" + isEvaluated +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DoubleArraySolution that = (DoubleArraySolution) o;
+        return Double.compare(that.fitness, fitness) == 0 &&
+                isEvaluated == that.isEvaluated &&
+                Arrays.equals(genes, that.genes);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(fitness, isEvaluated);
+        result = 31 * result + Arrays.hashCode(genes);
+        return result;
     }
 
 }
