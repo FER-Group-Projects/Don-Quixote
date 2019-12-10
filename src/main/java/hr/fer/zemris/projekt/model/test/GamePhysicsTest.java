@@ -21,12 +21,14 @@ import hr.fer.zemris.projekt.model.controller.GameControllerListener;
 import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl.GameParameters;
+import hr.fer.zemris.projekt.model.input.RayColliderInputExtractor;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.Barrel;
 import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
 import hr.fer.zemris.projekt.model.objects.impl.Ladder;
 import hr.fer.zemris.projekt.model.objects.impl.Platform;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
+import hr.fer.zemris.projekt.model.raycollider.RayCollider;
 
 @SuppressWarnings("serial")
 public class GamePhysicsTest extends JPanel implements GameControllerListener {
@@ -206,6 +208,23 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 			g2d.setColor(outer);
 			g2d.drawRect((int) newScreen.x, (int) newScreen.y, (int) convertor.scaleWidth(obj.getBoundingBox().getWidth()),
 					(int) convertor.scaleHeight(obj.getBoundingBox().getHeight()));
+		}
+
+		RayColliderInputExtractor inputExtractor = new RayColliderInputExtractor(16);
+
+		List<RayCollider.Collider> colliders = inputExtractor.calculateColliders(gc);
+
+		for (RayCollider.Collider collider : colliders) {
+			if (collider == null) continue;
+
+			Game2DObject obj = collider.getObject();
+			DoublePoint newPosition = new DoublePoint();
+			newPosition.x = obj.getBoundingBox().getX();
+			newPosition.y = obj.getBoundingBox().getY();
+			LongPoint newScreen = convertor.convert(newPosition);
+
+			g2d.drawString(String.valueOf((int) collider.getDistance()), (int) newScreen.x, (int) newScreen.y);
+
 		}
 	}
 

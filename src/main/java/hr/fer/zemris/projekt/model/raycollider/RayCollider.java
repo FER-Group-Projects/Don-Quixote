@@ -4,6 +4,7 @@ import java.util.List;
 import hr.fer.zemris.projekt.model.controller.GameController;
 import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
+import hr.fer.zemris.projekt.model.objects.impl.Player;
 
 public class RayCollider {
 	
@@ -27,6 +28,8 @@ public class RayCollider {
 		List<Game2DObject> objects = gc.getGameObjects();
 		
 		for(Game2DObject obj : objects) {
+
+			if (obj instanceof Player) continue;
 			
 			BoundingBox2D bb = obj.getBoundingBox();
 			
