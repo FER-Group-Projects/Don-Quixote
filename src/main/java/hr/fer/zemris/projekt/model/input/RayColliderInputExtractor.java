@@ -34,10 +34,10 @@ public class RayColliderInputExtractor implements GameInputExtractor {
             throw new IllegalArgumentException("Invalid size of argument array.");
         }
 
-        List<RayCollider.Collider> colliders = calculateColliders(controller);
+        List<RayCollider.Collision> colliders = calculateColliders(controller);
         int inputIndex = 0;
 
-        for (RayCollider.Collider collider : colliders) {
+        for (RayCollider.Collision collider : colliders) {
             if (collider != null) {
                 extractToThis[inputIndex] = getOrdinalNumberOfGameObject(collider.getObject());
                 extractToThis[inputIndex] = collider.getDistance();
@@ -47,7 +47,7 @@ public class RayColliderInputExtractor implements GameInputExtractor {
         }
     }
 
-    public List<RayCollider.Collider> calculateColliders(GameController controller) {
+    public List<RayCollider.Collision> calculateColliders(GameController controller) {
         Player player = (Player) controller
                 .getGameObjects()
                 .stream()
@@ -58,13 +58,13 @@ public class RayColliderInputExtractor implements GameInputExtractor {
         BoundingBox2D boundingBox = player.getBoundingBox();
 
         Vector2D playersCenter = new Vector2D(
-                boundingBox.getX() + (double) boundingBox.getWidth() / 2,
-                boundingBox.getY() - (double) boundingBox.getHeight() / 2
+                boundingBox.getX() + boundingBox.getWidth() / 2,
+                boundingBox.getY() - boundingBox.getHeight() / 2
         );
 
         double angleBetweenRays = 2 * Math.PI / numberOfRays;
 
-        List<RayCollider.Collider> colliders = new ArrayList<>();
+        List<RayCollider.Collision> colliders = new ArrayList<>();
 
         for (int rayIndex = 0; rayIndex < numberOfRays; rayIndex++) {
             Vector2D rayVector = new Vector2D(Math.cos(rayIndex * angleBetweenRays), Math.sin(rayIndex * angleBetweenRays));

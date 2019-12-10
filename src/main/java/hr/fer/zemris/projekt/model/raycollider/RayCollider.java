@@ -8,7 +8,7 @@ import hr.fer.zemris.projekt.model.objects.Game2DObject;
 
 public class RayCollider {
 	
-	public static List<Collider> raycastAll(GameController gc, Vector2D origin, Vector2D direction, double maxDistance) {
+	public static List<Collision> raycastAll(GameController gc, Vector2D origin, Vector2D direction, double maxDistance) {
 		return raycastAll(gc, origin, direction, maxDistance, true);
 	}
 	
@@ -16,14 +16,14 @@ public class RayCollider {
 	// first one is from p to p+r (where p is origin of the ray, and r is normalized direction of the ray scaled by maxDistance)
 	// second one is (for each game object in gc) from q to q+s (where q is origin of the vector and and r 
 	// 													is normalized direction scaled by length of that side of the rectangle)
-	public static List<Collider> raycastAll(GameController gc, Vector2D origin, Vector2D direction, double maxDistance, boolean ignoreOriginCollider) {
+	public static List<Collision> raycastAll(GameController gc, Vector2D origin, Vector2D direction, double maxDistance, boolean ignoreOriginCollider) {
 		
 		if(gc==null || origin == null || direction == null)
 			throw new NullPointerException();
 		if(maxDistance == Double.POSITIVE_INFINITY || maxDistance <= 0)
 			throw new IllegalArgumentException();
 		
-		List<Collider> colliders = new ArrayList<>();
+		List<Collision> colliders = new ArrayList<>();
 		
 		Vector2D p = origin; // point1 of ray
 		Vector2D r = direction.normalized().scale(maxDistance); // direction of ray
@@ -35,37 +35,55 @@ public class RayCollider {
 			BoundingBox2D bb = obj.getBoundingBox();
 			
 			double distance = Double.POSITIVE_INFINITY;
+			Vector2D point = null;
 			
 			if(bb.isInBoundingBox(origin.getX(), origin.getY())) {
 				
 				distance = 0;
+				point = origin;
 				
 			} else {
 			
 				// left side
 				Vector2D q = new Vector2D(bb.getX(), bb.getY()); // point1 of line segment
 				Vector2D s = new Vector2D(0, -bb.getHeight()); // point2 of line segment
-				distance = Math.min(distance, distanceFromPToLineSegmentIntersection(p, r, q, s));
+				double newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
+				if(newDistance < distance) {
+					distance = newDistance;
+					point = p.add(r.normalized().scale(distance));
+				}
 				
 				// right side
 				q = new Vector2D(bb.getX() + bb.getWidth(), bb.getY()); // point1 of line segment
 				s = new Vector2D(0, -bb.getHeight()); // point2 of line segment
-				distance = Math.min(distance, distanceFromPToLineSegmentIntersection(p, r, q, s));
+				newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
+				if(newDistance < distance) {
+					distance = newDistance;
+					point = p.add(r.normalized().scale(distance));
+				}
 				
 				// top side
 				q = new Vector2D(bb.getX(), bb.getY()); // point1 of line segment
 				s = new Vector2D(bb.getWidth(), 0); // point2 of line segment
-				distance = Math.min(distance, distanceFromPToLineSegmentIntersection(p, r, q, s));
+				newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
+				if(newDistance < distance) {
+					distance = newDistance;
+					point = p.add(r.normalized().scale(distance));
+				}
 							
 				// bottom side
 				q = new Vector2D(bb.getX(), bb.getY() - bb.getHeight()); // point1 of line segment
 				s = new Vector2D(bb.getWidth(), 0); // point2 of line segment
-				distance = Math.min(distance, distanceFromPToLineSegmentIntersection(p, r, q, s));
+				newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
+				if(newDistance < distance) {
+					distance = newDistance;
+					point = p.add(r.normalized().scale(distance));
+				}
 			
 			}
 			
 			if(distance == 0 && !ignoreOriginCollider || distance != 0 && distance != Double.POSITIVE_INFINITY) {
-				colliders.add(new Collider(obj, distance));
+				colliders.add(new Collision(obj, distance, point, origin, direction));
 			}
 			
 		}
@@ -74,18 +92,18 @@ public class RayCollider {
 		
 	}
 	
-	public static Collider raycast(GameController gc, Vector2D origin, Vector2D direction, double maxDistance) {
+	public static Collision raycast(GameController gc, Vector2D origin, Vector2D direction, double maxDistance) {
 		return raycast(gc, origin, direction, maxDistance, true);
 	}
 	
-	public static Collider raycast(GameController gc, Vector2D origin, Vector2D direction, double maxDistance, boolean ignoreOriginCollider) {
+	public static Collision raycast(GameController gc, Vector2D origin, Vector2D direction, double maxDistance, boolean ignoreOriginCollider) {
 		
-		List<Collider> colliders = raycastAll(gc, origin, direction, maxDistance, ignoreOriginCollider);
+		List<Collision> colliders = raycastAll(gc, origin, direction, maxDistance, ignoreOriginCollider);
 		if(colliders.size() == 0) return null;
 		
-		Collider closest = colliders.get(0);
+		Collision closest = colliders.get(0);
 		
-		for(Collider c : colliders) {
+		for(Collision c : colliders) {
 			if(c.getDistance() < closest.getDistance())
 				closest = c;
 		}
@@ -121,22 +139,42 @@ public class RayCollider {
 		return Double.POSITIVE_INFINITY;
 	}
 	
-	public static class Collider {
+	public static class Collision {
 		
 		private Game2DObject object;
 		private double distance;
+		private Vector2D point;
 		
-		public Collider(Game2DObject object, double distance) {
+		private Vector2D rayOrigin;
+		private Vector2D rayDirection;
+		
+		public Collision(Game2DObject object, double distance, Vector2D point, Vector2D rayOrigin,
+				Vector2D rayDirection) {
 			this.object = object;
 			this.distance = distance;
+			this.point = point;
+			this.rayOrigin = rayOrigin;
+			this.rayDirection = rayDirection;
 		}
-		
+
 		public Game2DObject getObject() {
 			return object;
 		}
 		
 		public double getDistance() {
 			return distance;
+		}
+		
+		public Vector2D getPoint() {
+			return point;
+		}
+		
+		public Vector2D getRayOrigin() {
+			return rayOrigin;
+		}
+		
+		public Vector2D getRayDirection() {
+			return rayDirection;
 		}
 
 		@Override
