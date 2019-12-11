@@ -121,7 +121,7 @@ public class ModelToScreenCoordinateConvertor {
 	}
 
 	public long getMaxYS() {
-		return maxYS;
+		return maxYS; 
 	}
 
 	public void setMaxYS(long maxYS) {

@@ -43,7 +43,7 @@ public class Node {
 	public void setTerminal(boolean isTerminal) {
 		this.isTerminal = isTerminal;
 	}
-
+	
 	public int getLevel() {
 		return level;
 	}
@@ -85,13 +85,4 @@ public class Node {
 	    return this.toString(new StringBuilder(), true, new StringBuilder()).toString();
 	}
 	
-	public void insertAtRandomNode(Node branch) {
-		int r = new Random().nextInt(Tree.size(this));
-		if (r == 0) this.setLeft(branch);
-		else if (this.getLeft() != null && 1 <= r && r <= Tree.size(this.getLeft())) {
-	        this.getLeft().insertAtRandomNode(branch);
-	    } else {
-	        this.getRight().insertAtRandomNode(branch);
-	    }
-	}
 }

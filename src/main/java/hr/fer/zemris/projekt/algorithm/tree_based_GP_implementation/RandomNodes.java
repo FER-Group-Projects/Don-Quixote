@@ -9,13 +9,14 @@ public class RandomNodes {
 	Node gennode;
 	private int randomNum1;
 	private int randomNum2;
+	private final Random random = new Random();
 	
 	public RandomNodes(Node head) {
 		this.head = head;
 		count1 = -1;
 		count2 = -1;
-		randomNum1 = new Random().nextInt(Tree.nodeSize(head));
-		randomNum2 = new Random().nextInt(Tree.nodeSize(head));
+		randomNum1 = random.nextInt(Tree.nodeSize(head));
+		randomNum2 = random.nextInt(Tree.nodeSize(head));
 	}
 	
 	public void getRandomBranch(Node head) {
@@ -33,7 +34,7 @@ public class RandomNodes {
 			count2++;
 			
 			if (count2 == randomNum2) {
-				if (new Random().nextDouble() > 0.5)head.setLeft(branch);
+				if (random.nextDouble() > 0.5) head.setLeft(branch);
 				else {
 					head.setRight(branch);
 				}

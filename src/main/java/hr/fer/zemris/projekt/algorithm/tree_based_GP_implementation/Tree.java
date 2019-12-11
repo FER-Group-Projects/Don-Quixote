@@ -5,7 +5,7 @@ import java.util.Random;
 import hr.fer.zemris.projekt.algorithm.solution.DoubleArraySolution;
 import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
-public class Tree implements Solution<Double>{
+public class Tree implements Solution<Node>{
 	//nonterminal cvorovi su operacije
 	//terminal cvorovi su indexi u listi inputa
 	
@@ -24,6 +24,7 @@ public class Tree implements Solution<Double>{
 		this.head = head;
 	}
 	
+	//broj svih cvorova
 	public static int size(Node head) {
 		if (head == null) return 0;
 		else {
@@ -31,6 +32,7 @@ public class Tree implements Solution<Double>{
 		}	
 	}
 	
+	//broj non-T cvorova
 	public static int nodeSize(Node head) {
 		if (head.isTerminal()) return 0;
 		else {
@@ -54,7 +56,13 @@ public class Tree implements Solution<Double>{
 	public void setSize(int size) {
 		this.size = size;
 	}
-	
+	public boolean getIsEvaluated() {
+		return this.isEvaluated;
+	}
+	public void setIsEvaluated(boolean bool) {
+		this.isEvaluated = bool;
+	}
+			
 	//ispisuje stablo 
 	@Override 
 	public String toString() {
@@ -83,19 +91,18 @@ public class Tree implements Solution<Double>{
 	}
 
 	@Override
-	public Double getGeneAt(int index) {
+	public Node getGeneAt(int index) {
 		throw new UnsupportedOperationException("no genes in tree gp");
 		
 	}
-
+	
 	@Override
-	public void setGeneAt(int index, Double newValue) {
-		throw new UnsupportedOperationException("no genes in tree gp");
+	public void setGeneAt(int index, Node newValue) {
+		throw new UnsupportedOperationException("no genes in tree gp");	
 	}
 
 	@Override
-	public Solution<Double> copy() {
-		// TODO Auto-generated method stub
+	public Solution<Node> copy() {
 		return null;
 	}
 	

@@ -11,5 +11,6 @@ public interface Solution<G> {
     void setGeneAt(int index, G newValue);
 
     Solution<G> copy();
+	
 
 }
