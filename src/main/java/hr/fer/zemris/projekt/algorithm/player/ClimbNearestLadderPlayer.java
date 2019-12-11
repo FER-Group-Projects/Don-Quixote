@@ -3,6 +3,7 @@ package hr.fer.zemris.projekt.algorithm.player;
 import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.input.RayColliderInputExtractor;
 import hr.fer.zemris.projekt.model.objects.impl.Ladder;
+import hr.fer.zemris.projekt.model.objects.impl.Platform;
 
 public class ClimbNearestLadderPlayer implements ArtificialPlayer {
 
@@ -10,10 +11,16 @@ public class ClimbNearestLadderPlayer implements ArtificialPlayer {
 
     @Override
     public PlayerAction calculateAction(double[] input) {
+        if (input.length != 8) {
+            throw new IllegalArgumentException("Artificial player expects input to contain exactly 8 numbers.");
+        }
+
         // 0, 1, 2, 3 => right, up, left, down
         double minimalDistanceFromLadder = Double.MAX_VALUE;
         int indexOfMinimum = -1;
+
         double ladderType = RayColliderInputExtractor.getOrdinalNumberOfGameObject(Ladder.class);
+        double platformType = RayColliderInputExtractor.getOrdinalNumberOfGameObject(Platform.class);
 
         for (int typeIndex = 0; typeIndex < input.length; typeIndex += 2) {
             if (input[typeIndex] == ladderType && input[typeIndex + 1] < minimalDistanceFromLadder) {
@@ -30,7 +37,7 @@ public class ClimbNearestLadderPlayer implements ArtificialPlayer {
 
         // If its center has gone out of the ladder and inside a platform, go up since it cannot go left or right yet
         if (input[2] != ladderType && input[6] == ladderType ||
-            input[6] == 3 && input[7] < 25) {
+            input[6] == platformType && input[7] < 25) {
             return PlayerAction.UP;
         }
 
