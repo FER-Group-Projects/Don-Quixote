@@ -6,6 +6,7 @@ import java.util.List;
 import hr.fer.zemris.projekt.model.controller.GameController;
 import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
+import hr.fer.zemris.projekt.model.objects.impl.Platform;
 
 public class RayCollider {
 	
@@ -44,52 +45,45 @@ public class RayCollider {
 			
 			double distance = Double.POSITIVE_INFINITY;
 			Vector2D point = null;
+
 			
-			if(bb.containsPoint(origin.getX(), origin.getY())) {
-				
-				distance = 0;
-				point = origin;
-				
-			} else {
-			
-				// left side
-				Vector2D q = new Vector2D(bb.getX(), bb.getY()); // point1 of line segment
-				Vector2D s = new Vector2D(0, -bb.getHeight()); // point2 of line segment
-				double newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
-				if(newDistance < distance) {
-					distance = newDistance;
-					point = p.add(r.normalized().scale(distance));
-				}
-				
-				// right side
-				q = new Vector2D(bb.getX() + bb.getWidth(), bb.getY()); // point1 of line segment
-				s = new Vector2D(0, -bb.getHeight()); // point2 of line segment
-				newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
-				if(newDistance < distance) {
-					distance = newDistance;
-					point = p.add(r.normalized().scale(distance));
-				}
-				
-				// top side
-				q = new Vector2D(bb.getX(), bb.getY()); // point1 of line segment
-				s = new Vector2D(bb.getWidth(), 0); // point2 of line segment
-				newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
-				if(newDistance < distance) {
-					distance = newDistance;
-					point = p.add(r.normalized().scale(distance));
-				}
-							
-				// bottom side
-				q = new Vector2D(bb.getX(), bb.getY() - bb.getHeight()); // point1 of line segment
-				s = new Vector2D(bb.getWidth(), 0); // point2 of line segment
-				newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
-				if(newDistance < distance) {
-					distance = newDistance;
-					point = p.add(r.normalized().scale(distance));
-				}
-			
+			// left side
+			Vector2D q = new Vector2D(bb.getX(), bb.getY()); // point1 of line segment
+			Vector2D s = new Vector2D(0, -bb.getHeight()); // point2 of line segment
+			double newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
+			if(newDistance < distance) {
+				distance = newDistance;
+				point = p.add(r.normalized().scale(distance));
+			}
+
+			// right side
+			q = new Vector2D(bb.getX() + bb.getWidth(), bb.getY()); // point1 of line segment
+			s = new Vector2D(0, -bb.getHeight()); // point2 of line segment
+			newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
+			if(newDistance < distance) {
+				distance = newDistance;
+				point = p.add(r.normalized().scale(distance));
+			}
+
+			// top side
+			q = new Vector2D(bb.getX(), bb.getY()); // point1 of line segment
+			s = new Vector2D(bb.getWidth(), 0); // point2 of line segment
+			newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
+			if(newDistance < distance) {
+				distance = newDistance;
+				point = p.add(r.normalized().scale(distance));
+			}
+
+			// bottom side
+			q = new Vector2D(bb.getX(), bb.getY() - bb.getHeight()); // point1 of line segment
+			s = new Vector2D(bb.getWidth(), 0); // point2 of line segment
+			newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
+			if(newDistance < distance) {
+				distance = newDistance;
+				point = p.add(r.normalized().scale(distance));
 			}
 			
+
 			if(distance != Double.POSITIVE_INFINITY) {
 				collisions.add(new Collision(obj, distance, point, origin, direction));
 			}
@@ -112,7 +106,7 @@ public class RayCollider {
 				originObjArea = area;
 			}
 		}
-		
+
 		return originObj;
 	}
 
@@ -124,14 +118,14 @@ public class RayCollider {
 		
 		List<Collision> collisions = raycastAll(gc, origin, direction, maxDistance, ignoreOriginCollider);
 		if(collisions.size() == 0) return null;
-		
+
 		Collision closest = collisions.get(0);
 		
 		for(Collision c : collisions) {
-			if(c.getDistance() < closest.getDistance())
+			if(c.getDistance() < closest.getDistance() || c.getDistance() == closest.getDistance() && closest.getObject() instanceof Platform)
 				closest = c;
 		}
-		
+
 		return closest;
 		
 	}

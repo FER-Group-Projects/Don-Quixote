@@ -15,6 +15,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import hr.fer.zemris.projekt.algorithm.player.ArtificialPlayer;
+import hr.fer.zemris.projekt.algorithm.player.ClimbNearestLadderPlayer;
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor;
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor.DoublePoint;
 import hr.fer.zemris.projekt.model.ModelToScreenCoordinateConvertor.LongPoint;
@@ -23,6 +25,7 @@ import hr.fer.zemris.projekt.model.controller.GameControllerListener;
 import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl.GameParameters;
+import hr.fer.zemris.projekt.model.input.GameInputExtractor;
 import hr.fer.zemris.projekt.model.input.RayColliderInputExtractor;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.Barrel;
@@ -126,6 +129,9 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 		gc.addListener(this);
 		convertor = new ModelToScreenCoordinateConvertor(0, WIDTH, 0,
 				HEIGHT, 0, WIDTH, 0, HEIGHT);
+
+		ArtificialPlayer artificialPlayer = new ClimbNearestLadderPlayer();
+		GameInputExtractor inputExtractor = new RayColliderInputExtractor(4);
 		
 		new Thread(() -> {
 			try {
@@ -146,28 +152,43 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(320, 320, 20, 20), -75, 0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 320, 20, 20), 75, 0));
+//			gc.addGameObject(new Barrel(new BoundingBox2DImpl(320, 320, 20, 20), -75, 0));
+//			gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 320, 20, 20), 75, 0));
 //			p.setY(480);
 			} catch(InterruptedException ex) {
 			}
-			
+
+			PlayerAction previousAction = PlayerAction.UP;
+
 			while (true) {
+//				try {
+//					Thread.sleep((long) (3_000.0));
+//				} catch (InterruptedException ex) {
+//				}
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 380, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 270, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 380, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 270, 20, 20), 0, 0));
+//				try {
+//					Thread.sleep((long) (0_500.0));
+//				} catch (InterruptedException ex) {
+//				}
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 280, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 170, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 280, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 170, 20, 20), 0, 0));
+
+				gc.unsetPlayerAction(previousAction);
+				previousAction = artificialPlayer.calculateAction(inputExtractor.extractInputs(gc));
+				gc.setPlayerAction(previousAction);
 				try {
-					Thread.sleep((long) (3_000.0));
-				} catch (InterruptedException ex) {
+					Thread.sleep(150);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 380, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 270, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 380, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 270, 20, 20), 0, 0));
-				try {
-					Thread.sleep((long) (0_500.0));
-				} catch (InterruptedException ex) {
-				}
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 280, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 170, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 280, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 170, 20, 20), 0, 0));
+				System.out.println(previousAction);
 			}
+
 		}).start();
 		
 		System.out.println("Game started with parameters: ");
@@ -213,7 +234,7 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 					(int) convertor.scaleHeight(obj.getBoundingBox().getHeight()));
 		}
 
-		RayColliderInputExtractor inputExtractor = new RayColliderInputExtractor(16);
+		RayColliderInputExtractor inputExtractor = new RayColliderInputExtractor(4);
 
 		List<RayCollider.Collision> allCollisions = inputExtractor.calculateColliders(gc);
 		

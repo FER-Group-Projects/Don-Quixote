@@ -39,8 +39,8 @@ public class RayColliderInputExtractor implements GameInputExtractor {
 
         for (RayCollider.Collision collision : collisions) {
             if (collision != null) {
-                extractToThis[inputIndex] = getOrdinalNumberOfGameObject(collision.getObject());
-                extractToThis[inputIndex] = collision.getDistance();
+                extractToThis[inputIndex] = getOrdinalNumberOfGameObject(collision.getObject().getClass());
+                extractToThis[inputIndex + 1] = collision.getDistance();
             }
 
             inputIndex += 2;
@@ -75,11 +75,11 @@ public class RayColliderInputExtractor implements GameInputExtractor {
         return collisions;
     }
 
-    private double getOrdinalNumberOfGameObject(Game2DObject object) {
-        if (object instanceof Barrel) return 1;
-        if (object instanceof Ladder) return 2;
-        if (object instanceof Platform) return 3;
-        if (object instanceof Player) return 4;
+    public static double getOrdinalNumberOfGameObject(Class<? extends Game2DObject> clazz) {
+        if (clazz == Barrel.class) return 1;
+        if (clazz == Ladder.class) return 2;
+        if (clazz == Platform.class) return 3;
+        if (clazz == Player.class) return 4;
 
         throw new IllegalArgumentException("Could not recognise game object.");
     }
