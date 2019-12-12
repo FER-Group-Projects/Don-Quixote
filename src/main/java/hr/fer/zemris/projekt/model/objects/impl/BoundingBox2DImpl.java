@@ -55,6 +55,12 @@ public class BoundingBox2DImpl implements BoundingBox2D {
 	}
 	
 	@Override
+	public boolean containsPoint(double x, double y) {
+		return x >= this.x && x <= this.x + this.width &&
+				y <= this.y && y >= this.y - this.height;
+	}
+	
+	@Override
 	public boolean collidesWith(BoundingBox2D r) {
 		double tw = this.width;
 		double th = this.height;
