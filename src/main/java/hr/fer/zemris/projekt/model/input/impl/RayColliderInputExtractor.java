@@ -78,7 +78,7 @@ public class RayColliderInputExtractor implements GameInputExtractor {
             
             RayCollider.Collision collision = closestCollisions.get(0);
             for(var c : closestCollisions) {
-            	// => platform has priority over barrel and barrel has priority over ladders
+            	// => barrel has priority over ladder and ladder has priority over platform
             	if(getOrdinalNumberOfGameObject(collision.getObject().getClass()) > getOrdinalNumberOfGameObject(c.getObject().getClass()))
             		collision = c;
             }

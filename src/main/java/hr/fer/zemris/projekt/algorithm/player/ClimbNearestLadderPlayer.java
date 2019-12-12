@@ -7,8 +7,6 @@ import hr.fer.zemris.projekt.model.objects.impl.Platform;
 
 public class ClimbNearestLadderPlayer implements ArtificialPlayer {
 
-    private final static double LADDER_WIDTH = 35;
-
     @Override
     public PlayerAction calculateAction(double[] input) {
         if (input.length != 8) {
