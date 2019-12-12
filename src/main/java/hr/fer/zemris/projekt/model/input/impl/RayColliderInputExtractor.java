@@ -1,6 +1,7 @@
-package hr.fer.zemris.projekt.model.input;
+package hr.fer.zemris.projekt.model.input.impl;
 
 import hr.fer.zemris.projekt.model.controller.GameController;
+import hr.fer.zemris.projekt.model.input.GameInputExtractor;
 import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.Barrel;
@@ -34,7 +35,7 @@ public class RayColliderInputExtractor implements GameInputExtractor {
             throw new IllegalArgumentException("Invalid size of argument array.");
         }
 
-        List<RayCollider.Collision> collisions = calculateColliders(controller);
+        List<RayCollider.Collision> collisions = calculateCollisions(controller);
         int inputIndex = 0;
 
         for (RayCollider.Collision collision : collisions) {
@@ -47,7 +48,7 @@ public class RayColliderInputExtractor implements GameInputExtractor {
         }
     }
 
-    public List<RayCollider.Collision> calculateColliders(GameController controller) {
+    public List<RayCollider.Collision> calculateCollisions(GameController controller) {
         Player player = (Player) controller
                 .getGameObjects()
                 .stream()
@@ -69,7 +70,20 @@ public class RayColliderInputExtractor implements GameInputExtractor {
         for (int rayIndex = 0; rayIndex < numberOfRays; rayIndex++) {
             Vector2D rayVector = new Vector2D(Math.cos(rayIndex * angleBetweenRays), Math.sin(rayIndex * angleBetweenRays));
 
-            collisions.add(RayCollider.raycast(controller, playersCenter, rayVector, MAX_DISTANCE, true));
+            List<RayCollider.Collision> closestCollisions = RayCollider.raycast(controller, playersCenter, rayVector, MAX_DISTANCE);
+            if(closestCollisions.size()==0) {
+            	collisions.add(null);
+            	continue;
+            }
+            
+            RayCollider.Collision collision = closestCollisions.get(0);
+            for(var c : closestCollisions) {
+            	// => platform has priority over barrel and barrel has priority over ladders
+            	if(getOrdinalNumberOfGameObject(collision.getObject().getClass()) > getOrdinalNumberOfGameObject(c.getObject().getClass()))
+            		collision = c;
+            }
+            
+            collisions.add(collision);
         }
 
         return collisions;
