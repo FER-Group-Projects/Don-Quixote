@@ -7,7 +7,7 @@ import hr.fer.zemris.projekt.algorithm.crossover.Crossover;
 import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
 // Child = FirstParent or SecondParent (50/50 chance) with mutation (random part of length L is replaced with random part from other parent of length L)
-public class LGPCrossover implements Crossover<Solution<EasyLGPInstruction>> {
+public class LGPBlockCrossover implements Crossover<Solution<EasyLGPInstruction>> {
 	
 	private Random random = new Random();
 

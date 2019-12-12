@@ -3,6 +3,7 @@ package hr.fer.zemris.projekt.LGP;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction;
@@ -20,30 +21,30 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 	private long maxGenerations;
 	private double mutationRate;
 	
-	private FitnessFunction<Solution<EasyLGPInstruction>> fitnessFunction;
+	private PopulationInitializer<Solution<EasyLGPInstruction>> populationInitializer;
 	private Crossover<Solution<EasyLGPInstruction>> crossoverOperator;
 	private Mutation<Solution<EasyLGPInstruction>> mutationOperator;
-	private PopulationInitializer<Solution<EasyLGPInstruction>> populationInitializer;
-	
-	private double totalPopulationShiftedFitness;
-	private double minimalPopulationFitness;
+	private FitnessFunction<Solution<EasyLGPInstruction>> fitnessFunction;
 	
 	private Comparator<Solution<?>> cmpRev = (s1, s2) -> Double.compare(s2.getFitness(), s1.getFitness());
 	private Random random = new Random();
+	
+	double totalPopulationShiftedFitness = 0;
+	double minimalPopulationFitness = 0;
 
 	public LGP(int populationSize, double fitnessThreshold, long maxGenerations, double mutationRate,
-			FitnessFunction<Solution<EasyLGPInstruction>> fitnessFunction,
+			PopulationInitializer<Solution<EasyLGPInstruction>> populationInitializer,
 			Crossover<Solution<EasyLGPInstruction>> crossoverOperator,
 			Mutation<Solution<EasyLGPInstruction>> mutationOperator,
-			PopulationInitializer<Solution<EasyLGPInstruction>> populationInitializer) {
+			FitnessFunction<Solution<EasyLGPInstruction>> fitnessFunction) {
 		this.populationSize = populationSize;
 		this.fitnessThreshold = fitnessThreshold;
 		this.maxGenerations = maxGenerations;
 		this.mutationRate = mutationRate;
-		this.fitnessFunction = fitnessFunction;
-		this.crossoverOperator = crossoverOperator;
-		this.mutationOperator = mutationOperator;
-		this.populationInitializer = populationInitializer;
+		this.populationInitializer = Objects.requireNonNull(populationInitializer);
+		this.crossoverOperator = Objects.requireNonNull(crossoverOperator);
+		this.mutationOperator = Objects.requireNonNull(mutationOperator);
+		this.fitnessFunction = Objects.requireNonNull(fitnessFunction);
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 		while(iter<maxGenerations && population.get(0).getFitness()<fitnessThreshold) {
 			List<Solution<EasyLGPInstruction>> newPopulation = new ArrayList<>();
 			
-			// Selection, crossover and mutation
+			// Selection (fitness proportionate selection, aka roulette wheel selection), crossover and mutation
 			while(newPopulation.size() != populationSize) {
 				var parent1 = selection(population);
 				var parent2 = selection(population);

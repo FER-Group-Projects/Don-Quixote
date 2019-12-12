@@ -75,6 +75,7 @@ public class LGPSolution implements Solution<EasyLGPInstruction> {
 	public Solution<EasyLGPInstruction> copy() {
 		LGPSolution solution = new LGPSolution();
 		solution.fitness = this.fitness;
+		solution.evaluated = this.evaluated;
 		solution.instructions.addAll(this.instructions);
 		return solution;
 	}

@@ -6,29 +6,25 @@ import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction;
 import hr.fer.zemris.projekt.algorithm.mutation.Mutation;
 import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
-// Mutate block of instructions
-public class LGPMutation2 implements Mutation<Solution<EasyLGPInstruction>>{
+// Mutate one individual instruction
+public class LGPInstructionMutation implements Mutation<Solution<EasyLGPInstruction>>{
 
 	private Random random = new Random();
-
+	
 	private long numOfRegisters;
 	private long maxAbsMovConstant;
 
-	public LGPMutation2(long numOfRegisters, long maxAbsMovConstant) {
+	public LGPInstructionMutation(long numOfRegisters, long maxAbsMovConstant) {
 		this.numOfRegisters = numOfRegisters;
 		this.maxAbsMovConstant = maxAbsMovConstant;
 	}
-	
+
 	@Override
 	public Solution<EasyLGPInstruction> mutate(Solution<EasyLGPInstruction> solutionToMutate) {
 		var mutatedSolution = solutionToMutate.copy();
 		
-		int blockStart = random.nextInt(mutatedSolution.getNumberOfGenes());
-		int blockEnd = blockStart + random.nextInt(mutatedSolution.getNumberOfGenes() - blockStart);
-		
-		for(int i=blockStart; i<=blockEnd; i++) {
-			mutatedSolution.setGeneAt(i, RandomInstructionUtility.generateRandomLGPInstruction(numOfRegisters, solutionToMutate.getNumberOfGenes(), maxAbsMovConstant));
-		}
+		int instructionIndex = random.nextInt(mutatedSolution.getNumberOfGenes());
+		mutatedSolution.setGeneAt(instructionIndex, RandomInstructionUtility.generateRandomLGPInstruction(numOfRegisters, solutionToMutate.getNumberOfGenes(), maxAbsMovConstant));
 		
 		return mutatedSolution;
 	}

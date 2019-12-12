@@ -7,13 +7,13 @@ import hr.fer.zemris.projekt.algorithm.crossover.Crossover;
 import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
 // Child = random part of the firstParent + random part of the secondParent
-public class LGPCrossover2 implements Crossover<Solution<EasyLGPInstruction>> {
+public class LGPHeadTailCrossover implements Crossover<Solution<EasyLGPInstruction>> {
 	
 	private Random random = new Random();
 	
 	private int maxChildLength;
 
-	public LGPCrossover2(int maxChildLength) {
+	public LGPHeadTailCrossover(int maxChildLength) {
 		this.maxChildLength = maxChildLength;
 	}
 
