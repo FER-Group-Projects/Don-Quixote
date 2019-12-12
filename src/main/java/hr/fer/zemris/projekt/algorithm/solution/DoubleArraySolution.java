@@ -5,7 +5,12 @@ import java.util.Objects;
 
 public class DoubleArraySolution implements Solution<Double> {
 
-    private double[] genes;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -203187040358608640L;
+	
+	private double[] genes;
     private double fitness;
     private boolean isEvaluated;
 
