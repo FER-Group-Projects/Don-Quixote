@@ -131,7 +131,7 @@ public class RayCollider {
 		}
 		
 		for(Collision c : collisions) {
-			if(c.getDistance() == closestDistance)
+			if(Math.abs(c.getDistance()-closestDistance) < 1E-7)
 				closest.add(c);
 		}
 

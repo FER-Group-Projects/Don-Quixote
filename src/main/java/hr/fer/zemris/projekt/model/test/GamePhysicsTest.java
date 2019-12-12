@@ -152,22 +152,22 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 			}
 
 			while (true) {
-				try {
-					Thread.sleep((long) (3_000.0));
-				} catch (InterruptedException ex) {
-				}
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 380, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 270, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 380, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 270, 20, 20), 0, 0));
-				try {
-					Thread.sleep((long) (0_500.0));
-				} catch (InterruptedException ex) {
-				}
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 280, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 170, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 280, 20, 20), 0, 0));
-				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 170, 20, 20), 0, 0));
+//				try {
+//					Thread.sleep((long) (3_000.0));
+//				} catch (InterruptedException ex) {
+//				}
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 380, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 270, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 380, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 270, 20, 20), 0, 0));
+//				try {
+//					Thread.sleep((long) (0_500.0));
+//				} catch (InterruptedException ex) {
+//				}
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 280, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(450, 170, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 280, 20, 20), 0, 0));
+//				gc.addGameObject(new Barrel(new BoundingBox2DImpl(350, 170, 20, 20), 0, 0));
 
 			}
 

@@ -60,7 +60,7 @@ public class RayColliderInputExtractor implements GameInputExtractor {
 
         Vector2D playersCenter = new Vector2D(
                 boundingBox.getX() + boundingBox.getWidth() / 2,
-                boundingBox.getY() - boundingBox.getHeight() / 2
+                boundingBox.getY() - 9 * boundingBox.getHeight() / 10
         );
 
         double angleBetweenRays = 2 * Math.PI / numberOfRays;

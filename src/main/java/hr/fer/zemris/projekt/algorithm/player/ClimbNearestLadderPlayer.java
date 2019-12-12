@@ -24,7 +24,7 @@ public class ClimbNearestLadderPlayer implements ArtificialPlayer {
 
         // If its center has gone out of the ladder and inside a platform, go up since it cannot go left or right yet
         if (input[2] != ladderType && input[6] == ladderType ||
-            input[6] == platformType && input[7] < 25) {
+        		input[6] == platformType && input[7] < 1 * 50 / 10) {
             return PlayerAction.UP;
         }
 
