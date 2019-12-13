@@ -43,6 +43,10 @@ public class RayColliderInputExtractor implements GameInputExtractor {
                 extractToThis[inputIndex] = getOrdinalNumberOfGameObject(collision.getObject().getClass());
                 extractToThis[inputIndex + 1] = collision.getDistance();
             }
+            else {
+                extractToThis[inputIndex] = 0;
+                extractToThis[inputIndex + 1] = 0;
+            }
 
             inputIndex += 2;
         }
