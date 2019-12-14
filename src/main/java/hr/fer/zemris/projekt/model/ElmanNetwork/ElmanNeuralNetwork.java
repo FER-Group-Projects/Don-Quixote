@@ -24,7 +24,9 @@ public class ElmanNeuralNetwork {
         for(int i=1; i<layout.length; i++){
 
             for(int j=0; j<layout[i]; j++){
-                int bias=1;
+                double bias=weights[weightIndex];
+                weightIndex++;
+                
                 double sum=0;
 
                 for(int k=0; k<layer_input.length; k++){
@@ -66,7 +68,7 @@ public class ElmanNeuralNetwork {
 
         int num = 0;
         for (int i = 1; i < layout.length; i++){
-            num += ((layout[i - 1]) * layout[i]);
+            num += ((layout[i - 1]+1) * layout[i]);
         }
 
         if(num!=weights.length){
