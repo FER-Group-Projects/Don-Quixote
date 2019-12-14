@@ -4,27 +4,30 @@ import java.util.ArrayList;
 
 public class Layer {
 
-    private ArrayList<Neuron> listOfNeurons;
-    private int numOfNeurons;
+    Neuron[] listOfNeurons;
 
-    public Layer(int numOfNeurons){
-        this.numOfNeurons = numOfNeurons;
-        listOfNeurons = new ArrayList<>();
-        initLayer();
-    }
-
-    public void initLayer(){
+    // Constructor for hidden and output layer
+    public Layer(int numOfNeurons, int inNeurons){
+        this.listOfNeurons = new Neuron[numOfNeurons];
         for(int i=0; i<numOfNeurons; i++){
-            listOfNeurons.add(new Neuron(i));
+            double[] inputWeights = new double[inNeurons];
+            for(int j=0; j<inNeurons; j++){
+                inputWeights[j] = getRandomDouble(Neuron.minWeight, Neuron.maxWeight);
+            }
+            listOfNeurons[i] = new Neuron(inputWeights, getRandomDouble(0, 1));
         }
     }
 
-    public ArrayList<Neuron> getListOfNeurons() {
-        return listOfNeurons;
+    // Constructor for input layer
+    public Layer(double[] input){
+        this.listOfNeurons = new Neuron[input.length];
+        for(int i=0; i<input.length; i++){
+            this.listOfNeurons[i] = new Neuron(input[i]);
+        }
     }
 
-    public int getNumOfNeurons() {
-        return numOfNeurons;
+    public double getRandomDouble(double min, double max){
+        return (Math.random()*((max-min)+1))+min;
     }
 
 }

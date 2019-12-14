@@ -4,75 +4,37 @@ import java.util.ArrayList;
 
 public class NeuralNetwork {
 
-    private InputLayer inputLayer;
-    private OutputLayer outputLayer;
-    private ArrayList<HiddenLayer> hiddenLayers;
-    private int numOfHiddenLayers;
-    private int numOfInputNeurons;
-    private int numOfOutputNeurons;
-    private int[] numOfNeuronsInEachHiddenLayer;
+    private Layer[] layers;
 
-    public NeuralNetwork(int numOfHiddenLayers){
-        this.numOfHiddenLayers = numOfHiddenLayers;
-    }
-
-    public void initNeuralNetwork(int numOfInputNeurons, int numOfOutputNeurons, int... numOfNeuronsInEachHiddenLayer){
-        this.numOfInputNeurons = numOfInputNeurons;
-        this.numOfOutputNeurons = numOfOutputNeurons;
-        this.numOfNeuronsInEachHiddenLayer = numOfNeuronsInEachHiddenLayer;
-
-        inputLayer = new InputLayer(numOfInputNeurons);
-        outputLayer = new OutputLayer(numOfOutputNeurons);
-        hiddenLayers = new ArrayList<>();
-        for(int i=0; i<numOfHiddenLayers; i++){
-            hiddenLayers.add(new HiddenLayer(numOfNeuronsInEachHiddenLayer[i], i));
+    public NeuralNetwork(int[] layout){
+        layers = new Layer[layout.length];
+        layers[0] = null;
+        for(int i=1; i<layout.length; i++){
+            layers[i] = new Layer(layout[i], layout[i-1]);
         }
-
-        generateWeightsRandomly();
     }
 
-    public void setInput(ArrayList<Double> inputs){
-        inputLayer.setInputs(inputs);
-    }
-
-    public void generateWeightsRandomly(){
-        //on hidden layer
-        for(int i=0; i<numOfHiddenLayers; i++){
-                for(int j=0; j<numOfNeuronsInEachHiddenLayer[i]; j++) {
-                    ArrayList<Double> inputWeights = new ArrayList<>();
-                    if (i==0) {
-                        for (int k=0; k<numOfInputNeurons; k++)
-                            inputWeights.add(Math.random());
-                    } else {
-                        for (int k=0; k<numOfNeuronsInEachHiddenLayer[i-1]; k++)
-                            inputWeights.add(Math.random());
-                    }
-                    hiddenLayers.get(i).getListOfNeurons().get(j).setInputWeights(inputWeights);
+    public double[] calculateOutput(double[] inputs){
+        layers[0] = new Layer(inputs);
+        double[] output = new double[layers[layers.length-1].listOfNeurons.length];
+        for(int i=1; i<layers.length; i++){
+            for(int j=0; j<layers[i].listOfNeurons.length; j++){
+                float sum = 0;
+                for(int k=0; k<layers[i-1].listOfNeurons.length; k++){
+                    sum += layers[i-1].listOfNeurons[k].output * layers[i].listOfNeurons[j].inputWeights[k];
                 }
-        }
-
-        //on output layer
-        for(int j=0; j<numOfOutputNeurons; j++){
-            ArrayList<Double> inputWeights = new ArrayList<>();
-            for(int k=0; k<numOfNeuronsInEachHiddenLayer[numOfHiddenLayers-1]; k++){
-                inputWeights.add(Math.random());
+                sum += layers[i].listOfNeurons[j].bias;
+                layers[i].listOfNeurons[j].output = sigmoidFunction(sum);
+                if(i == layers.length-1){
+                    output[j] = layers[i].listOfNeurons[j].output;
+                }
             }
-            outputLayer.getListOfNeurons().get(j).setInputWeights(inputWeights);
         }
+        return output;
     }
 
-    public void printNetwork(){
-        System.out.println(this.toString());
+    public double sigmoidFunction(double x){
+        return (double) (1/(1+Math.pow(Math.E, -x)));
     }
 
-    @Override
-    public String toString() {
-        String returnValue = "";
-        returnValue += inputLayer.toString();
-        for(int i=0; i<numOfHiddenLayers; i++){
-            returnValue += hiddenLayers.get(i).toString();
-        }
-        returnValue += outputLayer.toString();
-        return returnValue;
-    }
 }

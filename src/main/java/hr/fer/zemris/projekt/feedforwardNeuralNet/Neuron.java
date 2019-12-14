@@ -4,46 +4,41 @@ import java.util.ArrayList;
 
 public class Neuron {
 
-    private ArrayList<Double> inputWeights;
-    private double weightedSum;
-    private double output;
-    private int idNeuron;
+    static double minWeight = -1;
+    static double maxWeight = 1;
 
-    public Neuron(int idNeuron){
-        this.idNeuron = idNeuron;
-    }
+    double[] inputWeights;
+    double[] cacheWeights;
+    double gradient;
+    double bias;
+    double output = 0;
 
-    public void activationFunction(){
-    }
-
-    public ArrayList<Double> getInputWeights() {
-        return inputWeights;
-    }
-
-    public void setInputWeights(ArrayList<Double> inputWeights) {
+    // Constructor for hidden and output layers
+    public Neuron(double[] inputWeights, double bias){
         this.inputWeights = inputWeights;
+        this.bias = bias;
+        this.cacheWeights = inputWeights;
+        this.gradient = 0;
     }
 
-    public double getWeightedSum() {
-        return weightedSum;
+    // Constructor for input layer
+    public Neuron(double value){
+        this.output = value;
+        this.inputWeights = null;
+        this.bias = -1;
+        this.cacheWeights = this.inputWeights;
+        this.gradient = -1;
     }
 
-    public void setWeightedSum(double weightedSum) {
-        this.weightedSum = weightedSum;
+    // Set min and max weight for all neurons
+    public static void setWeightRange(double min, double max){
+        minWeight = min;
+        maxWeight = max;
     }
 
-    public double getOutput() {
-        return output;
+    //Function used at the end of backpropagation to update weights
+    public void updateWeights(){
+        this.inputWeights = this.cacheWeights;
     }
-
-    public void setOutput(double output) {
-        this.output = output;
-    }
-
-    public int getIdNeuron() {
-        return idNeuron;
-    }
-
-
 
 }
