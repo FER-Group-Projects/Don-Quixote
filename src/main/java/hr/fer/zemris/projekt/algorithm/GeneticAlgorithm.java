@@ -3,8 +3,11 @@ package hr.fer.zemris.projekt.algorithm;
 import java.util.List;
 
 import hr.fer.zemris.projekt.algorithm.fitness.FitnessFunction;
+import hr.fer.zemris.projekt.algorithm.genetic.crossover.GeneticCrossover;
 import hr.fer.zemris.projekt.algorithm.genetic.crossover.SinglePointCrossover;
 import hr.fer.zemris.projekt.algorithm.genetic.mutation.GaussMutation;
+import hr.fer.zemris.projekt.algorithm.genetic.mutation.GeneticMutation;
+import hr.fer.zemris.projekt.algorithm.genetic.selection.GeneticSelection;
 import hr.fer.zemris.projekt.algorithm.genetic.selection.TournamentSelection;
 import hr.fer.zemris.projekt.algorithm.initializer.PopulationInitializer;
 import hr.fer.zemris.projekt.algorithm.solution.Solution;
@@ -15,9 +18,9 @@ public class GeneticAlgorithm implements OptimizationAlgorithm<Solution<Double>>
 	private final int populationSize;
 	private final int maxIterations;
 	private final double fitnessThreshold;
-	private final SinglePointCrossover crossover;
-	private final GaussMutation mutation;
-	private final TournamentSelection<Solution<Double>> selection;
+	private final GeneticCrossover<Solution<Double>> crossover;
+	private final GeneticMutation<Solution<Double>> mutation;
+	private final GeneticSelection<Solution<Double>> selection;
 	private final FitnessFunction<Solution<Double>> fitness;
 	PopulationInitializer<Solution<Double>> initializer;
 
@@ -65,13 +68,13 @@ public class GeneticAlgorithm implements OptimizationAlgorithm<Solution<Double>>
 			
 			List<Solution<Double>> newPopulation = initializer.generatePopulation(populationSize);
 			
-			for (int iteration = 0; i < populationSize; i++) {
+			for (int iteration = 0; iteration < populationSize; iteration++) {
 				Solution<Double> firstParent = selection.selectFromPopulation(population);
 				Solution<Double> secondParent = selection.selectFromPopulation(population);
 				
 				Solution<Double> child = crossover.crossover(firstParent, secondParent);
 				Solution<Double> mutatedChild = mutation.mutate(child);
-				
+
 				newPopulation.add(mutatedChild);
 			}
 			

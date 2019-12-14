@@ -19,7 +19,7 @@ public class TournamentSelection<S extends Solution<?>> implements GeneticSelect
 		S ind;
 		S best = null;
 		
-		for(int i = 0;i < k; i++) {
+		for(int i = 0;i <= k; i++) {
 			
 			ind = list.get(random.nextInt(population.size()));
 			
@@ -32,7 +32,7 @@ public class TournamentSelection<S extends Solution<?>> implements GeneticSelect
 			}
 			
 		}
-		
+
 		return best;
 	}
 
