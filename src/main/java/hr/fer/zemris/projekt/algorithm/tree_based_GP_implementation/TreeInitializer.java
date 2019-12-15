@@ -6,9 +6,9 @@ import hr.fer.zemris.projekt.algorithm.initializer.PopulationInitializer;
 
 public class TreeInitializer implements PopulationInitializer<Tree>{
 	private Random r = new Random();
-	private int depth =2;//dubina generiranja(nije egzaktno)
+	private int depth =1;//dubina generiranja(nije egzaktno)
 							//za veci broj generalno daje veca stabla
-	private double terminalChance = 0.4;
+	private double terminalChance = 0.5;
 	@Override
 	public Tree generateSolution() {
 		
@@ -24,7 +24,7 @@ public class TreeInitializer implements PopulationInitializer<Tree>{
 			
 		if (depth < 0) return null;
 		
-		Node current = r.nextDouble() > terminalChance	 ? new Node(Tree.selectNonTerminal())	: new Node(Tree.selectTerminal());
+		Node current = r.nextDouble() > terminalChance	? new Node(Tree.selectNonTerminal())	: new Node(Tree.selectTerminal());
 		
 		if ((depth > 0) && !current.isTerminal()) {
 			current.setLeft(generateTree(depth-1));

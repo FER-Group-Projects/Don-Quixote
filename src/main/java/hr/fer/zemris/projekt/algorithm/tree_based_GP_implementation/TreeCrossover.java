@@ -12,8 +12,9 @@ public class TreeCrossover implements Crossover<Tree>{
 
 		RandomNodes rnodes = new RandomNodes(secondParent.head);
 		rnodes.getRandomBranch(secondParent.head);
-		rnodes.setRandomBranch(firstParent.head, rnodes.gennode);
-		return new Tree(firstParent.head);
+		Node copy = firstParent.head.copy();
+		rnodes.setRandomBranch(copy, rnodes.gennode);
+		return new Tree(copy);
 	
 		
 	}

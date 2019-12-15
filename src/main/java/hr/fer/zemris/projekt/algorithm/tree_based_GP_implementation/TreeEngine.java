@@ -28,7 +28,7 @@ public class TreeEngine {
 		}
 	}	
 	
-	public static PlayerAction doubleToPlayerAction(double value) {
+	public static PlayerAction calculatePlayerAction(double value) {
 		//kod koji mapira izlaz compute funkcije u akciju
 		return PlayerAction.DOWN;
 		

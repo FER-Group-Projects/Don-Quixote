@@ -5,17 +5,18 @@ import java.util.Random;
 import hr.fer.zemris.projekt.algorithm.solution.DoubleArraySolution;
 import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
-public class Tree implements Solution<Node>{
+public class Tree implements Solution<Node>,Comparable<Tree>{
 	//nonterminal cvorovi su operacije
 	//terminal cvorovi su indexi u listi inputa
 	
 	private int size; 
 	public static String[] nonTerminal = {"+","-","*"};
 	public static int nonTerminalLength = nonTerminal.length;
-	public static int terminalLength = 4; //duljina inputa 
+	public static int terminalLength = 8; //duljina inputa 
 	public Node head;
 	private double fitness;
 	private boolean isEvaluated;
+	private static final Random rand = new Random();
 	
 	public Tree() { 
 	}
@@ -42,12 +43,28 @@ public class Tree implements Solution<Node>{
 	
 	//odabire random nonTerminal znak 
 	public static String selectNonTerminal() {
-		int index = new Random().nextInt(nonTerminalLength);
+		int index = rand.nextInt(nonTerminalLength);
 		return (nonTerminal[index]);
 	}
 	
 	public static String selectTerminal() {
-		return (String.valueOf(new Random().nextInt(terminalLength)));
+		return (String.valueOf(rand.nextInt(terminalLength)));
+	}
+			
+	//ispisuje stablo 
+	@Override 
+	public String toString() {
+		Node p = this.head;
+		return(p.toString());				
+	}
+	
+	@Override
+	public int compareTo(Tree o) {
+		if (this.getFitness() < o.getFitness()) return -1;
+		else if (this.getFitness() > o.getFitness()) return 1;
+		else {
+			return 0;
+		}	
 	}
 	
 	public int getSize() {
@@ -61,13 +78,6 @@ public class Tree implements Solution<Node>{
 	}
 	public void setIsEvaluated(boolean bool) {
 		this.isEvaluated = bool;
-	}
-			
-	//ispisuje stablo 
-	@Override 
-	public String toString() {
-		Node p = this.head;
-		return(p.toString());				
 	}
 
 	@Override
@@ -105,6 +115,9 @@ public class Tree implements Solution<Node>{
 	public Solution<Node> copy() {
 		return null;
 	}
+	
+
+	
 	
 	
 }

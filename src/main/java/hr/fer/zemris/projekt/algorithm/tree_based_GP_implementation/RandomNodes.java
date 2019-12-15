@@ -20,9 +20,9 @@ public class RandomNodes {
 	}
 	
 	public void getRandomBranch(Node head) {
-		if (!head.isTerminal()) {
-			count1++;
-		
+		if (!head.isTerminal()) {		
+			count1++;		
+			
 			if (count1 == randomNum1) gennode = head;
 			getRandomBranch(head.getLeft());
 			getRandomBranch(head.getRight());
