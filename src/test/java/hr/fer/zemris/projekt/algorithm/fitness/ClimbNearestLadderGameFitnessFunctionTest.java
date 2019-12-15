@@ -19,7 +19,7 @@ public class ClimbNearestLadderGameFitnessFunctionTest extends GameFitnessFuncti
     }
 
     @Override
-    protected ArtificialPlayer initializeArtificialPlayer(Solution<Double> solution) {
+    public ArtificialPlayer initializeArtificialPlayer(Solution<Double> solution) {
         return new ClimbNearestLadderPlayer();
     }
 

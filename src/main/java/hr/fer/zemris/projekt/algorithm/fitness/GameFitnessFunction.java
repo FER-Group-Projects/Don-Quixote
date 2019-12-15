@@ -97,12 +97,12 @@ public abstract class GameFitnessFunction<G extends Solution<?>> implements Fitn
             double yAfter = player.getBoundingBox().getY();
 
             fitness += 1000 * (yAfter - yBefore);
-            System.out.println("After: " + yAfter + ", before: " + yBefore);
+//            System.out.println("Fitness: " + fitness + ", before: " + yBefore + ", after: " + yAfter);
         }
 
         return fitness;
     }
 
-    protected abstract ArtificialPlayer initializeArtificialPlayer(G solution);
+    public abstract ArtificialPlayer initializeArtificialPlayer(G solution);
 
 }
