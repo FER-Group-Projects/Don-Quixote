@@ -8,9 +8,10 @@ public class TreeMutation implements Mutation<Tree>{
 	@Override
 	public Tree mutate(Tree solutionToMutate) {
 		RandomNodes r = new RandomNodes(solutionToMutate.head);
+		Node copy = solutionToMutate.head.copy();
 		
-		r.setRandomBranch(solutionToMutate.head,new TreeInitializer().generateSolution().head);
-		return new Tree(solutionToMutate.head);
+		r.setRandomBranch(copy,new TreeInitializer().generateSolution().head);
+		return new Tree(copy);
 	}
 
 }
