@@ -13,5 +13,6 @@ public interface Solution<G> extends Serializable {
     void setGeneAt(int index, G newValue);
 
     Solution<G> copy();
+	
 
 }
