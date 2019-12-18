@@ -29,12 +29,12 @@ public abstract class GameFitnessFunction<G extends Solution<?>> implements Fitn
 
     @Override
     public double calculateFitness(G solution) {
-        ArtificialPlayer artificialPlayer = initializeArtificialPlayer(solution);
         double[] input = new double[gameInputExtractor.getNumberOfInputs()];
         double fitness = 0;
 
         for (SceneGenerator sceneGenerator : sceneGenerators) {
             GameController gameController = sceneGenerator.generateScene();
+            ArtificialPlayer artificialPlayer = initializeArtificialPlayer(solution);
             PlayerAction previousAction = null;
 
             Player player = (Player) gameController

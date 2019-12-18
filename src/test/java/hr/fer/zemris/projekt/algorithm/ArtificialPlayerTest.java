@@ -78,22 +78,7 @@ public class ArtificialPlayerTest extends JPanel implements GameControllerListen
 	}
 
 	private void init() {
-		params = new GameParameters(60, 1000, 0.5, 100, 100, 300, 75, 75);
-
-		p = new Player(new BoundingBox2DImpl(250, 110, playerWidth, playerHeight), 0, 0, "Player1");
-
-		objects = new ArrayList<>();
-		objects.add(new Platform(new BoundingBox2DImpl(100, 50, 420, 20)));
-
-		gc = new GameControllerImpl(p, objects, params);
-		gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 175, 420, 20)));
-		gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 300, 420, 20)));
-		gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 425, 420, 20)));
-		gc.addGameObject(new Ladder(new BoundingBox2DImpl(150, 155, 35, 105)));
-		gc.addGameObject(new Ladder(new BoundingBox2DImpl(400, 155, 35, 105)));
-		gc.addGameObject(new Ladder(new BoundingBox2DImpl(220, 280, 35, 105)));
-		gc.addGameObject(new Ladder(new BoundingBox2DImpl(245, 405, 35, 105)));
-
+		gc = new ClimbingScene(60, 1000, 0.5, 100, 100, 300, 75, 75, playerWidth, playerHeight, 420, 20, 35).generateScene();
 		objects = null;
 		gc.addListener(this);
 		convertor = new ModelToScreenCoordinateConvertor(0, WIDTH, 0,
@@ -117,7 +102,7 @@ public class ArtificialPlayerTest extends JPanel implements GameControllerListen
 				tick %= 10;
 
 				try {
-					Thread.sleep(16);
+					Thread.sleep(4);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
