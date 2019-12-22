@@ -51,10 +51,12 @@ public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
 			List<Tree> newPopulation = new ArrayList<>();
 			
 			//prenosi u novu populaciju odredjen broj rjesenja sa najvecim fitnessom
+			//koliko si prenjeo, toliko ih makni iz populacije za crossover(najlosiji)
 			for (int i = 0; i < reproductionChance*populationSize; i++) {
-				newPopulation.add(population.get(population.size()-1-i));	
+				newPopulation.add(population.get(population.size()-1-i));
+				population.remove(0);
 			} 
-			population.removeAll(newPopulation);
+			
 			//dodaje u novu populaciju crossover od rjesenja s navecim fitnessom
 			int selectionSize = population.size();
 			for (int i = 0; i < (selectionSize / 2); i++) {
@@ -100,7 +102,7 @@ public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
 		}
 		System.out.println("solution ");
 		System.out.println(selection.selectFromPopulation(population));
-		System.out.println(selection.selectFromPopulation(population).getFitness());
+		System.out.println("fitness: "+selection.selectFromPopulation(population).getFitness());
 		return selection.selectFromPopulation(population);
 	}
 		
