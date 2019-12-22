@@ -10,7 +10,7 @@ public class Tree implements Solution<Node>,Comparable<Tree>{
 	//terminal cvorovi su indexi u listi inputa
 	
 	private int size; 
-	public static String[] nonTerminal = {"+","-","*"};
+	public static String[] nonTerminal = {"+","-","*","sin+","sin-","cos+","cos-","tan+","tan-","%"};
 	public static int nonTerminalLength = nonTerminal.length;
 	public static int terminalLength = 8; //duljina inputa 
 	public Node head;

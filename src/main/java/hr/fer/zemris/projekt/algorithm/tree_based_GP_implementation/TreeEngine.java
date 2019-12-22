@@ -1,5 +1,9 @@
 package hr.fer.zemris.projekt.algorithm.tree_based_GP_implementation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import hr.fer.zemris.projekt.model.controller.PlayerAction;
 
 public class TreeEngine { 
@@ -15,13 +19,25 @@ public class TreeEngine {
 			
 			switch(t.head.getValue()) {
 			case "+":
-				return(compute(left,input) + compute(right,input));
-				
+				return(compute(left,input) + compute(right,input));	
 			case "-":
 				return (compute(left,input) - compute(right,input)); 
 			case "*":
 				return (compute(left,input) * compute(right,input));
-			
+			case "%":
+				return (compute(left,input) % compute(right,input));
+			case "sin+":
+				return (Math.sin(compute(left,input)) + Math.sin(compute(right,input)));
+			case "sin-":
+				return (Math.sin(compute(left,input)) - Math.sin(compute(right,input)));
+			case "cos+":
+				return (Math.cos(compute(left,input)) + Math.cos(compute(right,input)));
+			case "cos-":
+				return (Math.cos(compute(left,input)) - Math.cos(compute(right,input)));
+			case "tan+":
+				return (Math.tan(compute(left,input)) + Math.tan(compute(right,input)));
+			case "tan-":
+				return (Math.tan(compute(left,input)) - Math.tan(compute(right,input)));
 			default:
 				return(0.0);
 			}	
@@ -30,7 +46,11 @@ public class TreeEngine {
 	
 	public static PlayerAction calculatePlayerAction(double value) {
 		//kod koji mapira izlaz compute funkcije u akciju
-		return PlayerAction.DOWN;
+		double broj = (Math.sin(value)+1)/2.0;
+		double broj2 = 0 +((6-0)/(1-0))*(broj-0);
+		int b = (int)Math.floor(broj2);
+		List<PlayerAction> lista = new ArrayList<PlayerAction>(Arrays.asList(PlayerAction.values()));
+		return lista.get(b);
 		
 	}
 

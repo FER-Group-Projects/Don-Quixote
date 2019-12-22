@@ -21,11 +21,11 @@ public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
 	private double reproductionChance; 
 	private double mutationChance; 		//sansa mutacije za pojedinacno stablo
 	private int populationSize;
-	private double terminationFitnessValue;
+	private int terminationFitnessValue;
 	private int maxGen = 50;
 	
 	
-	public TreeAlgorithm(int populationSize,double terminationFitnessValue, double reproductionChance, double mutationChance,FitnessFunction<Tree> f) {
+	public TreeAlgorithm(int populationSize,int terminationFitnessValue, double reproductionChance, double mutationChance,FitnessFunction<Tree> f) {
 		this.populationSize = populationSize;
 		this.terminationFitnessValue = terminationFitnessValue;
 		this.reproductionChance = reproductionChance;
@@ -41,7 +41,8 @@ public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
 		eval(population);
 		
 		while((selection.selectFromPopulation(population).getFitness() < terminationFitnessValue) && gen < maxGen) {
-			System.out.print("generation " + gen + "		");
+			System.out.print("generation " + gen + "	"+"maxFit " +selection.selectFromPopulation(population).getFitness() );
+			
 			Stream<Tree> stream = population.stream();
 			List<Double> fit = stream.map((t) -> t.getFitness()).collect(Collectors.toList());
 			System.out.println(fit);
@@ -99,6 +100,7 @@ public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
 		}
 		System.out.println("solution ");
 		System.out.println(selection.selectFromPopulation(population));
+		System.out.println(selection.selectFromPopulation(population).getFitness());
 		return selection.selectFromPopulation(population);
 	}
 		
