@@ -16,9 +16,9 @@ public class LGPGameTest {
 
     public static void main(String[] args) {
     	final int numOfRegisters = 8;
-    	final long maxSteps = 5_000;
-    	final int maxLength = 100;
-    	final double maxAbsMovConst = Double.MAX_VALUE;
+    	final long maxSteps = 100;
+    	final int maxLength = 50;
+    	final double maxAbsMovConstant = Double.MAX_VALUE;
     	
         GameFitnessFunction<Solution<EasyLGPInstruction>> fitnessFunction = new LGPFitnessFunction(
                 List.of(
@@ -27,8 +27,8 @@ public class LGPGameTest {
                 new RayColliderInputExtractor(4), numOfRegisters, maxSteps);
 
         OptimizationAlgorithm<Solution<EasyLGPInstruction>> algorithm =
-                new LGP(5000, 269_722 , Long.MAX_VALUE, 0.01, new LGPPopulationInitializer(maxLength, numOfRegisters, maxAbsMovConst), 
-                		new LGPBlockCrossover(), new LGPBlockMutation(numOfRegisters, maxAbsMovConst), fitnessFunction);
+                new LGP(10_000, 230_000 , Long.MAX_VALUE, 0.075, new LGPPopulationInitializer(maxLength, numOfRegisters, maxAbsMovConstant), 
+                		new LGPBlockCrossover(), new LGPBlockMutation(numOfRegisters, maxAbsMovConstant), fitnessFunction);
 
         Solution<EasyLGPInstruction> solution = algorithm.run();
 
