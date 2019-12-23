@@ -18,7 +18,7 @@ public class TreeGPEvolutionTest {
                 	),
                 	new RayColliderInputExtractor(4));
 	
-		OptimizationAlgorithm<Tree> algorithm = new TreeAlgorithm(3000, 228333, 0.1, 0.01, fitnessFunction);
+		OptimizationAlgorithm<Tree> algorithm = new TreeAlgorithm(3000, 228333, 0.2, 0.01, fitnessFunction);
 	
 		Tree solution = algorithm.run();
 	

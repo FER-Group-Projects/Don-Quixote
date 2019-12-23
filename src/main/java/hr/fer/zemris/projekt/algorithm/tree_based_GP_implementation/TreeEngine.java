@@ -46,11 +46,12 @@ public class TreeEngine {
 	
 	public static PlayerAction calculatePlayerAction(double value) {
 		//kod koji mapira izlaz compute funkcije u akciju
-		double broj = (Math.sin(value)+1)/2.0;
-		double broj2 = 0 +((6-0)/(1-0))*(broj-0);
-		int b = (int)Math.floor(broj2);
+		
+		double doubleVal = 6*(Math.sin(value)+1)/2.0;
+		
+		int index = (int)Math.floor(doubleVal);
 		List<PlayerAction> lista = new ArrayList<PlayerAction>(Arrays.asList(PlayerAction.values()));
-		return lista.get(b);
+		return lista.get(index);
 		
 	}
 
