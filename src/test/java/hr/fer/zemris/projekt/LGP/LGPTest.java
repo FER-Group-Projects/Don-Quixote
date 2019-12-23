@@ -5,7 +5,7 @@ public class LGPTest {
 	public static void main(String[] args) {
 		
 		int numOfRegisters = 20;
-		int maxProgramLength = 30;
+		int maxProgramLength = 0;
 		long maxAbsMovConstant = 0;
 		
 		LGP lgp = new LGP(1_000, 3, Long.MAX_VALUE, 0.25,

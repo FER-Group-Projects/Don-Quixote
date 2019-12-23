@@ -21,7 +21,7 @@ public class RandomInstructionUtility {
 	
 	public static EasyLGPInstruction generateRandomLGPInstruction(int numOfRegisters, int programLength, double maxAbsMovConstant) {
 		
-		int rnd = random.nextInt(9);
+		int rnd = random.nextInt(10);
 		
 		switch(rnd) {
 		
