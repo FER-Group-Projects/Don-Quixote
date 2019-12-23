@@ -11,11 +11,11 @@ public class DivInstruction implements EasyLGPInstruction {
 	 * 
 	 */
 	private static final long serialVersionUID = -191972937767029223L;
-	private long op1Register;
-	private long op2Register;
-	private long resRegister;
+	private int op1Register;
+	private int op2Register;
+	private int resRegister;
 	
-	public DivInstruction(long op1Register, long op2Register, long resRegister) {
+	public DivInstruction(int op1Register, int op2Register, int resRegister) {
 		this.op1Register = op1Register;
 		this.op2Register = op2Register;
 		this.resRegister = resRegister;
@@ -23,9 +23,9 @@ public class DivInstruction implements EasyLGPInstruction {
 
 	@Override
 	public InstructionResult execute(EasyLGPContext context) {
-		long op1 = context.getRegister(op1Register);
-		long op2 = context.getRegister(op2Register);
-		long res = 0;
+		double op1 = context.getRegister(op1Register);
+		double op2 = context.getRegister(op2Register);
+		double res = 0;
 		
 		res = op1 / op2;
 		

@@ -11,24 +11,21 @@ public class CmpInstruction implements EasyLGPInstruction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1319964871920723587L;
-	private long op1Register;
-	private long op2Register;
+	private int op1Register;
+	private int op2Register;
 	
-	public CmpInstruction(long op1Register, long op2Register) {
+	public CmpInstruction(int op1Register, int op2Register) {
 		this.op1Register = op1Register;
 		this.op2Register = op2Register;
 	}
 
 	@Override
 	public InstructionResult execute(EasyLGPContext context) {
-		long op1 = context.getRegister(op1Register);
-		long op2 = context.getRegister(op2Register);
-		long res = 0;
+		double op1 = context.getRegister(op1Register);
+		double op2 = context.getRegister(op2Register);
 		
-		res = op1 - op2;
-		
-		context.setNegative(res < 0);
-		context.setZero(res == 0);
+		context.setNegative(op1 < op2);
+		context.setZero(op1 == op2);
 		
 		return new InstructionResult(InstructionResultStatus.CONTINUE);
 	}

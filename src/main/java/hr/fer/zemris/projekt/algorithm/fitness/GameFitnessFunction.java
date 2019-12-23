@@ -77,7 +77,14 @@ public abstract class GameFitnessFunction<G extends Solution<?>> implements Fitn
                 if ((tick % numberOfTicksBetweenMoves) != 0) continue;
 
                 gameInputExtractor.extractInputs(gameController, input);
-                PlayerAction newAction = artificialPlayer.calculateAction(input);
+                
+                PlayerAction newAction = null;
+                try {
+                	newAction = artificialPlayer.calculateAction(input);
+                } catch (Exception ex) {
+                	fitness += playerDestroyedPunishment;
+                	break;
+                }
 
                 if (previousAction != newAction && previousAction != null) {
                     gameController.unsetPlayerAction(previousAction);

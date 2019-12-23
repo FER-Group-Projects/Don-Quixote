@@ -11,10 +11,10 @@ public class LGPInstructionMutation implements Mutation<Solution<EasyLGPInstruct
 
 	private Random random = new Random();
 	
-	private long numOfRegisters;
-	private long maxAbsMovConstant;
+	private int numOfRegisters;
+	private double maxAbsMovConstant;
 
-	public LGPInstructionMutation(long numOfRegisters, long maxAbsMovConstant) {
+	public LGPInstructionMutation(int numOfRegisters, double maxAbsMovConstant) {
 		this.numOfRegisters = numOfRegisters;
 		this.maxAbsMovConstant = maxAbsMovConstant;
 	}

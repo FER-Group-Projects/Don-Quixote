@@ -11,10 +11,10 @@ public class MovConstInstruction implements EasyLGPInstruction {
 	 * 
 	 */
 	private static final long serialVersionUID = -5472710173686017486L;
-	private long regTo;
-	private long constant;
+	private int regTo;
+	private double constant;
 	
-	public MovConstInstruction(long regTo, long constant) {
+	public MovConstInstruction(int regTo, double constant) {
 		this.regTo = regTo;
 		this.constant = constant;
 	}
