@@ -8,17 +8,14 @@ public class Neuron {
     static double maxWeight = 1;
 
     double[] inputWeights;
-    double[] cacheWeights;
-    double gradient;
     double bias;
     double output = 0;
+
 
     // Constructor for hidden and output layers
     public Neuron(double[] inputWeights, double bias){
         this.inputWeights = inputWeights;
         this.bias = bias;
-        this.cacheWeights = inputWeights;
-        this.gradient = 0;
     }
 
     // Constructor for input layer
@@ -26,8 +23,6 @@ public class Neuron {
         this.output = value;
         this.inputWeights = null;
         this.bias = -1;
-        this.cacheWeights = this.inputWeights;
-        this.gradient = -1;
     }
 
     // Set min and max weight for all neurons
@@ -36,9 +31,16 @@ public class Neuron {
         maxWeight = max;
     }
 
-    //Function used at the end of backpropagation to update weights
-    public void updateWeights(){
-        this.inputWeights = this.cacheWeights;
+    public double[] getInputWeights() {
+        return inputWeights;
+    }
+
+    public double getOutput() {
+        return output;
+    }
+
+    public void setInputWeights(double[] inputWeights) {
+        this.inputWeights = inputWeights;
     }
 
 }
