@@ -14,11 +14,11 @@ import hr.fer.zemris.projekt.algorithm.solution.Solution;
 public class ArraySortingFitnessFunction implements FitnessFunction<Solution<EasyLGPInstruction>> {
 	
 	long[][] arrays;
-	long numberOfRegisters;
+	int numberOfRegisters;
 	long maxSteps;
 	double minimalFitness;
 
-	public ArraySortingFitnessFunction(long[][] arraysToSort, long numberOfRegisters, long maxSteps) {
+	public ArraySortingFitnessFunction(long[][] arraysToSort, int numberOfRegisters, long maxSteps) {
 		this.arrays = Objects.requireNonNull(arraysToSort);
 		this.numberOfRegisters = numberOfRegisters;
 		this.maxSteps = maxSteps;
@@ -90,7 +90,7 @@ public class ArraySortingFitnessFunction implements FitnessFunction<Solution<Eas
 	private long[] getArrayFromContext(EasyLGPContext context, int length) {
 		long[] array = new long[length];
 		for(int i=1; i<array.length+1; i++) {
-			array[i-1] = context.getRegister(i);
+			array[i-1] = (long) context.getRegister(i);
 		}
 		return array;
 	}

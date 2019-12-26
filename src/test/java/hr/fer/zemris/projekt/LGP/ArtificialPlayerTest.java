@@ -1,4 +1,4 @@
-package hr.fer.zemris.projekt.algorithm;
+package hr.fer.zemris.projekt.LGP;
 
 import java.awt.Color;
 import java.awt.Dimension;

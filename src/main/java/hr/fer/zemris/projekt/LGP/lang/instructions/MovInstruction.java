@@ -11,10 +11,10 @@ public class MovInstruction implements EasyLGPInstruction {
 	 * 
 	 */
 	private static final long serialVersionUID = 58964316451867475L;
-	private long regTo;
-	private long regFrom;
+	private int regTo;
+	private int regFrom;
 	
-	public MovInstruction(long regTo, long regFrom) {
+	public MovInstruction(int regTo, int regFrom) {
 		this.regTo = regTo;
 		this.regFrom = regFrom;
 	}
