@@ -41,8 +41,13 @@ public class ClimbNearestLadderPlayer implements ArtificialPlayer {
         if (input[0]==0 || input[4] != 0 && input[1] > input[5]) {
             return PlayerAction.LEFT;
         }
-        
+
         if (input[4]==0 || input[0] != 0 && input[1] < input[5]) {
+            return PlayerAction.RIGHT;
+        }
+
+        // If both are equally distant, go right
+        if (input[1] == input[5] && input[1] != 0.0 && input[0] == ladderType && input[4] == ladderType) {
             return PlayerAction.RIGHT;
         }
         

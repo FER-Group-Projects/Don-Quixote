@@ -5,39 +5,29 @@ import java.util.Map;
 
 public class EasyLGPContext {
 	
-	private long numberOfRegisters;
+	private int numberOfRegisters;
 	
 	// Map : registerNumber -> registerValue
-	private Map<Long, Long> registers = new HashMap<>();
-	// Map : memorySlotAddress -> memorySlotValue
-	private Map<Long, Long> memory = new HashMap<>();
+	private Map<Integer, Double> registers = new HashMap<>();
 	
 	// Status register (SR)
 	boolean negative = false;
 	boolean zero = false;
 	
-	public EasyLGPContext(long numberOfRegisters) {
+	public EasyLGPContext(int numberOfRegisters) {
 		this.numberOfRegisters = numberOfRegisters;
 	}
 	
-	public void setRegister(long regNumber, long value) {
+	public void setRegister(int regNumber, double value) {
 		if(regNumber < 0 || regNumber >= numberOfRegisters) throw new EasyLGPException("Register number " + regNumber + " out of range for length " + numberOfRegisters);
 	
 		registers.put(regNumber, value);
 	}
 	
-	public long getRegister(long regNumber) {
+	public double getRegister(int regNumber) {
 		if(regNumber < 0 || regNumber >= numberOfRegisters) throw new EasyLGPException("Register number " + regNumber + " out of range for length " + numberOfRegisters);
 	
-		return registers.getOrDefault(regNumber, 0L);
-	}
-	
-	public void setMemory(long memAddress, long value) {
-		memory.put(memAddress, value);
-	}
-	
-	public long getMemory(long memAddress) {
-		return memory.getOrDefault(memAddress, 0L);
+		return registers.getOrDefault(regNumber, 0D);
 	}
 	
 	public boolean isNegative() {
@@ -58,6 +48,12 @@ public class EasyLGPContext {
 
 	public long getNumberOfRegisters() {
 		return numberOfRegisters;
+	}
+	
+	public void clear() {
+		registers.clear();
+		negative = false;
+		zero = false;
 	}
 	
 }

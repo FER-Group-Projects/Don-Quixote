@@ -11,10 +11,10 @@ public class LGPBlockMutation implements Mutation<Solution<EasyLGPInstruction>>{
 
 	private Random random = new Random();
 
-	private long numOfRegisters;
-	private long maxAbsMovConstant;
+	private int numOfRegisters;
+	private double maxAbsMovConstant;
 
-	public LGPBlockMutation(long numOfRegisters, long maxAbsMovConstant) {
+	public LGPBlockMutation(int numOfRegisters, double maxAbsMovConstant) {
 		this.numOfRegisters = numOfRegisters;
 		this.maxAbsMovConstant = maxAbsMovConstant;
 	}

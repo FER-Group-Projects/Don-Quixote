@@ -97,5 +97,4 @@ public class DoubleArraySolution implements Solution<Double> {
         return Arrays.copyOf(genes, genes.length);
     }
 
-
 }

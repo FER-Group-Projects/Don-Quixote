@@ -29,8 +29,8 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 	private Comparator<Solution<?>> cmpRev = (s1, s2) -> Double.compare(s2.getFitness(), s1.getFitness());
 	private Random random = new Random();
 	
-	double totalPopulationShiftedFitness = 0;
-	double minimalPopulationFitness = 0;
+	double shiftFitnessSum = 0;
+	double shift = 0;
 
 	public LGP(int populationSize, double fitnessThreshold, long maxGenerations, double mutationRate,
 			PopulationInitializer<Solution<EasyLGPInstruction>> populationInitializer,
@@ -80,35 +80,39 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 	private Solution<EasyLGPInstruction> selection(List<Solution<EasyLGPInstruction>> population) {
 		double rnd = random.nextDouble();
 		
-		double increment = 0;
+		double interval = 0;
 		for(var solution : population) {
-			double shiftedFitness = solution.getFitness() - minimalPopulationFitness;
-			double probabilityInterval = shiftedFitness/totalPopulationShiftedFitness + increment;
-			if(rnd < probabilityInterval)
+			double shiftedFitness = solution.getFitness() + shift;
+			interval += shiftedFitness/shiftFitnessSum;
+			if(rnd < interval) {
 				return solution;
-			increment+=probabilityInterval;
+			}
 		}
 		
 		return null; // Never
 	}
 	
 	private void populationSort(List<Solution<EasyLGPInstruction>> population) {
-		double totalShiftedFitness = 0;
-		double minValue = Double.MAX_VALUE;
+		double shiftFitnessSum = 0;
+		double shift = 0;
+		
+		double minFitness = Double.MAX_VALUE;
 		for(var solution : population) {
 			double fitness = fitnessFunction.calculateFitness(solution);
 			solution.setFitness(fitness);
-			if(fitness < minValue)
-				minValue = fitness;
+			if(fitness < minFitness)
+				minFitness = fitness;
 		}
+		
+		shift = -minFitness + 1;
 		for(var solution : population) {
-			totalShiftedFitness += solution.getFitness() - minValue;
+			shiftFitnessSum += solution.getFitness() + shift;
 		}
 		
 		population.sort(cmpRev);
 		
-		this.totalPopulationShiftedFitness = totalShiftedFitness;
-		this.minimalPopulationFitness = minValue;
+		this.shiftFitnessSum = shiftFitnessSum;
+		this.shift = shift;
 	}
 	
 }
