@@ -16,9 +16,9 @@ public class LGPGameTest {
 
     public static void main(String[] args) {
     	final int numOfRegisters = 8;
-    	final long maxSteps = 100;
-    	final int maxLength = 35;
-    	final double maxAbsMovConstant = Double.MAX_VALUE;
+    	final long maxSteps = 5000;
+    	final int maxLength = 50;
+    	final double maxAbsMovConstant = 0;
     	
         GameFitnessFunction<Solution<EasyLGPInstruction>> fitnessFunction = new LGPFitnessFunction(
                 List.of(

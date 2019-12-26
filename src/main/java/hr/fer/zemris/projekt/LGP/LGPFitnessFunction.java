@@ -44,16 +44,10 @@ public class LGPFitnessFunction extends GameFitnessFunction<Solution<EasyLGPInst
 				
 				EasyLGPEngine.execute(lgpSolution.getInstructions(), context, maxSteps);
 				
-				double maxValue = context.getRegister(0);
-				int maxIndex = 0;
-				for(int i=1; i<actions.length; i++) {
-					if(context.getRegister(i) > maxValue) {
-						maxValue = context.getRegister(i);
-						maxIndex = i;
-					}
-				}
+				double value = context.getRegister(0);
+				int actionIndex = (int) Math.floor(((Math.sin(value)+1)*actions.length/2));
 				
-				return actions[maxIndex];
+				return actions[actionIndex];
 			}
 			
 		};
