@@ -93,4 +93,8 @@ public class DoubleArraySolution implements Solution<Double> {
         return result;
     }
 
+    public double[] toArray() {
+        return Arrays.copyOf(genes, genes.length);
+    }
+
 }

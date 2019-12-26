@@ -13,19 +13,21 @@ import hr.fer.zemris.projekt.algorithm.OptimizationAlgorithm;
 import hr.fer.zemris.projekt.algorithm.fitness.FitnessFunction;
 
 public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
+	
 	private Random random = new Random();
 	private TreeCrossover cross = new TreeCrossover();
 	private TreeMutation mutation = new TreeMutation();
+	private TreeInitializer init = new TreeInitializer();
 	private FitnessFunction<Tree> fitnessFunction;
 	
 	private double reproductionChance; 
 	private double mutationChance; 		//sansa mutacije za pojedinacno stablo
 	private int populationSize;
-	private double terminationFitnessValue;
+	private int terminationFitnessValue;
 	private int maxGen = 50;
 	
 	
-	public TreeAlgorithm(int populationSize,double terminationFitnessValue, double reproductionChance, double mutationChance,FitnessFunction<Tree> f) {
+	public TreeAlgorithm(int populationSize,int terminationFitnessValue, double reproductionChance, double mutationChance,FitnessFunction<Tree> f) {
 		this.populationSize = populationSize;
 		this.terminationFitnessValue = terminationFitnessValue;
 		this.reproductionChance = reproductionChance;
@@ -35,25 +37,28 @@ public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
 	
 	@Override
 	public Tree run() {
+		
 		int gen = 0;
-		TreeSelection selection = new TreeSelection();
-		List<Tree> population = new TreeInitializer().generatePopulation(populationSize);
+		List<Tree> population = init.generatePopulation(populationSize);
 		eval(population);
 		
-		while((selection.selectFromPopulation(population).getFitness() < terminationFitnessValue) && gen < maxGen) {
-			System.out.print("generation " + gen + "		");
+		while((population.get(population.size()-1).getFitness() < terminationFitnessValue) && gen < maxGen) {
+			System.out.print("generation " + gen + "	" + "maxFit " + population.get(population.size()-1).getFitness() );
+			
 			Stream<Tree> stream = population.stream();
 			List<Double> fit = stream.map((t) -> t.getFitness()).collect(Collectors.toList());
 			System.out.println(fit);
-			//test
+		
 			gen++;
 			List<Tree> newPopulation = new ArrayList<>();
 			
 			//prenosi u novu populaciju odredjen broj rjesenja sa najvecim fitnessom
+			//koliko si prenjeo, toliko ih makni iz populacije za crossover(najlosiji)
 			for (int i = 0; i < reproductionChance*populationSize; i++) {
-				newPopulation.add(population.get(population.size()-1-i));	
+				newPopulation.add(population.get(population.size()-1-i));
+				population.remove(0);
 			} 
-			population.removeAll(newPopulation);
+			
 			//dodaje u novu populaciju crossover od rjesenja s navecim fitnessom
 			int selectionSize = population.size();
 			for (int i = 0; i < (selectionSize / 2); i++) {
@@ -98,8 +103,9 @@ public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
 			eval(population);
 		}
 		System.out.println("solution ");
-		System.out.println(selection.selectFromPopulation(population));
-		return selection.selectFromPopulation(population);
+		System.out.println(population.get(population.size()-1));
+		System.out.println("fitness: "+population.get(population.size()-1).getFitness());
+		return population.get(population.size()-1);
 	}
 		
 	

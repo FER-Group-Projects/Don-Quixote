@@ -33,22 +33,25 @@ import hr.fer.zemris.projekt.model.objects.impl.Platform;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
 import hr.fer.zemris.projekt.model.raycollider.RayCollider;
 import hr.fer.zemris.projekt.model.raycollider.RayCollider.Collision;
+import hr.fer.zemris.projekt.model.scenes.ClimbingScene;
 
 @SuppressWarnings("serial")
 public class ArtificialPlayerTest extends JPanel implements GameControllerListener {
 	
 	public static void main(String[] args) {
+		show(new ClimbNearestLadderPlayer());
+	}
 
-		var gpt = new ArtificialPlayerTest();
+	public static void show(ArtificialPlayer artificialPlayer) {
+		var gpt = new ArtificialPlayerTest(artificialPlayer);
 		JFrame frame = new JFrame();
-		
+
 		frame.add(gpt);
 		frame.pack();
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-
 	}
 
 	private static final int WIDTH = 640;
@@ -60,8 +63,11 @@ public class ArtificialPlayerTest extends JPanel implements GameControllerListen
 	private GameController gc;
 	private GameParameters params;
 	private ModelToScreenCoordinateConvertor convertor;
+	private ArtificialPlayer artificialPlayer;
 
-	public ArtificialPlayerTest() {
+	public ArtificialPlayerTest(ArtificialPlayer artificialPlayer) {
+		this.artificialPlayer = artificialPlayer;
+
 		Dimension size = new Dimension(WIDTH, HEIGHT);
 		this.setMinimumSize(size);
 		this.setPreferredSize(size);
@@ -72,43 +78,41 @@ public class ArtificialPlayerTest extends JPanel implements GameControllerListen
 	}
 
 	private void init() {
-		params = new GameParameters(60, 1000, 0.5, 100, 100, 300, 75, 75);
-
-		p = new Player(new BoundingBox2DImpl(250, 110, playerWidth, playerHeight), 0, 0, "Player1");
-
-		objects = new ArrayList<>();
-		objects.add(new Platform(new BoundingBox2DImpl(100, 50, 420, 20)));
-		
-		gc = new GameControllerImpl(p, objects, params);
-		gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 175, 420, 20)));
-		gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 300, 420, 20)));
-		gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 425, 420, 20)));
-		gc.addGameObject(new Ladder(new BoundingBox2DImpl(150, 155, 35, 105)));
-		gc.addGameObject(new Ladder(new BoundingBox2DImpl(400, 155, 35, 105)));
-		gc.addGameObject(new Ladder(new BoundingBox2DImpl(220, 280, 35, 105)));
-		gc.addGameObject(new Ladder(new BoundingBox2DImpl(245, 405, 35, 105)));
-		
+		gc = new ClimbingScene(60, 1000, 0.5, 100, 100, 300, 75, 75, playerWidth, playerHeight, 420, 20, 35).generateScene();
 		objects = null;
 		gc.addListener(this);
 		convertor = new ModelToScreenCoordinateConvertor(0, WIDTH, 0,
 				HEIGHT, 0, WIDTH, 0, HEIGHT);
 
-		ArtificialPlayer artificialPlayer = new ClimbNearestLadderPlayer();
 		GameInputExtractor inputExtractor = new RayColliderInputExtractor(4);
 		
 		new Thread(() -> {
+			try {
+				Thread.sleep(3_000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			PlayerAction previousAction = PlayerAction.UP;
+			int tick = 0;
 
 			while (true) {
-				gc.unsetPlayerAction(previousAction);
-				previousAction = artificialPlayer.calculateAction(inputExtractor.extractInputs(gc));
-				gc.setPlayerAction(previousAction);
+				gc.tick();
+
+				++tick;
+				tick %= 10;
+
 				try {
-					Thread.sleep(16);
+					Thread.sleep(4);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				gc.tick();
+
+				if (tick != 1) continue;
+
+				gc.unsetPlayerAction(previousAction);
+				previousAction = artificialPlayer.calculateAction(inputExtractor.extractInputs(gc));
+				gc.setPlayerAction(previousAction);
+
 				System.out.println(previousAction);
 			}
 
