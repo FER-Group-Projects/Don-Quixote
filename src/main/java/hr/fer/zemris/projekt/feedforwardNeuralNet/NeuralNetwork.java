@@ -26,7 +26,7 @@ public class NeuralNetwork {
         double[] output = new double[layers[layers.length-1].listOfNeurons.length];
         for(int i=1; i<layers.length; i++){
             for(int j=0; j<layers[i].listOfNeurons.length; j++){
-                float sum = 0;
+                double sum = 0;
                 for(int k=0; k<layers[i-1].listOfNeurons.length; k++){
                     sum += layers[i-1].listOfNeurons[k].output * layers[i].listOfNeurons[j].inputWeights[k];
                 }
@@ -47,8 +47,8 @@ public class NeuralNetwork {
             int numOfWeights = layers[layer-1].listOfNeurons.length;
             for(int neuron=0; neuron<layers[layer].listOfNeurons.length; neuron++){
                 double[] weights = Arrays.copyOfRange(allWeights, index, index + numOfWeights);
-                index += numOfWeights;
-                layers[layer].listOfNeurons[neuron].setInputWeights(weights);
+                index += numOfWeights + 1;
+                layers[layer].listOfNeurons[neuron].setInputWeights(weights, weights[numOfWeights - 1]);
             }
         }
     }
@@ -71,7 +71,7 @@ public class NeuralNetwork {
     public int getNumberOfWeights() {
         int num = 0;
         for (int i = 1; i < layout.length; i++){
-            num += ((layout[i - 1]) * layout[i]);
+            num += ((layout[i - 1] + 1) * layout[i]);
         }
         return num;
     }

@@ -1,5 +1,7 @@
 package hr.fer.zemris.projekt.algorithm;
 
+import hr.fer.zemris.projekt.algorithm.DifferentialEvolution;
+import hr.fer.zemris.projekt.algorithm.OptimizationAlgorithm;
 import hr.fer.zemris.projekt.algorithm.differential.crossover.BinomialDifferentialCrossover;
 import hr.fer.zemris.projekt.algorithm.differential.mutation.RandomDifferentialMutation;
 import hr.fer.zemris.projekt.algorithm.differential.selection.SelectBetterDifferentialSelection;
@@ -20,12 +22,12 @@ public class FFDifferentialEvolutionTest {
                 List.of(
                         new ClimbingScene(60, 1000, 0.5, 100, 100, 300, 75, 75, 25, 50, 420, 20, 35)
                 ),
-                new RayColliderInputExtractor(4), new int[]{8, 5, 5, PlayerAction.values().length});
+                new RayColliderInputExtractor(4), new int[]{8, 10, 5, PlayerAction.values().length});
 
         OptimizationAlgorithm<Solution<Double>> algorithm =
                 new DifferentialEvolution(100, 100000, 269722, new BinomialDifferentialCrossover(0.1),
                         new RandomDifferentialMutation(0.2, 1), new SelectBetterDifferentialSelection<>(),
-                        fitnessFunction, new RandomPopulationInitializer(8*5 + 5*5 + 5*7, -1, 1));
+                        fitnessFunction, new RandomPopulationInitializer(187, -1, 1));
 
         Solution<Double> solution = algorithm.run();
 

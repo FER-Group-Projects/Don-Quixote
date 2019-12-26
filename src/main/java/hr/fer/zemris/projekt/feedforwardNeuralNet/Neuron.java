@@ -39,8 +39,9 @@ public class Neuron {
         return output;
     }
 
-    public void setInputWeights(double[] inputWeights) {
+    public void setInputWeights(double[] inputWeights, double bias) {
         this.inputWeights = inputWeights;
+        this.bias = bias;
     }
 
 }
