@@ -9,4 +9,8 @@ public class Ladder extends Game2DObject {
 		super(position);
 	}
 
+	@Override
+	public Ladder copy() {
+		return new Ladder(getBoundingBox());
+	}
 }

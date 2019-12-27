@@ -149,4 +149,9 @@ public class ClimbingBarrelScene implements SceneGenerator {
 		return new GameControllerImpl(p, otherObjects, parameters);
 	}
 
+	@Override
+	public GameController generateNewScene() {
+		return null;
+	}
+
 }

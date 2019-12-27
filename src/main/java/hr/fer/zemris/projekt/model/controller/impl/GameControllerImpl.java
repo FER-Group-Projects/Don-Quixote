@@ -522,6 +522,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 					+ ", otherDefaultSpeedGround=" + otherDefaultSpeedGround + ", otherDefaultSpeedLadders="
 					+ otherDefaultSpeedLadders + "]";
 		}
+
 	}
 	
 	private static class CollisionCollection {

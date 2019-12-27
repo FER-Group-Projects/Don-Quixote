@@ -107,7 +107,7 @@ public abstract class GameFitnessFunction<G extends Solution<?>> implements Fitn
 //            System.out.println("Fitness: " + fitness + ", before: " + yBefore + ", after: " + yAfter);
         }
 
-        return fitness;
+        return fitness / sceneGenerators.size();
     }
 
     public abstract ArtificialPlayer initializeArtificialPlayer(G solution);

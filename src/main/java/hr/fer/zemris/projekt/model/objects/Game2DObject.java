@@ -11,7 +11,7 @@ public abstract class Game2DObject implements Destroyable {
 	private UnmodifiableBoundingBox boundingBox;
 	
 	private List<Game2DObjectListener> listeners = new CopyOnWriteArrayList<>();
-	
+
 	public Game2DObject(BoundingBox2D position) {
 		this.boundingBox = new UnmodifiableBoundingBox(new BoundingBox2DImpl(position.getX(), position.getY(), position.getWidth(), position.getHeight()));
 	}
@@ -60,6 +60,8 @@ public abstract class Game2DObject implements Destroyable {
 	private  void notifyAllListenersDestroyed() {
 		listeners.forEach(l -> l.objectDestroyed(this));
 	}
+
+	public abstract Game2DObject copy();
 	
 	@Override
 	public void destroy() {

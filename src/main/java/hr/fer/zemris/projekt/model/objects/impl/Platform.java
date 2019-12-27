@@ -9,4 +9,8 @@ public class Platform extends Game2DObject {
 		super(position);
 	}
 
+	@Override
+	public Platform copy() {
+		return new Platform(getBoundingBox());
+	}
 }

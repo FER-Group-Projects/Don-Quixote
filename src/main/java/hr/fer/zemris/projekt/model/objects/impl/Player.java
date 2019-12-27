@@ -41,4 +41,8 @@ public class Player extends MovableGame2DObject {
 				+ super.toString() + "]";
 	}
 
+	public Player copy() {
+		return new Player(getBoundingBox(), getVelocityX(), getVelocityY(), name);
+	}
+
 }
