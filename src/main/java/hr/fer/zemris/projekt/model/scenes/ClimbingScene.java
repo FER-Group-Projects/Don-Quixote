@@ -5,29 +5,20 @@ import java.util.List;
 import java.util.Random;
 
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl.GameParameters;
+import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
 import hr.fer.zemris.projekt.model.objects.impl.Ladder;
 import hr.fer.zemris.projekt.model.objects.impl.Platform;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
 
-// 3 platforms equally spaced apart
-// 3 ladders (two on platform 1 and one on platform 2)
-// player in the middle of platform 1
-// two ladders on platform 1 equally spaced from the center of that platform
-// one ladder on platform 2 in the middle of that platform
 public class ClimbingScene extends AbstractSceneGenerator {
-
-	private final Random random = new Random();
 
 	private final int minimumNumberOfPlatforms;
 	private final int maximumNumberOfPlatforms;
 
-	private double playerWidth;
-	private double playerHeight;
-	private double platformWidth;
-	private double platformHeight;
-	private double ladderWidth;
+	private final int minimumNumberOfLadders;
+	private final int maximumNumberOfLadders;
 
 	public ClimbingScene(int tickRatePerSec, double gravitationalAcceleration, double barrelLadderProbability,
 			double playerDefaultSpeedGround, double playerDefaultSpeedLadders, double playerDefaultSpeedJump,
@@ -35,19 +26,18 @@ public class ClimbingScene extends AbstractSceneGenerator {
 			double platformWidth, double platformHeight, double ladderWidth) {
 		this(new GameParameters(tickRatePerSec, gravitationalAcceleration, barrelLadderProbability, playerDefaultSpeedGround,
 						playerDefaultSpeedLadders, playerDefaultSpeedJump, otherDefaultSpeedGround, otherDefaultSpeedLadders),
-				3, 7, playerWidth, playerHeight, platformWidth, platformHeight, ladderWidth);
+				3, 7, 1, 3, platformWidth, platformHeight, ladderWidth, playerWidth, playerHeight);
 	}
 
-	public ClimbingScene(GameParameters parameters, int minimumNumberOfPlatforms, int maximumNumberOfPlatforms, double playerWidth, double playerHeight,
-						 double platformWidth, double platformHeight, double ladderWidth) {
+	public ClimbingScene(GameParameters parameters, int minimumNumberOfPlatforms, int maximumNumberOfPlatforms,
+						 int minimumNumberOfLadders, int maximumNumberOfLadders, double platformWidth, double platformHeight,
+						 double ladderWidth, double playerWidth, double playerHeight) {
+		super(parameters, playerWidth, playerHeight, platformWidth, platformHeight, ladderWidth, -1, -1);
+
 		this.minimumNumberOfPlatforms = minimumNumberOfPlatforms;
 		this.maximumNumberOfPlatforms = maximumNumberOfPlatforms;
-		this.parameters = parameters;
-		this.playerWidth = playerWidth;
-		this.playerHeight = playerHeight;
-		this.platformWidth = platformWidth;
-		this.platformHeight = platformHeight;
-		this.ladderWidth = ladderWidth;
+		this.minimumNumberOfLadders = minimumNumberOfLadders;
+		this.maximumNumberOfLadders = maximumNumberOfLadders;
 	}
 
 	@Override
@@ -58,7 +48,6 @@ public class ClimbingScene extends AbstractSceneGenerator {
 		double jumpHalfTime = playerDefaultSpeedJump / gravitationalAcceleration;
 		double maxPlayerJumpHeight = playerDefaultSpeedJump * jumpHalfTime - gravitationalAcceleration / 2 * jumpHalfTime * jumpHalfTime;
 		double platformDelta = playerHeight + maxPlayerJumpHeight + platformHeight;
-		double ladderHeight = platformDelta - platformHeight;
 
 		int numberOfPlatforms = random.nextInt(maximumNumberOfPlatforms - minimumNumberOfPlatforms) + minimumNumberOfPlatforms;
 
@@ -70,7 +59,27 @@ public class ClimbingScene extends AbstractSceneGenerator {
 			newGameObjects.add(new Platform(new BoundingBox2DImpl(0, currentPlatformY, platformWidth, platformHeight)));
 
 			if (platformIndex != 0) {
-				newGameObjects.add(new Ladder(new BoundingBox2DImpl(random.nextDouble() * platformWidth, currentPlatformY - platformHeight, ladderWidth, platformDelta)));
+				int numberOfLadders = random.nextInt(maximumNumberOfLadders - minimumNumberOfLadders) + minimumNumberOfLadders;
+
+				// Create N non intersecting ladders between current and previous platform
+				for (int ladderIndex = 0; ladderIndex < numberOfLadders; ladderIndex++) {
+					BoundingBox2D ladderBB = new BoundingBox2DImpl(random.nextDouble() * (platformWidth - ladderWidth), currentPlatformY - platformHeight, ladderWidth, platformDelta);
+					boolean collidesExisting = false;
+
+					for (Game2DObject gameObject : newGameObjects) {
+						if (gameObject.getBoundingBox().intersects(ladderBB)) {
+							collidesExisting = true;
+							break;
+						}
+					}
+
+					if (collidesExisting) {
+						--ladderIndex;
+						continue;
+					}
+
+					newGameObjects.add(new Ladder(ladderBB));
+				}
 			}
 		}
 
