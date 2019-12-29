@@ -13,7 +13,7 @@ public class Sprites {
             loadResource(spritesClass, "/assets/sprites/player_spritesheet.png");
 
     public static final String BARREL_SPRITESHEET =
-            loadResource(spritesClass, "/assets/sprites/barrels.png");
+            loadResource(spritesClass, "/assets/sprites/barrel_spritesheet.png");
 
     public static final String LADDER_SPRITE =
             loadResource(spritesClass, "/assets/sprites/ladder.png");

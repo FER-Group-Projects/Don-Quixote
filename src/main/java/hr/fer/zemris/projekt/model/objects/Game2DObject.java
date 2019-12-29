@@ -10,19 +10,6 @@ public abstract class Game2DObject implements Destroyable {
 	
 	private UnmodifiableBoundingBox boundingBox;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Game2DObject)) return false;
-		Game2DObject object = (Game2DObject) o;
-		return boundingBox.equals(object.boundingBox);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(boundingBox);
-	}
-
 	private List<Game2DObjectListener> listeners = new CopyOnWriteArrayList<>();
 	
 	public Game2DObject(BoundingBox2D position) {

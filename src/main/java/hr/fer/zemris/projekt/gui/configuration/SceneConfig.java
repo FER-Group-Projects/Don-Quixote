@@ -17,24 +17,24 @@ public class SceneConfig {
 
     public static final double PLATFORM_X = (GAME_SCENE_WIDTH - PLATFORM_WIDTH) / 2;
 
-    public static final double PLATFORM_START_Y = 0.05 * GAME_SCENE_HEIGHT;
+    public static final double PLATFORM_START_Y = PLATFORM_HEIGHT;
 
-    public static final double PLAYER_WIDTH = 64.0;
+    public static final double PLAYER_WIDTH = 49.0;
 
-    public static final double PLAYER_HEIGHT = 77.0;
+    public static final double PLAYER_HEIGHT = 72.33;
 
     public static final double PLAYER_START_X = PLATFORM_X + 50;
 
     public static final double PLAYER_START_Y = PLATFORM_START_Y + PLAYER_HEIGHT;
 
-    public static final double LADDER_WIDTH = 80.0;
+    public static final double LADDER_WIDTH = 55.0;
 
     public static final double LADDER_HEIGHT = 170.0;
 
     public static final int LADDERS_PER_PLATFORM = 3;
 
-    public static final double BARREL_WIDTH = 28.0;
+    public static final double BARREL_WIDTH = 40.0;
 
-    public static final double BARREL_HEIGHT = 38.0;
+    public static final double BARREL_HEIGHT = 32.0;
 
 }

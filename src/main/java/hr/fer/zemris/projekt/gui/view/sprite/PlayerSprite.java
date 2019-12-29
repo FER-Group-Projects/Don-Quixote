@@ -3,8 +3,6 @@ package hr.fer.zemris.projekt.gui.view.sprite;
 import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.impl.Player;
 
-import java.util.Arrays;
-
 public class PlayerSprite extends Sprite {
 
     private static final int COLUMNS = 10;
@@ -30,10 +28,6 @@ public class PlayerSprite extends Sprite {
         BoundingBox2D bb = player.getBoundingBox();
         width = bb.getWidth();
         height = bb.getHeight();
-    }
-
-    private void reset(boolean... flags) {
-        Arrays.fill(flags, false);
     }
 
     private void setOffsetY(double offsetY) {
@@ -62,9 +56,8 @@ public class PlayerSprite extends Sprite {
         return frame;
     }
 
-    // return only first frame
     public Frame idle() {
-        reset(run, jump);
+        run = jump = false;
         if (!idle) {
             idle = true;
             setOffsetY(IDLE * height);
@@ -73,7 +66,7 @@ public class PlayerSprite extends Sprite {
     }
 
     public Frame run() {
-        reset(idle, jump);
+        idle = jump = false;
         if (!run) {
             run = true;
             setOffsetY(RUN * height);
@@ -82,7 +75,7 @@ public class PlayerSprite extends Sprite {
     }
 
     public Frame jump() {
-        reset(idle, run);
+        idle = run = false;
         if (!jump) {
             jump = true;
             setOffsetY(JUMP * height);

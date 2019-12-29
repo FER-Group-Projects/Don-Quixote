@@ -7,20 +7,24 @@ import hr.fer.zemris.projekt.model.controller.GameControllerListener;
 import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl.GameParameters;
+import hr.fer.zemris.projekt.model.input.impl.RayColliderInputExtractor;
 import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.*;
+import hr.fer.zemris.projekt.model.raycollider.RayCollider;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static hr.fer.zemris.projekt.gui.assets.Sprites.*;
@@ -42,17 +46,24 @@ public class GameViewManager implements GameControllerListener {
 
     private Random rand = new Random();
 
-    private boolean leftPressed;
-    private boolean rightPressed;
-    private boolean upPressed;
-    private boolean downPressed;
-    private boolean spacePressed;
+    // properties for keys
+    private BooleanProperty leftPressed = new SimpleBooleanProperty(false);
+    private BooleanProperty rightPressed = new SimpleBooleanProperty(false);
+    private BooleanProperty upPressed = new SimpleBooleanProperty(false);
+    private BooleanProperty downPressed = new SimpleBooleanProperty(false);
+
+    // binding for key pressed and released
+    private BooleanBinding leftOrRightPressed = leftPressed.or(rightPressed);
+    private BooleanBinding leftAndRightPressed = leftPressed.and(rightPressed);
+    private BooleanBinding upOrDownPressed = upPressed.or(downPressed);
+    private BooleanBinding upAndDownPressed = upPressed.and(downPressed);
 
     // 1 for right and -1 for left
     private int direction = 1;
 
     private int numberOfPlatforms;
 
+    private volatile boolean stopBarrels;
     private final Thread barrelThread = new Thread(() -> {
         double posX = (PLATFORM_X + PLATFORM_WIDTH) / 2;
         double[] posYs = new double[numberOfPlatforms];
@@ -61,7 +72,7 @@ public class GameViewManager implements GameControllerListener {
             posYs[i] = offsetY;
             offsetY += LADDER_HEIGHT;
         }
-        while (true) {
+        while (!stopBarrels) {
             for (double posY : posYs) {
                 Barrel barrel = new Barrel(new BoundingBox2DImpl(
                         posX, posY, BARREL_WIDTH, BARREL_HEIGHT),
@@ -71,7 +82,7 @@ public class GameViewManager implements GameControllerListener {
                 gc.addGameObject(barrel);
             }
             try {
-                Thread.sleep(3_000);
+                Thread.sleep(5_000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -84,6 +95,7 @@ public class GameViewManager implements GameControllerListener {
         initPlayerSprite();
         initSpritesList();
         initKeyListeners();
+        initBindings();
         initGameController();
         startGame();
     }
@@ -102,8 +114,8 @@ public class GameViewManager implements GameControllerListener {
         gameStage.setResizable(false);
         gameStage.setTitle(WindowConfig.WINDOW_TITLE);
         gameStage.setOnCloseRequest(event -> {
+            stopBarrels = true;
             gc.stop();
-            barrelThread.stop();
         });
     }
 
@@ -180,33 +192,27 @@ public class GameViewManager implements GameControllerListener {
             switch (code) {
                 case LEFT:
                 case A:
-                    leftPressed = true;
-                    direction = -1;
-                    rightPressed = downPressed = upPressed = spacePressed = false;
+                    leftPressed.set(true);
+                    if (!rightPressed.get()) direction = -1;
                     gc.setPlayerAction(PlayerAction.LEFT);
                     break;
                 case RIGHT:
                 case D:
-                    rightPressed = true;
-                    direction = 1;
-                    leftPressed = downPressed = upPressed = spacePressed = false;
+                    rightPressed.set(true);
+                    if (!leftPressed.get()) direction = 1;
                     gc.setPlayerAction(PlayerAction.RIGHT);
                     break;
                 case UP:
                 case W:
-                    upPressed = true;
-                    leftPressed = rightPressed = downPressed = spacePressed = false;
+                    upPressed.set(true);
                     gc.setPlayerAction(PlayerAction.UP);
                     break;
                 case DOWN:
                 case S:
-                    downPressed = true;
-                    leftPressed = rightPressed = upPressed = spacePressed = false;
+                    downPressed.set(true);
                     gc.setPlayerAction(PlayerAction.DOWN);
                     break;
                 case SPACE:
-                    spacePressed = true;
-                    leftPressed = rightPressed = downPressed = upPressed = false;
                     gc.setPlayerAction(PlayerAction.JUMP);
             }
         });
@@ -215,27 +221,34 @@ public class GameViewManager implements GameControllerListener {
             switch (code) {
                 case LEFT:
                 case A:
-                    leftPressed = false;
+                    leftPressed.set(false);
                     gc.unsetPlayerAction(PlayerAction.LEFT);
                     break;
                 case RIGHT:
                 case D:
-                    rightPressed = false;
+                    rightPressed.set(false);
                     gc.unsetPlayerAction(PlayerAction.RIGHT);
                     break;
                 case UP:
                 case W:
-                    upPressed = false;
+                    upPressed.set(false);
                     gc.unsetPlayerAction(PlayerAction.UP);
                     break;
                 case DOWN:
                 case S:
-                    downPressed = false;
+                    downPressed.set(false);
                     gc.unsetPlayerAction(PlayerAction.DOWN);
                     break;
                 case SPACE:
-                    spacePressed = false;
                     gc.unsetPlayerAction(PlayerAction.JUMP);
+            }
+        });
+    }
+
+    private void initBindings() {
+        leftAndRightPressed.addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                direction = leftPressed.get() ? -1 : 1;
             }
         });
     }
@@ -268,12 +281,16 @@ public class GameViewManager implements GameControllerListener {
 
             if (obj instanceof Player) {
                 Frame frame;
-                if (leftPressed && spacePressed || rightPressed && spacePressed) {
+                if (leftOrRightPressed.get() && !leftAndRightPressed.get() && ((Player) obj).isOnGround() ||
+                        upOrDownPressed.get() && !upAndDownPressed.get() && ((Player) obj).isOnLadders()
+                ) {
+                    frame = ((PlayerSprite) sprite).run();
+                } else if (((Player) obj).isJumping()) {
                     frame = ((PlayerSprite) sprite).jump();
-                } else if (leftPressed || rightPressed) frame = ((PlayerSprite) sprite).run();
-                else {
+                } else {
                     frame = ((PlayerSprite) sprite).idle();
                 }
+
                 // mirror image based on direction
                 double posX = direction == 1 ? bb.getX() : bb.getX() + PLAYER_WIDTH;
                 g.drawImage(
@@ -297,7 +314,40 @@ public class GameViewManager implements GameControllerListener {
             if (obj instanceof Platform || obj instanceof Ladder) {
                 g.drawImage(sprite.getImage(), bb.getX(), GAME_SCENE_HEIGHT - bb.getY());
             }
+        }
 
+        RayColliderInputExtractor inputExtractor = new RayColliderInputExtractor(4);
+
+        List<RayCollider.Collision> allCollisions = inputExtractor.calculateCollisions(gc);
+
+        // Map : object with which any ray collides -> collisionDescriptor dd
+        Map<Game2DObject, RayCollider.Collision> filteredClosestCollisions = new HashMap<>();
+
+        for (var collision : allCollisions) {
+            if (collision == null) continue;
+            RayCollider.Collision oldC = filteredClosestCollisions.get(collision.getObject());
+            if (oldC == null || collision.getDistance() < oldC.getDistance())
+                filteredClosestCollisions.put(collision.getObject(), collision);
+        }
+
+        for (RayCollider.Collision collision : filteredClosestCollisions.values()) {
+            if (collision == null) continue;
+
+            Game2DObject obj = collision.getObject();
+            BoundingBox2D bb = obj.getBoundingBox();
+            g.fillText(
+                    String.valueOf((int) collision.getDistance()),
+                    bb.getX(),
+                    GAME_SCENE_HEIGHT - bb.getY()
+            );
+
+            g.setStroke(Paint.valueOf("RED"));
+            g.strokeLine(
+                    collision.getRayOrigin().getX(),
+                    GAME_SCENE_HEIGHT - collision.getRayOrigin().getY(),
+                    collision.getPoint().getX(),
+                    GAME_SCENE_HEIGHT - collision.getPoint().getY()
+            );
         }
     }
 
@@ -341,4 +391,5 @@ public class GameViewManager implements GameControllerListener {
     public void playerActionStateChanged(PlayerAction action, boolean isSet) {
         // DO NOTNING
     }
+
 }
