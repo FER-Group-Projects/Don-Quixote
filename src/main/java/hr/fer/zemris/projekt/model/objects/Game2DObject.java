@@ -9,7 +9,7 @@ import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
 public abstract class Game2DObject implements Destroyable {
 	
 	private UnmodifiableBoundingBox boundingBox;
-	
+
 	private List<Game2DObjectListener> listeners = new CopyOnWriteArrayList<>();
 	
 	public Game2DObject(BoundingBox2D position) {

@@ -37,8 +37,8 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 	private double tickDelay;
 	private EnumSet<PlayerAction> actions = EnumSet.noneOf(PlayerAction.class);
 	
-	private boolean isRunning = false;
-	private boolean stopReq = false;
+	private volatile boolean isRunning = false;
+	private volatile boolean stopReq = false;
 
 	public GameControllerImpl(Player p, List<Game2DObject> otherObjects, GameParameters parameters) {
 		this.player = Objects.requireNonNull(p);
@@ -262,7 +262,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				if(!(obj instanceof Ladder)) continue;
 				
 				Ladder l = (Ladder) obj;
-				if(newBBPlayer.isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collision.p.getBoundingBox().getY() - collision.p.getBoundingBox().getHeight()) {
+				if(newBBPlayer.isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collision.p.getBoundingBox().getY()) {
 					player.setAboveLadders(true);
 					break;
 				}
@@ -360,7 +360,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 					if(!(obj instanceof Ladder)) continue;
 					
 					Ladder l = (Ladder) obj;
-					if(moveMap.get(entry.getKey()).isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collisionMap.get(entry.getKey()).p.getBoundingBox().getY() - collisionMap.get(entry.getKey()).p.getBoundingBox().getHeight()) {
+					if(moveMap.get(entry.getKey()).isBetweenVerticalBoundariesOf(l.getBoundingBox()) && l.getBoundingBox().getY() == collisionMap.get(entry.getKey()).p.getBoundingBox().getY()) { //  - collisionMap.get(entry.getKey()).p.getBoundingBox().getHeight()
 						entry.getKey().setAboveLadders(true);
 						break;
 					}
