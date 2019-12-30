@@ -1,4 +1,4 @@
-open module don.quixote {
+open module hr.fer.zemris.projekt.gui {
     requires javafx.controls;
     requires slf4j.api;
 
