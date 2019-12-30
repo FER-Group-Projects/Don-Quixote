@@ -21,14 +21,16 @@ class DifferentialEvolutionTest {
                 List.of(
                         new ClimbingScene(60, 1000, 0.5, 100, 100, 300, 75, 75, 25, 50, 420, 20, 35),
                         new ClimbingScene(60, 1000, 0.5, 100, 100, 300, 75, 75, 25, 50, 420, 20, 35),
+                        new ClimbingScene(60, 1000, 0.5, 100, 100, 300, 75, 75, 25, 50, 420, 20, 35),
+                        new ClimbingScene(60, 1000, 0.5, 100, 100, 300, 75, 75, 25, 50, 420, 20, 35),
                         new ClimbingScene(60, 1000, 0.5, 100, 100, 300, 75, 75, 25, 50, 420, 20, 35)
                 ),
-                new RayColliderInputExtractor(4), new int[]{8, 5, PlayerAction.values().length});
+                new RayColliderInputExtractor(4), new int[]{8, 5, 5, PlayerAction.values().length});
 
         OptimizationAlgorithm<Solution<Double>> algorithm =
-                new DifferentialEvolution(100, 100000, 269722, new BinomialDifferentialCrossover(0.1),
+                new DifferentialEvolution(20, 500, 269722, 50, new BinomialDifferentialCrossover(0.2),
                         new RandomDifferentialMutation(0.8, 1), new SelectBetterDifferentialSelection<>(),
-                        fitnessFunction, new RandomPopulationInitializer(14 * 5 + 6 * 7 + 5, -1, 1));
+                        fitnessFunction, new RandomPopulationInitializer(14 * 5 + 6 * 5 + 6 * 7 + 5, -1, 1));
 
         Solution<Double> solution = algorithm.run();
 

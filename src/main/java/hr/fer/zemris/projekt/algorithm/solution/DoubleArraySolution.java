@@ -97,4 +97,8 @@ public class DoubleArraySolution implements Solution<Double> {
         return Arrays.copyOf(genes, genes.length);
     }
 
+    @Override
+    public void resetIsEvaluated() {
+        isEvaluated = false;
+    }
 }

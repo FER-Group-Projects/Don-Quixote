@@ -6,4 +6,8 @@ public interface FitnessFunction<S extends Solution<?>> {
 
     double calculateFitness(S solution);
 
+    default boolean refreshFitness() {
+        return false;
+    }
+
 }

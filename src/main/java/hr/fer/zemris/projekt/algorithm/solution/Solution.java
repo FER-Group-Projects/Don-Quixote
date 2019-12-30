@@ -7,6 +7,7 @@ public interface Solution<G> extends Serializable {
     double getFitness();
     void setFitness(double newFitness);
     boolean isEvaluated();
+    void resetIsEvaluated();
 
     int getNumberOfGenes();
     G getGeneAt(int index);

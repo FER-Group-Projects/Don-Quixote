@@ -20,6 +20,7 @@ public class DifferentialEvolution implements OptimizationAlgorithm<Solution<Dou
     private final int populationSize;
     private final int maximumNumberOfIterations;
     private final double fitnessThreshold;
+    private final int numberOfIterationsBetweenRefreshes;
 
     private final DifferentialCrossover<Solution<Double>> crossover;
     private final DifferentialMutation<Solution<Double>> mutation;
@@ -28,10 +29,11 @@ public class DifferentialEvolution implements OptimizationAlgorithm<Solution<Dou
     private final FitnessFunction<Solution<Double>> fitnessFunction;
     private final PopulationInitializer<Solution<Double>> populationInitializer;
 
-    public DifferentialEvolution(int populationSize, int maximumNumberOfIterations, double fitnessThreshold, DifferentialCrossover<Solution<Double>> crossover, DifferentialMutation<Solution<Double>> mutation, DifferentialSelection<Solution<Double>> selection, FitnessFunction<Solution<Double>> fitnessFunction, PopulationInitializer<Solution<Double>> populationInitializer) {
+    public DifferentialEvolution(int populationSize, int maximumNumberOfIterations, double fitnessThreshold, int numberOfIterationsBetweenRefreshes, DifferentialCrossover<Solution<Double>> crossover, DifferentialMutation<Solution<Double>> mutation, DifferentialSelection<Solution<Double>> selection, FitnessFunction<Solution<Double>> fitnessFunction, PopulationInitializer<Solution<Double>> populationInitializer) {
         this.populationSize = populationSize;
         this.maximumNumberOfIterations = maximumNumberOfIterations;
         this.fitnessThreshold = fitnessThreshold;
+        this.numberOfIterationsBetweenRefreshes = numberOfIterationsBetweenRefreshes;
         this.crossover = crossover;
         this.mutation = mutation;
         this.selection = selection;
@@ -45,6 +47,18 @@ public class DifferentialEvolution implements OptimizationAlgorithm<Solution<Dou
         List<Solution<Double>> population = populationInitializer.generatePopulation(populationSize);
 
         for (int iteration = 0; iteration < maximumNumberOfIterations; iteration++) {
+            if ((iteration % numberOfIterationsBetweenRefreshes) == 0) {
+                if (fitnessFunction.refreshFitness()) {
+                    for (Solution<Double> solution : population) {
+                        solution.resetIsEvaluated();
+                    }
+
+                    if (bestSolution != null) {
+                        bestSolution.setFitness(fitnessFunction.calculateFitness(bestSolution));
+                    }
+                }
+            }
+
             // Evaluate current population
             for (Solution<Double> solution : population) {
                 if (!solution.isEvaluated()) {
@@ -85,7 +99,20 @@ public class DifferentialEvolution implements OptimizationAlgorithm<Solution<Dou
                 logger.debug("Iteration {}: found new best solution with fitness {}", iteration, bestSolution.getFitness());
 
                 if (bestSolution.getFitness() >= fitnessThreshold) {
-                    break;
+                    if (fitnessFunction.refreshFitness()) {
+                        bestSolution.setFitness(fitnessFunction.calculateFitness(bestSolution));
+
+                        if (bestSolution.getFitness() >= fitnessThreshold) {
+                            break;
+                        }
+
+                        for (Solution<Double> solution : population) {
+                            solution.resetIsEvaluated();
+                        }
+                    }
+                    else {
+                        break;
+                    }
                 }
             }
         }

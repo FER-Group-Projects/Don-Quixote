@@ -115,9 +115,9 @@ public class Tree implements Solution<Node>,Comparable<Tree>{
 	public Solution<Node> copy() {
 		return null;
 	}
-	
 
-	
-	
-	
+	@Override
+	public void resetIsEvaluated() {
+		isEvaluated = false;
+	}
 }

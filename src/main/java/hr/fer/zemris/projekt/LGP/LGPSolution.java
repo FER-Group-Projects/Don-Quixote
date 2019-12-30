@@ -106,4 +106,9 @@ public class LGPSolution implements Solution<EasyLGPInstruction> {
 		return sb.toString();
 	}
 
+	@Override
+	public void resetIsEvaluated() {
+		evaluated = false;
+	}
+
 }

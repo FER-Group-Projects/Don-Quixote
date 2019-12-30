@@ -11,14 +11,17 @@ import hr.fer.zemris.projekt.model.objects.impl.Player;
 import hr.fer.zemris.projekt.model.scenes.SceneGenerator;
 
 import java.util.List;
+import java.util.Random;
 
 public abstract class GameFitnessFunction<G extends Solution<?>> implements FitnessFunction<G> {
+
+    private final Random random = new Random();
 
     private final List<SceneGenerator> sceneGenerators;
     private final GameInputExtractor gameInputExtractor;
 
     private final int numberOfTicksToEvaluate = 400;
-    private final int numberOfTicksBetweenMoves = 10;
+    private final int numberOfTicksBetweenMoves = 1;
 
     private final double playerDestroyedPunishment = -1E5;
 
@@ -112,4 +115,9 @@ public abstract class GameFitnessFunction<G extends Solution<?>> implements Fitn
 
     public abstract ArtificialPlayer initializeArtificialPlayer(G solution);
 
+    public boolean refreshFitness() {
+        sceneGenerators.get(random.nextInt(sceneGenerators.size())).generateNewScene();
+
+        return true;
+    }
 }
