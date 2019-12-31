@@ -1,5 +1,6 @@
 package hr.fer.zemris.projekt.gui.view;
 
+import hr.fer.zemris.projekt.algorithm.player.ArtificialPlayer;
 import hr.fer.zemris.projekt.gui.configuration.WindowConfig;
 import hr.fer.zemris.projekt.gui.view.sprite.*;
 import hr.fer.zemris.projekt.model.controller.GameController;
@@ -7,6 +8,7 @@ import hr.fer.zemris.projekt.model.controller.GameControllerListener;
 import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl;
 import hr.fer.zemris.projekt.model.controller.impl.GameControllerImpl.GameParameters;
+import hr.fer.zemris.projekt.model.input.GameInputExtractor;
 import hr.fer.zemris.projekt.model.input.impl.RayColliderInputExtractor;
 import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
@@ -89,13 +91,62 @@ public class GameViewManager implements GameControllerListener {
         }
     });
 
-    public GameViewManager() {
+    private ArtificialPlayer artificialPlayer;
+    private volatile boolean stopAIThread;
+    private final Thread aiThread = new Thread(() -> {
+        GameInputExtractor inputExtractor = new RayColliderInputExtractor(4);
+        try {
+            Thread.sleep(3_000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        PlayerAction previousAction = PlayerAction.UP;
+        while (!stopAIThread) {
+            gc.unsetPlayerAction(previousAction);
+            previousAction = artificialPlayer.calculateAction(inputExtractor.extractInputs(gc));
+            switch (previousAction) {
+                case LEFT:
+                    direction = -1;
+                    leftPressed.set(true);
+                    rightPressed.set(false);
+                    upPressed.set(false);
+                    downPressed.set(false);
+                    break;
+                case RIGHT:
+                    direction = 1;
+                    leftPressed.set(false);
+                    rightPressed.set(true);
+                    upPressed.set(false);
+                    downPressed.set(false);
+                    break;
+                case UP:
+                    leftPressed.set(false);
+                    rightPressed.set(false);
+                    upPressed.set(true);
+                    downPressed.set(false);
+                    break;
+                case DOWN:
+                    leftPressed.set(false);
+                    rightPressed.set(false);
+                    upPressed.set(false);
+                    downPressed.set(true);
+                    break;
+            }
+            gc.setPlayerAction(previousAction);
+            System.out.println(previousAction);
+        }
+    });
+
+    public GameViewManager(ArtificialPlayer artificialPlayer) {
+        this.artificialPlayer = artificialPlayer;
         initJavaFXComponents();
         initGameParameters();
         initPlayerSprite();
         initSpritesList();
-        initKeyListeners();
-        initBindings();
+        if (artificialPlayer == null) {
+            initKeyListeners();
+            initBindings();
+        }
         initGameController();
         startGame();
     }
@@ -115,6 +166,7 @@ public class GameViewManager implements GameControllerListener {
         gameStage.setTitle(WindowConfig.WINDOW_TITLE);
         gameStage.setOnCloseRequest(event -> {
             stopBarrels = true;
+            stopAIThread = true;
             gc.stop();
         });
     }
@@ -264,7 +316,8 @@ public class GameViewManager implements GameControllerListener {
 
     private void startGame() {
         gc.start();
-        barrelThread.start();
+        if (artificialPlayer == null) barrelThread.start();
+        else aiThread.start();
     }
 
     private void repaint() {
@@ -349,6 +402,7 @@ public class GameViewManager implements GameControllerListener {
                     GAME_SCENE_HEIGHT - collision.getPoint().getY()
             );
         }
+
     }
 
     public Stage getGameStage() {
