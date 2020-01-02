@@ -12,3 +12,13 @@ test:
   stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
+
+package:
+  stage: deploy
+  script:
+    - mvn $MAVEN_CLI_OPTS package
+    - cp target/don-quixote.jar .
+  artifacts:
+    paths:
+      - don-quixote.jar
+    expire_in: 1 week
