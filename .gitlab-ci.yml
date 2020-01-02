@@ -21,3 +21,4 @@ package:
   artifacts:
     paths:
       - don-quixote.jar
+    expire_in: 1 week
