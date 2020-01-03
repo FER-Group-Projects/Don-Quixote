@@ -4,6 +4,9 @@ import static hr.fer.zemris.projekt.gui.util.ResourceLoader.*;
 
 public class SceneConfig {
 
+    public static final String MENU_SCENE_STYLESHEET =
+            loadResource(SceneConfig.class, "/style/menuScene.css");
+
     public static final String GAME_SCENE_STYLESHEET =
             loadResource(SceneConfig.class, "/style/gameScene.css");
 

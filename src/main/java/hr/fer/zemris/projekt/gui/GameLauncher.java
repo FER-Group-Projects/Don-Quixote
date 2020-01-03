@@ -1,7 +1,6 @@
 package hr.fer.zemris.projekt.gui;
 
-import hr.fer.zemris.projekt.algorithm.player.ClimbNearestLadderPlayer;
-import hr.fer.zemris.projekt.gui.view.GameViewManager;
+import hr.fer.zemris.projekt.gui.view.MenuViewManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -13,8 +12,8 @@ public class GameLauncher extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        GameViewManager gameViewManager = new GameViewManager(new ClimbNearestLadderPlayer());
-        primaryStage = gameViewManager.getGameStage();
+        primaryStage = new MenuViewManager().getMenuStage();
+        //primaryStage = new GameViewManager(null).getGameStage();
         primaryStage.show();
     }
 

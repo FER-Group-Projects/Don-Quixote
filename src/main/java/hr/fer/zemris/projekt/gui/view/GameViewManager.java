@@ -2,6 +2,7 @@ package hr.fer.zemris.projekt.gui.view;
 
 import hr.fer.zemris.projekt.algorithm.player.ArtificialPlayer;
 import hr.fer.zemris.projekt.gui.configuration.WindowConfig;
+import hr.fer.zemris.projekt.gui.util.AlertBox;
 import hr.fer.zemris.projekt.gui.view.sprite.*;
 import hr.fer.zemris.projekt.model.controller.GameController;
 import hr.fer.zemris.projekt.model.controller.GameControllerListener;
@@ -23,12 +24,17 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.awt.event.KeyListener;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static hr.fer.zemris.projekt.gui.assets.Audios.WALKING_SOUND;
 import static hr.fer.zemris.projekt.gui.assets.Sprites.*;
 import static hr.fer.zemris.projekt.gui.configuration.GameParemetersConfig.*;
 import static hr.fer.zemris.projekt.gui.configuration.SceneConfig.*;
@@ -91,6 +97,7 @@ public class GameViewManager implements GameControllerListener {
         }
     });
 
+    private String gameName;
     private ArtificialPlayer artificialPlayer;
     private volatile boolean stopAIThread;
     private final Thread aiThread = new Thread(() -> {
@@ -137,6 +144,9 @@ public class GameViewManager implements GameControllerListener {
         }
     });
 
+    private MediaPlayer walkingSound;
+    private MediaPlayer jumpingSound;
+
     public GameViewManager(ArtificialPlayer artificialPlayer) {
         this.artificialPlayer = artificialPlayer;
         initJavaFXComponents();
@@ -159,16 +169,24 @@ public class GameViewManager implements GameControllerListener {
 
         gameScene = new Scene(gamePane, GAME_SCENE_WIDTH, GAME_SCENE_HEIGHT);
         gameScene.getStylesheets().add(GAME_SCENE_STYLESHEET);
+        gameScene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+
+            }
+        });
 
         gameStage = new Stage();
         gameStage.setScene(gameScene);
         gameStage.setResizable(false);
         gameStage.setTitle(WindowConfig.WINDOW_TITLE);
-        gameStage.setOnCloseRequest(event -> {
-            stopBarrels = true;
-            stopAIThread = true;
-            gc.stop();
-        });
+        gameStage.setOnCloseRequest(event -> stop());
+
+        gameName = artificialPlayer == null ?
+                "Normal game" :
+                artificialPlayer.getClass().getSimpleName();
+
+        walkingSound = new MediaPlayer(new Media(WALKING_SOUND));
+        walkingSound.setMute(true);
     }
 
     private void initGameParameters() {
@@ -323,6 +341,7 @@ public class GameViewManager implements GameControllerListener {
     private void repaint() {
         GraphicsContext g = canvas.getGraphicsContext2D();
         g.clearRect(0, 0, GAME_SCENE_WIDTH, GAME_SCENE_HEIGHT);
+        g.setFont(Font.getDefault());
 
         for (Game2DObject obj : gc.getGameObjects()) {
 
@@ -403,10 +422,36 @@ public class GameViewManager implements GameControllerListener {
             );
         }
 
+        double fontSize = 20;
+        g.setFont(Font.font(Font.getDefault().getName(), fontSize));
+        g.fillText(gameName, 0, fontSize);
     }
 
     public Stage getGameStage() {
         return gameStage;
+    }
+
+    public Pane getGamePane() {
+        return gamePane;
+    }
+
+    private Stage menuStage;
+
+    public Stage getMenuStage() {
+        return menuStage;
+    }
+
+    public void createNewGame(Stage menuStage) {
+        this.menuStage = menuStage;
+        menuStage.hide();
+        gameStage.show();
+    }
+
+    public void stop() {
+        stopBarrels = true;
+        stopAIThread = true;
+        gc.stop();
+        gameStage.close();
     }
 
     @Override
@@ -431,8 +476,10 @@ public class GameViewManager implements GameControllerListener {
     @Override
     public void gameObjectDestroyed(Game2DObject object) {
         if (object instanceof Player) {
-            System.out.println("Game Over");
-            System.exit(0);
+            javafx.application.Platform.runLater(() -> {
+                AlertBox.display("Game over", this);
+                System.out.println("Game Over");
+            });
         }
     }
 
