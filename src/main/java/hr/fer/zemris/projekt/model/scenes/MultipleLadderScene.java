@@ -11,15 +11,15 @@ import hr.fer.zemris.projekt.model.objects.impl.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static hr.fer.zemris.projekt.gui.configuration.SceneConfig.*;
-import static hr.fer.zemris.projekt.gui.configuration.SceneConfig.LADDER_HEIGHT;
 
-public class SingleLadderScene implements SceneGenerator {
+public class MultipleLadderScene implements SceneGenerator {
 
     private final GameParameters parameters;
 
-    public SingleLadderScene(GameParameters parameters) {
+    public MultipleLadderScene(GameParameters parameters) {
         this.parameters = parameters;
     }
 
@@ -45,17 +45,33 @@ public class SingleLadderScene implements SceneGenerator {
         double upperBound = PLATFORM_X + PLATFORM_WIDTH - LADDER_WIDTH;
 
         for (int i = 0; i < numberOfPlatforms - 1; i++) {
-            double randomX = lowerBound + (upperBound - lowerBound) * (1 - i / (numberOfPlatforms - 2.0));
-            Ladder ladder = new Ladder(new BoundingBox2DImpl(
+            double randomX = lowerBound + (upperBound - lowerBound) * 0.4 * (1 - i / (numberOfPlatforms - 2.0));
+
+            objects.add(new Ladder(new BoundingBox2DImpl(
                     randomX, offsetY,
                     LADDER_WIDTH, LADDER_HEIGHT)
-            );
-            objects.add(ladder);
+            ));
+
+            randomX = lowerBound + (upperBound - lowerBound) * 0.4 * (0.6 / 0.4 + i / (numberOfPlatforms - 2.0));
+
+            objects.add(new Ladder(new BoundingBox2DImpl(
+                    randomX, offsetY,
+                    LADDER_WIDTH, LADDER_HEIGHT)
+            ));
+
+            if ((i % 2) == 1) {
+                randomX = lowerBound + (upperBound - lowerBound) * 0.5;
+
+                objects.add(new Ladder(new BoundingBox2DImpl(
+                        randomX, offsetY,
+                        LADDER_WIDTH, LADDER_HEIGHT)
+                ));
+            }
 
             offsetY += LADDER_HEIGHT;
         }
 
-        Player player = new Player(new BoundingBox2DImpl(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT), 0, 0, "Player");
+        Player player = new Player(new BoundingBox2DImpl(lowerBound + (upperBound - lowerBound) / 2, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT), 0, 0, "Player");
 
         return new GameControllerImpl(player, objects, parameters);
     }

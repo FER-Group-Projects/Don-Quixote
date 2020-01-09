@@ -15,6 +15,8 @@ import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.*;
 import hr.fer.zemris.projekt.model.raycollider.RayCollider;
+import hr.fer.zemris.projekt.model.scenes.MultipleLadderScene;
+import hr.fer.zemris.projekt.model.scenes.MultipleLadderWithBarrelsScene;
 import hr.fer.zemris.projekt.model.scenes.SingleLadderScene;
 import hr.fer.zemris.projekt.model.scenes.SingleLadderWithBarrelsScene;
 import javafx.beans.binding.BooleanBinding;
@@ -326,7 +328,7 @@ public class GameViewManager implements GameControllerListener {
     }
 
     private void initGameController() {
-        gc = new SingleLadderWithBarrelsScene(params).generateScene();
+        gc = new MultipleLadderWithBarrelsScene(params).generateScene();
 
         sprites = new ArrayList<>();
         gc.addListener(this);
