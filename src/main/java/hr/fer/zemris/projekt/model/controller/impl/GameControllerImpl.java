@@ -428,7 +428,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			
 			if (moveObj.isOnGround()) {
 				if (moveObj.getVelocityX() == 0) {
-					if (random.nextDouble() < 0.5)
+					if (Math.sin(moveObj.getBoundingBox().getY()) > 0)
 						moveObj.setVelocityX(params.getOtherDefaultSpeedGround());
 					else
 						moveObj.setVelocityX(-params.getOtherDefaultSpeedGround());
@@ -447,7 +447,19 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 			if(moveObj.isOnGround() && !moveObj.isAboveLadders() && moveObj.getVelocityY() < 0) {
 				moveObj.setVelocityY(0);
 			}
-			
+
+			if (collisionMap.containsKey(moveObj) && collisionMap.get(moveObj).p != null && !moveObj.getBoundingBox().isBetweenVerticalBoundariesOf(collisionMap.get(moveObj).p.getBoundingBox())) {
+				BoundingBox2D bbObj = moveObj.getBoundingBox();
+				BoundingBox2D bbPlat = collisionMap.get(moveObj).p.getBoundingBox();
+
+				if (bbObj.getX() < bbPlat.getX()) {
+					moveObj.setVelocityX(params.getOtherDefaultSpeedGround());
+				}
+				else {
+					moveObj.setVelocityX(-params.getOtherDefaultSpeedGround());
+				}
+			}
+
 			if (!moveObj.isOnGround() && !moveObj.isOnLadders() && !moveObj.isInGround()) // Free fall
 				moveObj.setVelocityY(moveObj.getVelocityY() - params.getGravitationalAcceleration() * tickDelay);
 		

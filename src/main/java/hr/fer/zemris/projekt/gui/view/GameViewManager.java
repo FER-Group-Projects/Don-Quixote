@@ -15,6 +15,8 @@ import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.*;
 import hr.fer.zemris.projekt.model.raycollider.RayCollider;
+import hr.fer.zemris.projekt.model.scenes.SingleLadderScene;
+import hr.fer.zemris.projekt.model.scenes.SingleLadderWithBarrelsScene;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -151,8 +153,8 @@ public class GameViewManager implements GameControllerListener {
         this.artificialPlayer = artificialPlayer;
         initJavaFXComponents();
         initGameParameters();
-        initPlayerSprite();
-        initSpritesList();
+//        initPlayerSprite();
+//        initSpritesList();
         if (artificialPlayer == null) {
             initKeyListeners();
             initBindings();
@@ -324,12 +326,31 @@ public class GameViewManager implements GameControllerListener {
     }
 
     private void initGameController() {
-        gc = new GameControllerImpl(
-                (Player) playerSprite.getObject(),
-                sprites.stream().map(Sprite::getObject).collect(Collectors.toList()),
-                params);
+        gc = new SingleLadderWithBarrelsScene(params).generateScene();
+
+        sprites = new ArrayList<>();
         gc.addListener(this);
-        sprites.add(playerSprite);
+
+        for (Game2DObject object : gc.getGameObjects()) {
+            if (object instanceof Platform) {
+                sprites.add(new PlatformSprite(PLATFORM_SPRITE, (Platform) object));
+            }
+            else if (object instanceof Ladder) {
+                sprites.add(new LadderSprite(LADDER_SPRITE, (Ladder) object));
+            }
+            else if (object instanceof Player) {
+                sprites.add(new PlayerSprite(PLAYER_SPRITESHEET, (Player) object));
+            }
+            else {
+                sprites.add(new BarrelSprite(BARREL_SPRITESHEET, (Barrel) object));
+            }
+        }
+//        gc = new GameControllerImpl(
+//                (Player) playerSprite.getObject(),
+//                sprites.stream().map(Sprite::getObject).collect(Collectors.toList()),
+//                params);
+//        gc.addListener(this);
+//        sprites.add(playerSprite);
     }
 
     private void startGame() {
