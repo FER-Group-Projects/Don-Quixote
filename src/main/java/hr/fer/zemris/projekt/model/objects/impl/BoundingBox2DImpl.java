@@ -56,8 +56,8 @@ public class BoundingBox2DImpl implements BoundingBox2D {
 	
 	@Override
 	public boolean containsPoint(double x, double y) {
-		return x >= this.x && x <= this.x + this.width &&
-				y <= this.y && y >= this.y - this.height;
+		return x > this.x && x < this.x + this.width &&
+				y < this.y && y > this.y - this.height;
 	}
 	
 	@Override

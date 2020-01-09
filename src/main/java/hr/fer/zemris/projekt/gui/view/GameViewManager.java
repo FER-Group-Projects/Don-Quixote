@@ -113,8 +113,7 @@ public class GameViewManager implements GameControllerListener {
         }
         PlayerAction previousAction = PlayerAction.UP;
         while (!stopAIThread) {
-            gc.unsetPlayerAction(previousAction);
-            previousAction = artificialPlayer.calculateAction(inputExtractor.extractInputs(gc));
+            PlayerAction currentAction = artificialPlayer.calculateAction(inputExtractor.extractInputs(gc));
             switch (previousAction) {
                 case LEFT:
                     direction = -1;
@@ -143,7 +142,11 @@ public class GameViewManager implements GameControllerListener {
                     downPressed.set(true);
                     break;
             }
-            gc.setPlayerAction(previousAction);
+            if (currentAction != previousAction) {
+                gc.unsetPlayerAction(previousAction);
+                gc.setPlayerAction(currentAction);
+            }
+            previousAction = currentAction;
             System.out.println(previousAction);
         }
     });
@@ -328,7 +331,7 @@ public class GameViewManager implements GameControllerListener {
     }
 
     private void initGameController() {
-        gc = new MultipleLadderWithBarrelsScene(params).generateScene();
+        gc = new MultipleLadderScene(params).generateScene();
 
         sprites = new ArrayList<>();
         gc.addListener(this);

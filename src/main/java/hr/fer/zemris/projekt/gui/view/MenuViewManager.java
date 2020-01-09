@@ -93,7 +93,7 @@ public class MenuViewManager {
         private Button btnBlank = new Button();
 
         // null if artificial player item isn't used
-        private ArtificialPlayer aiPlayer;
+        private ArtificialPlayer aiPlayer = new ClimbNearestLadderPlayer();
 
         public GameMenu(MenuViewManager manager) {
             // style class
