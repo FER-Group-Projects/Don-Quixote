@@ -105,6 +105,14 @@ public class MenuViewManager {
         // null if artificial player item isn't used
         private ArtificialPlayer aiPlayer;
 
+        {
+            try {
+                aiPlayer = new JavaArtificialPlayerSerializer().deserialize(Paths.get("player.elman"));
+            } catch (SerializationException e) {
+                e.printStackTrace();
+            }
+        }
+
         public GameMenu(MenuViewManager manager) {
             // style class
             getStyleClass().clear();

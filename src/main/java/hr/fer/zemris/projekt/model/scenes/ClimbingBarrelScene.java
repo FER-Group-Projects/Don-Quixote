@@ -93,7 +93,7 @@ public class ClimbingBarrelScene implements SceneGenerator {
 		double jumpHalfTime = playerDefaultSpeedJump / gravitationalAcceleration;
 		double maxPlayerJumpHeight = playerDefaultSpeedJump * jumpHalfTime - gravitationalAcceleration / 2 * jumpHalfTime * jumpHalfTime;
 		double platformDelta = playerHeight + maxPlayerJumpHeight + platformHeight;
-		ladderHeight = platformDelta - platformHeight;
+		ladderHeight = platformDelta;
 		
 		platform1X = 10;
 		platform1Y = 10 + platformHeight;
@@ -138,10 +138,10 @@ public class ClimbingBarrelScene implements SceneGenerator {
 		otherObjects.add(new Ladder(new BoundingBox2DImpl(ladder1X, ladder1Y, ladderWidth, ladderHeight)));
 		otherObjects.add(new Ladder(new BoundingBox2DImpl(ladder2X, ladder2Y, ladderWidth, ladderHeight)));
 		otherObjects.add(new Ladder(new BoundingBox2DImpl(ladder3X, ladder3Y, ladderWidth, ladderHeight)));
-		otherObjects.add(new Barrel(new BoundingBox2DImpl(barrel1X, barrel1Y, barrelWidth, barrelHeight), otherDefaultSpeedGround, 0));
-		otherObjects.add(new Barrel(new BoundingBox2DImpl(barrel2X, barrel2Y, barrelWidth, barrelHeight), -otherDefaultSpeedGround, 0));
+//		otherObjects.add(new Barrel(new BoundingBox2DImpl(barrel1X, barrel1Y, barrelWidth, barrelHeight), otherDefaultSpeedGround, 0));
+//		otherObjects.add(new Barrel(new BoundingBox2DImpl(barrel2X, barrel2Y, barrelWidth, barrelHeight), -otherDefaultSpeedGround, 0));
 		otherObjects.add(new Barrel(new BoundingBox2DImpl(barrel3X, barrel3Y, barrelWidth, barrelHeight), 0, 0));
-		otherObjects.add(new Barrel(new BoundingBox2DImpl(barrel4X, barrel4Y, barrelWidth, barrelHeight), 0, 0));
+//		otherObjects.add(new Barrel(new BoundingBox2DImpl(barrel4X, barrel4Y, barrelWidth, barrelHeight), 0, 0));
 		otherObjects.add(new Barrel(new BoundingBox2DImpl(barrel5X, barrel5Y, barrelWidth, barrelHeight), 0, 0));
 		
 		GameParameters parameters = new GameParameters(tickRatePerSec, gravitationalAcceleration, barrelLadderProbability, playerDefaultSpeedGround, playerDefaultSpeedLadders, playerDefaultSpeedJump, otherDefaultSpeedGround, otherDefaultSpeedLadders);

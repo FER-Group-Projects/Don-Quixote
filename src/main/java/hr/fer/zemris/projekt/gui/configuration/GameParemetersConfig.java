@@ -9,7 +9,7 @@ public class GameParemetersConfig {
 
     public static final double GRAVITATIONAL_ACCELARATION = 1000.0;
 
-    public static final double BARREL_LADDER_PROBABILITY = 0.5;
+    public static final double BARREL_LADDER_PROBABILITY = 1;
 
     public static final double PLAYER_DEFAULT_SPEED_GROUND = 150;
 
