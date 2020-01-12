@@ -41,4 +41,35 @@ public class ImageModifier {
         }
         return output;
     }
+
+    /**
+     * Scales width of provided <i>input</i> image by provided <i>scaleFactor</i>.
+     *
+     * @param input       image input.
+     * @param scaleFactor scale factor.
+     * @return scaled image.
+     */
+    public static Image resample(Image input, double scaleFactor) {
+        final int W = (int) input.getWidth();
+        final int H = (int) input.getHeight();
+
+        WritableImage output = new WritableImage(
+                (int) (W * scaleFactor), H);
+
+        PixelReader reader = input.getPixelReader();
+        PixelWriter writer = output.getPixelWriter();
+
+        for (int y = 0; y < H; y++) {
+            for (int x = 0; x < W; x++) {
+                final int argb = reader.getArgb(x, y);
+                for (int dy = 0; dy < scaleFactor; dy++) {
+                    for (int dx = 0; dx < scaleFactor; dx++) {
+                        writer.setArgb((int) (x * scaleFactor + dx), y + dy, argb);
+                    }
+                }
+            }
+        }
+
+        return output;
+    }
 }

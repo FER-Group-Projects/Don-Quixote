@@ -3,7 +3,10 @@ package hr.fer.zemris.projekt.gui.view;
 import hr.fer.zemris.projekt.algorithm.player.ArtificialPlayer;
 import hr.fer.zemris.projekt.gui.configuration.WindowConfig;
 import hr.fer.zemris.projekt.gui.util.ResourceLoader;
+import hr.fer.zemris.projekt.model.controller.GameController;
+import hr.fer.zemris.projekt.model.serialization.GameControllerSerializer;
 import hr.fer.zemris.projekt.model.serialization.JavaArtificialPlayerSerializer;
+import hr.fer.zemris.projekt.model.serialization.JavaGameControllerSerializer;
 import hr.fer.zemris.projekt.model.serialization.SerializationException;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -20,6 +23,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 import static hr.fer.zemris.projekt.gui.configuration.SceneConfig.*;
@@ -80,17 +85,16 @@ public class MenuViewManager {
         // scene menu items
         private Button btnStart = new Button("Start");
         private RadioButton[] scenes = new RadioButton[]{
-                new RadioButton("Normal scene"),
-                new RadioButton("Climbing scene"),
-                new RadioButton("Barrel scene"),
-                new RadioButton("Climbing barrel scene")
+                new RadioButton("Normal Scene"),
+                new RadioButton("Climbing Scene"),
+                new RadioButton("Climbing Barrel Scene")
         };
         // scene menu toggle group
         private ToggleGroup sceneTg = new ToggleGroup();
 
         // AI players menu items
         private RadioButton[] aiModels = new RadioButton[]{
-                new RadioButton("player.elman"),
+                new RadioButton("elman"),
                 new RadioButton("Model 2"),
                 new RadioButton("Model 3"),
                 new RadioButton("Model 4")
@@ -104,14 +108,6 @@ public class MenuViewManager {
 
         // null if artificial player item isn't used
         private ArtificialPlayer aiPlayer;
-
-        {
-            try {
-                aiPlayer = new JavaArtificialPlayerSerializer().deserialize(Paths.get("player.elman"));
-            } catch (SerializationException e) {
-                e.printStackTrace();
-            }
-        }
 
         public GameMenu(MenuViewManager manager) {
             // style class
@@ -147,6 +143,29 @@ public class MenuViewManager {
             sceneMenuPane = new TitledPane("Scenes", menu);
             // add menu items
             menu.getChildren().add(btnStart);
+            btnStart.setDisable(true);
+            sceneTg.selectedToggleProperty().addListener(event -> {
+                if (sceneTg.getSelectedToggle() == null) btnStart.setDisable(true);
+                else btnStart.setDisable(false);
+            });
+            btnStart.setOnAction(event -> {
+                RadioButton selectedScene = (RadioButton) sceneTg.getSelectedToggle();
+                String name = selectedScene.getText().replace(" ", "");
+                GameController gc = null;
+                if (!name.equals("NormalScene")) {
+                    try {
+                        GameControllerSerializer ds = new JavaGameControllerSerializer();
+                        String path = ResourceLoader.loadResource(
+                                getClass(),
+                                "/scenes/" + name + ".scene");
+                        URI uri = new URI(path);
+                        gc = ds.deserialize(Paths.get(uri));
+                    } catch (URISyntaxException | SerializationException e) {
+                        e.printStackTrace();
+                    }
+                }
+                new GameViewManager(aiPlayer, gc).createNewGame(manager.menuStage);
+            });
             for (RadioButton scene : scenes) {
                 RadioButtonSelectionHandler handler = new RadioButtonSelectionHandler(scene);
                 scene.setOnMousePressed(handler.mousePressed);
@@ -177,14 +196,15 @@ public class MenuViewManager {
                         ? (RadioButton) aiTg.getSelectedToggle()
                         : (RadioButton) sceneTg.getSelectedToggle();
                 if (selectedModel != null && activeMenu == apMenuPane) {
-                    JavaArtificialPlayerSerializer deserializer = new JavaArtificialPlayerSerializer();
                     try {
+                        JavaArtificialPlayerSerializer ds = new JavaArtificialPlayerSerializer();
                         String path = ResourceLoader.loadResource(
                                 getClass(),
-                                "/" + selectedModel.getText()
+                                "/players/player." + selectedModel.getText()
                         );
-                        aiPlayer = deserializer.deserialize(Paths.get(path));
-                    } catch (SerializationException e) {
+                        URI uri = new URI(path);
+                        aiPlayer = ds.deserialize(Paths.get(uri));
+                    } catch (SerializationException | URISyntaxException e) {
                         e.printStackTrace();
                     }
                 }
