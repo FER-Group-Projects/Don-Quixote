@@ -452,7 +452,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener 
 				BoundingBox2D bbObj = moveObj.getBoundingBox();
 				BoundingBox2D bbPlat = collisionMap.get(moveObj).p.getBoundingBox();
 
-				if (bbObj.getX() < bbPlat.getX()) {
+				if (bbObj.getX() <= bbPlat.getX()) {
 					moveObj.setVelocityX(params.getOtherDefaultSpeedGround());
 				}
 				else {

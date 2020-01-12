@@ -93,7 +93,15 @@ public class MenuViewManager {
         private Button btnBlank = new Button();
 
         // null if artificial player item isn't used
-        private ArtificialPlayer aiPlayer = new ClimbNearestLadderPlayer();
+        private ArtificialPlayer aiPlayer;
+
+        {
+            try {
+                aiPlayer = new JavaArtificialPlayerSerializer().deserialize(Paths.get("player.elman"));
+            } catch (SerializationException e) {
+                e.printStackTrace();
+            }
+        }
 
         public GameMenu(MenuViewManager manager) {
             // style class

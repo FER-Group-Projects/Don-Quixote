@@ -15,10 +15,7 @@ import hr.fer.zemris.projekt.model.objects.BoundingBox2D;
 import hr.fer.zemris.projekt.model.objects.Game2DObject;
 import hr.fer.zemris.projekt.model.objects.impl.*;
 import hr.fer.zemris.projekt.model.raycollider.RayCollider;
-import hr.fer.zemris.projekt.model.scenes.MultipleLadderScene;
-import hr.fer.zemris.projekt.model.scenes.MultipleLadderWithBarrelsScene;
-import hr.fer.zemris.projekt.model.scenes.SingleLadderScene;
-import hr.fer.zemris.projekt.model.scenes.SingleLadderWithBarrelsScene;
+import hr.fer.zemris.projekt.model.scenes.*;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -106,15 +103,24 @@ public class GameViewManager implements GameControllerListener {
     private volatile boolean stopAIThread;
     private final Thread aiThread = new Thread(() -> {
         GameInputExtractor inputExtractor = new RayColliderInputExtractor(4);
-        try {
-            Thread.sleep(3_000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         PlayerAction previousAction = PlayerAction.UP;
+        int tick = 0;
+
         while (!stopAIThread) {
+            try {
+                Thread.sleep((long) (1_000.0/params.getTickRatePerSec()));
+            } catch (InterruptedException e) {
+            }
+
+            gc.tick();
+
+            tick++;
+            tick %= 10;
+
+            if ((tick % 10) != 1) continue;
+
             PlayerAction currentAction = artificialPlayer.calculateAction(inputExtractor.extractInputs(gc));
-            switch (previousAction) {
+            switch (currentAction) {
                 case LEFT:
                     direction = -1;
                     leftPressed.set(true);
@@ -331,7 +337,7 @@ public class GameViewManager implements GameControllerListener {
     }
 
     private void initGameController() {
-        gc = new MultipleLadderScene(params).generateScene();
+        gc = new ClimbingBarrelScene(60, 1000, 1, 100, 100, 300, 75, 75, 25, 50, 420, 20, 35, 20, 20).generateScene();
 
         sprites = new ArrayList<>();
         gc.addListener(this);
@@ -359,7 +365,6 @@ public class GameViewManager implements GameControllerListener {
     }
 
     private void startGame() {
-        gc.start();
         if (artificialPlayer == null) barrelThread.start();
         else aiThread.start();
     }

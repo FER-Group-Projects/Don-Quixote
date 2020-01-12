@@ -77,7 +77,7 @@ public class ClimbingScene implements SceneGenerator {
 		double jumpHalfTime = playerDefaultSpeedJump / gravitationalAcceleration;
 		double maxPlayerJumpHeight = playerDefaultSpeedJump * jumpHalfTime - gravitationalAcceleration / 2 * jumpHalfTime * jumpHalfTime;
 		double platformDelta = playerHeight + maxPlayerJumpHeight + platformHeight;
-		ladderHeight = platformDelta - platformHeight;
+		ladderHeight = platformDelta;
 		
 		platform1X = 10;
 		platform1Y = 10 + platformHeight;
