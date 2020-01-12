@@ -41,7 +41,7 @@
 }
 
 .radio-button > .text, .button > .text {
-    -fx-font-size: 50;
+    -fx-font-size: 40;
     -fx-stroke-width: 2px;
 }
 
@@ -58,13 +58,15 @@
     -fx-effect: dropshadow(gaussian, darkgray, 10, 0.0, 4, 5);
 }
 
-#blankBtn {
-    -fx-background-color: transparent;
+.button-return {
+    -fx-padding: 40 0 40 0;
+    -fx-background-insets: 35 0 35 0;
 }
 
 .titled-pane {
     -fx-alignment: center;
     -fx-collapsible: false;
+    -fx-padding: 20px;
 }
 
 .titled-pane > .title {

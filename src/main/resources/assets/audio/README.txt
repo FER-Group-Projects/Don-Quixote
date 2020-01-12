@@ -1,1 +1,0 @@
-All audios are taken from http://www.classicgaming.cc/classics/donkey-kong/sounds.

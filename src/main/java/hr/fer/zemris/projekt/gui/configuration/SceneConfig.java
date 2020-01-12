@@ -10,11 +10,11 @@ public class SceneConfig {
     public static final String GAME_SCENE_STYLESHEET =
             loadResource(SceneConfig.class, "/style/gameScene.css");
 
-    public static final double GAME_SCENE_WIDTH = 1_200.0;
+    public static final double GAME_SCENE_WIDTH = 1_000.0;
 
-    public static final double GAME_SCENE_HEIGHT = 1_000.0;
+    public static final double GAME_SCENE_HEIGHT = 800.0;
 
-    public static final double PLATFORM_WIDTH = 1_048.0;
+    public static final double PLATFORM_WIDTH = 800.0;
 
     public static final double PLATFORM_HEIGHT = 24.0;
 
@@ -34,7 +34,7 @@ public class SceneConfig {
 
     public static final double LADDER_HEIGHT = 170.0;
 
-    public static final int LADDERS_PER_PLATFORM = 3;
+    public static final int LADDERS_PER_PLATFORM = 2;
 
     public static final double BARREL_WIDTH = 40.0;
 
