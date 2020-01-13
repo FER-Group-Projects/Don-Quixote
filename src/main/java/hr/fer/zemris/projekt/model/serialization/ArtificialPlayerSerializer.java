@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 public interface ArtificialPlayerSerializer {
 
-    ArtificialPlayer deserialize(Path path) throws SerializationException;
+    ArtificialPlayer deserialize(String path) throws SerializationException;
 
     void serialize(Path path, ArtificialPlayer player) throws SerializationException;
 

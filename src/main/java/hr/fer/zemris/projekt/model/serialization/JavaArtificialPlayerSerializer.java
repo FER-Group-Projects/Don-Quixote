@@ -2,17 +2,20 @@ package hr.fer.zemris.projekt.model.serialization;
 
 import hr.fer.zemris.projekt.algorithm.player.ArtificialPlayer;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Path;
 
 public class JavaArtificialPlayerSerializer implements ArtificialPlayerSerializer {
 
     @Override
-    public ArtificialPlayer deserialize(Path path) throws SerializationException {
-        try (FileInputStream fileIn = new FileInputStream(path.toFile());
-             ObjectInputStream in = new ObjectInputStream(fileIn)) {
+    public ArtificialPlayer deserialize(String path) throws SerializationException {
+        try (InputStream in = getClass().getResourceAsStream(path)) {
+            ObjectInputStream objIn = new ObjectInputStream(in);
 
-            return (ArtificialPlayer) in.readObject();
+            return (ArtificialPlayer) objIn.readObject();
         } catch (Exception exc) {
             throw new SerializationException(exc);
         }
@@ -21,7 +24,7 @@ public class JavaArtificialPlayerSerializer implements ArtificialPlayerSerialize
     @Override
     public void serialize(Path path, ArtificialPlayer player) throws SerializationException {
         try (FileOutputStream fileOut = new FileOutputStream(path.toFile());
-             ObjectOutputStream out = new ObjectOutputStream(fileOut)){
+             ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
 
             out.writeObject(player);
         } catch (Exception exc) {

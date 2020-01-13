@@ -211,7 +211,7 @@ public class GameViewManager implements GameControllerListener {
         gameStage.setOnCloseRequest(event -> stop());
 
         gameName = artificialPlayer == null ?
-                "Normal game" :
+                "Real player" :
                 artificialPlayer.getClass().getSimpleName();
     }
 
@@ -441,9 +441,10 @@ public class GameViewManager implements GameControllerListener {
                 );
             }
             if (obj instanceof Platform) {
-                Image img = sprite.getImage();
-                g.drawImage(artificialPlayer == null ? img : ImageModifier.resample(img, 0.525),
-                        bb.getX(), GAME_SCENE_HEIGHT - bb.getY());
+                Image img = null;
+                if (isNormalScene) img = sprite.getImage();
+                else img = ImageModifier.resample(sprite.getImage(), 0.525);
+                g.drawImage(img, bb.getX(), GAME_SCENE_HEIGHT - bb.getY());
             }
             if (obj instanceof Ladder) {
                 g.drawImage(sprite.getImage(), bb.getX(), GAME_SCENE_HEIGHT - bb.getY());
@@ -503,8 +504,11 @@ public class GameViewManager implements GameControllerListener {
         return menuStage;
     }
 
-    public void createNewGame(Stage menuStage) {
+    private boolean isNormalScene;
+
+    public void createNewGame(Stage menuStage, boolean isNormalScene) {
         this.menuStage = menuStage;
+        this.isNormalScene = isNormalScene;
         menuStage.hide();
         gameStage.show();
     }

@@ -23,9 +23,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 
 import static hr.fer.zemris.projekt.gui.configuration.SceneConfig.*;
 
@@ -152,19 +152,16 @@ public class MenuViewManager {
                 RadioButton selectedScene = (RadioButton) sceneTg.getSelectedToggle();
                 String name = selectedScene.getText().replace(" ", "");
                 GameController gc = null;
-                if (!name.equals("NormalScene")) {
+                boolean isNormalScene = name.equals("NormalScene");
+                if (!isNormalScene) {
                     try {
                         GameControllerSerializer ds = new JavaGameControllerSerializer();
-                        String path = ResourceLoader.loadResource(
-                                getClass(),
-                                "/scenes/" + name + ".scene");
-                        URI uri = new URI(path);
-                        gc = ds.deserialize(Paths.get(uri));
-                    } catch (URISyntaxException | SerializationException e) {
+                        gc = ds.deserialize("/scenes/" + name + ".scene");
+                    } catch (SerializationException e) {
                         e.printStackTrace();
                     }
                 }
-                new GameViewManager(aiPlayer, gc).createNewGame(manager.menuStage);
+                new GameViewManager(aiPlayer, gc).createNewGame(manager.menuStage, isNormalScene);
             });
             for (RadioButton scene : scenes) {
                 RadioButtonSelectionHandler handler = new RadioButtonSelectionHandler(scene);
@@ -198,13 +195,8 @@ public class MenuViewManager {
                 if (selectedModel != null && activeMenu == apMenuPane) {
                     try {
                         JavaArtificialPlayerSerializer ds = new JavaArtificialPlayerSerializer();
-                        String path = ResourceLoader.loadResource(
-                                getClass(),
-                                "/players/player." + selectedModel.getText()
-                        );
-                        URI uri = new URI(path);
-                        aiPlayer = ds.deserialize(Paths.get(uri));
-                    } catch (SerializationException | URISyntaxException e) {
+                        aiPlayer = ds.deserialize("/players/player." + selectedModel.getText());
+                    } catch (SerializationException e) {
                         e.printStackTrace();
                     }
                 }

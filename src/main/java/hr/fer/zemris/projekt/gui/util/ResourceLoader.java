@@ -13,7 +13,7 @@ public class ResourceLoader {
      * @return system path of provided <i>path</i>.
      */
     public static String loadResource(Class<?> c, String path) {
-        return c.getResource(path).toExternalForm();
+        return c.getResource(path).toString();
     }
 
 }
