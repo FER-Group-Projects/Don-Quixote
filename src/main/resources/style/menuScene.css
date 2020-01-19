@@ -1,0 +1,114 @@
+@font-face {
+    font-family: 'Jumpman';
+    src: url('fonts/jumpman/Jumpman.ttf');
+}
+
+@font-face {
+    font-family: 'Quikhand';
+    src: url('fonts/quikhand/Quikhand.ttf');
+}
+
+.root {
+    -fx-background-color: rgb(255, 210, 193);
+}
+
+.text {
+    -fx-font-family: 'Jumpman';
+    -fx-fill: red;
+    -fx-stroke: yellow;
+}
+
+#title .text {
+    -fx-font-family: 'Jumpman';
+    -fx-font-size: 100;
+    -fx-stroke-width: 4px;
+}
+
+#title {
+    -fx-translate-y: 50;
+}
+
+.game-menu {
+    -fx-translate-y: 200;
+}
+
+.radio-button, .button {
+    -fx-alignment: center;
+    -fx-pref-width: 400px;
+    -fx-background-color: rgba(255, 60, 0, 0.2);
+    -fx-background-radius: 30px;
+    -fx-cursor: hand;
+}
+
+.radio-button > .text, .button > .text {
+    -fx-font-size: 40;
+    -fx-stroke-width: 2px;
+}
+
+.radio-button .radio {
+    -fx-border-color: transparent;
+}
+
+.radio-button .dot {
+    -fx-padding: 4px;
+    -fx-background-radius: 15px;
+}
+
+.radio-button:armed {
+    -fx-effect: dropshadow(gaussian, darkgray, 10, 0.0, 4, 5);
+}
+
+.button-return {
+    -fx-padding: 40 0 40 0;
+    -fx-background-insets: 35 0 35 0;
+}
+
+.titled-pane {
+    -fx-alignment: center;
+    -fx-collapsible: false;
+    -fx-padding: 20px;
+}
+
+.titled-pane > .title {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.titled-pane > .title > .text {
+    -fx-font-size: 60;
+    -fx-stroke-width: 3px;
+}
+
+.titled-pane > .content {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+#alert {
+    -fx-alignment: center;
+    -fx-background-color: rgba(255, 60, 0, 0.3);
+    -fx-padding: 0;
+}
+
+#alert > .label > .text {
+    -fx-font-size: 50;
+    -fx-stroke-width: 3px;
+}
+
+#alert > .button {
+    -fx-background-radius: 0;
+    -fx-background-color: rgba(255, 60, 0, 0.2);
+}
+
+#alert > .button > .text {
+    -fx-font-size: 20;
+    -fx-stroke-width: 1px;
+}
+
+.button:pressed, #alert > .button:pressed {
+    -fx-effect: dropshadow(gaussian, darkgray, 10, 0.0, 4, 5);
+}
+
+.button:hover, #alert > .button:hover {
+    -fx-background-color: rgba(255, 60, 0, 0.5);
+}

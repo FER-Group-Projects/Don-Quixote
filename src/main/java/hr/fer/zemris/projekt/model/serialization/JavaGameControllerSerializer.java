@@ -1,10 +1,9 @@
 package hr.fer.zemris.projekt.model.serialization;
 
-import hr.fer.zemris.projekt.algorithm.player.ArtificialPlayer;
 import hr.fer.zemris.projekt.model.controller.GameController;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Path;
@@ -12,11 +11,11 @@ import java.nio.file.Path;
 public class JavaGameControllerSerializer implements GameControllerSerializer {
 
     @Override
-    public GameController deserialize(Path path) throws SerializationException {
-        try (FileInputStream fileIn = new FileInputStream(path.toFile());
-             ObjectInputStream in = new ObjectInputStream(fileIn)) {
+    public GameController deserialize(String path) throws SerializationException {
+        try (InputStream in = getClass().getResourceAsStream(path)) {
+            ObjectInputStream objIn = new ObjectInputStream(in);
 
-            return (GameController) in.readObject();
+            return (GameController) objIn.readObject();
         } catch (Exception exc) {
             throw new SerializationException(exc);
         }

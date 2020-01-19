@@ -1,8 +1,9 @@
 package hr.fer.zemris.projekt.model.ElmanNetwork;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class ElmanNeuralNetwork {
+public class ElmanNeuralNetwork implements Serializable {
     private int[] layout;
     private double[] contextLayer;
 

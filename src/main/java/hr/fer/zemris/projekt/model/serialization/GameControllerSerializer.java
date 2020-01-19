@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 public interface GameControllerSerializer {
 
-    GameController deserialize(Path path) throws SerializationException;
+    GameController deserialize(String path) throws SerializationException;
 
     void serialize(Path path, GameController controller) throws SerializationException;
 

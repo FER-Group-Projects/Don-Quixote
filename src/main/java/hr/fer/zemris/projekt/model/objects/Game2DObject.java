@@ -1,12 +1,13 @@
 package hr.fer.zemris.projekt.model.objects;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import hr.fer.zemris.projekt.model.objects.impl.BoundingBox2DImpl;
 
-public abstract class Game2DObject implements Destroyable {
+public abstract class Game2DObject implements Destroyable, Serializable {
 	
 	private UnmodifiableBoundingBox boundingBox;
 

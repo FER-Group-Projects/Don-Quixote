@@ -50,36 +50,40 @@ public class RayCollider {
 			Vector2D q = new Vector2D(bb.getX(), bb.getY()); // point1 of line segment
 			Vector2D s = new Vector2D(0, -bb.getHeight()); // direction scaled by length of line segment
 			double newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
-			if(newDistance < distance) {
+			Vector2D currentPoint = p.add(r.normalized().scale(newDistance));
+			if(newDistance < distance && originObject != null && !originObject.getBoundingBox().containsPoint(currentPoint.getX(), currentPoint.getY())) {
 				distance = newDistance;
-				point = p.add(r.normalized().scale(distance));
+				point = currentPoint;
 			}
 			
 			// right side
 			q = new Vector2D(bb.getX() + bb.getWidth(), bb.getY()); // point1 of line segment
 			s = new Vector2D(0, -bb.getHeight()); // direction scaled by length of line segment
 			newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
-			if(newDistance < distance) {
+			currentPoint = p.add(r.normalized().scale(newDistance));
+			if(newDistance < distance && originObject != null && !originObject.getBoundingBox().containsPoint(currentPoint.getX(), currentPoint.getY())) {
 				distance = newDistance;
-				point = p.add(r.normalized().scale(distance));
+				point = currentPoint;
 			}
 			
 			// top side
 			q = new Vector2D(bb.getX(), bb.getY()); // point1 of line segment
 			s = new Vector2D(bb.getWidth(), 0); // direction scaled by length of line segment
 			newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
-			if(newDistance < distance) {
+			currentPoint = p.add(r.normalized().scale(newDistance));
+			if(newDistance < distance && originObject != null && !originObject.getBoundingBox().containsPoint(currentPoint.getX(), currentPoint.getY())) {
 				distance = newDistance;
-				point = p.add(r.normalized().scale(distance));
+				point = currentPoint;
 			}
 						
 			// bottom side
 			q = new Vector2D(bb.getX(), bb.getY() - bb.getHeight()); // point1 of line segment
 			s = new Vector2D(bb.getWidth(), 0); // direction scaled by length of line segment
 			newDistance = distanceFromPToLineSegmentIntersection(p, r, q, s);
-			if(newDistance < distance) {
+			currentPoint = p.add(r.normalized().scale(newDistance));
+			if(newDistance < distance && originObject != null && !originObject.getBoundingBox().containsPoint(currentPoint.getX(), currentPoint.getY())) {
 				distance = newDistance;
-				point = p.add(r.normalized().scale(distance));
+				point = currentPoint;
 			}			
 
 			if(Double.isFinite(distance)) {

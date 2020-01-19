@@ -17,7 +17,7 @@ public abstract class GameFitnessFunction<G extends Solution<?>> implements Fitn
     private final List<SceneGenerator> sceneGenerators;
     private final GameInputExtractor gameInputExtractor;
 
-    private final int numberOfTicksToEvaluate = 400;
+    private final int numberOfTicksToEvaluate = 500;
     private final int numberOfTicksBetweenMoves = 10;
 
     private final double playerDestroyedPunishment = -1E5;
@@ -107,7 +107,7 @@ public abstract class GameFitnessFunction<G extends Solution<?>> implements Fitn
 //            System.out.println("Fitness: " + fitness + ", before: " + yBefore + ", after: " + yAfter);
         }
 
-        return fitness;
+        return fitness / sceneGenerators.size();
     }
 
     public abstract ArtificialPlayer initializeArtificialPlayer(G solution);

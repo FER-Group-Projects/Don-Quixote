@@ -1,8 +1,10 @@
 package hr.fer.zemris.projekt.model.objects;
 
+import java.io.Serializable;
+
 // BoundingBox defined by : 1) x and y coordinate of the upper left vertex of the bounding box (rectangle)
 //                          2) height and width of the bounding box (rectangle)
-public interface BoundingBox2D {
+public interface BoundingBox2D extends Serializable {
 
 	double getX();
 	

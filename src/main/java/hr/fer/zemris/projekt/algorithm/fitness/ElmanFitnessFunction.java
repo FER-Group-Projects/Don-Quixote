@@ -8,10 +8,11 @@ import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.input.GameInputExtractor;
 import hr.fer.zemris.projekt.model.scenes.SceneGenerator;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class ElmanFitnessFunction extends GameFitnessFunction<Solution<Double>> {
+public class ElmanFitnessFunction extends GameFitnessFunction<Solution<Double>> implements Serializable {
 
     private final int[] layout;
 
@@ -25,34 +26,35 @@ public class ElmanFitnessFunction extends GameFitnessFunction<Solution<Double>> 
     public ArtificialPlayer initializeArtificialPlayer(Solution<Double> solution) {
         double[] weightsAndContextLayer = ((DoubleArraySolution) solution).toArray();
 
-        return new ArtificialPlayer() {
-            ElmanNeuralNetwork elmanNeuralNetwork;
-            double[] weights;
-
-            {
-                elmanNeuralNetwork = new ElmanNeuralNetwork(layout);
-                elmanNeuralNetwork.setContextLayer(Arrays.copyOf(weightsAndContextLayer, elmanNeuralNetwork.getContextLayer().length));
-                weights = new double[elmanNeuralNetwork.getNumberOfWeights()];
-
-                System.arraycopy(weightsAndContextLayer, elmanNeuralNetwork.getContextLayer().length, weights, 0, weights.length);
-            }
-
-            @Override
-            public PlayerAction calculateAction(double[] input) {
-                double[] output = elmanNeuralNetwork.calcOutput(input, weights);
-
-                int maximumIndex = 0;
-
-                for (int index = 0; index < output.length; index++) {
-                    if (output[index] > output[maximumIndex]) {
-                        maximumIndex = index;
-                    }
-                }
-
-                return PlayerAction.values()[maximumIndex];
-            }
-
-        };
+        return new ElmanNNPlayer(layout, weightsAndContextLayer);
     }
 
+    public static class ElmanNNPlayer implements ArtificialPlayer {
+        private ElmanNeuralNetwork elmanNeuralNetwork;
+        private double[] weights;
+
+        public ElmanNNPlayer(int[] layout, double[] weightsAndContextLayer) {
+            elmanNeuralNetwork = new ElmanNeuralNetwork(layout);
+            elmanNeuralNetwork.setContextLayer(Arrays.copyOf(weightsAndContextLayer, elmanNeuralNetwork.getContextLayer().length));
+            weights = new double[elmanNeuralNetwork.getNumberOfWeights()];
+
+            System.arraycopy(weightsAndContextLayer, elmanNeuralNetwork.getContextLayer().length, weights, 0, weights.length);
+        }
+
+        @Override
+        public PlayerAction calculateAction(double[] input) {
+            double[] output = elmanNeuralNetwork.calcOutput(input, weights);
+
+            int maximumIndex = 0;
+
+            for (int index = 0; index < output.length; index++) {
+                if (output[index] > output[maximumIndex]) {
+                    maximumIndex = index;
+                }
+            }
+
+            return PlayerAction.values()[maximumIndex];
+        }
+
+    }
 }
