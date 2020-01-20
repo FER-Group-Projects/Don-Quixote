@@ -2,7 +2,6 @@ package hr.fer.zemris.projekt.algorithm;
 
 import hr.fer.zemris.projekt.algorithm.fitness.*;
 import hr.fer.zemris.projekt.algorithm.genetic.crossover.BlendCrossover;
-import hr.fer.zemris.projekt.algorithm.genetic.crossover.SinglePointCrossover;
 import hr.fer.zemris.projekt.algorithm.genetic.mutation.GaussMutation;
 import hr.fer.zemris.projekt.algorithm.genetic.selection.TournamentSelection;
 import hr.fer.zemris.projekt.algorithm.initializer.RandomPopulationInitializer;
@@ -28,7 +27,7 @@ public class GeneticAlgorithmTest {
 				new RayColliderInputExtractor(4), new int[]{8, 10, PlayerAction.values().length});
 
 		OptimizationAlgorithm<Solution<Double>> algorithm =
-                new GeneticAlgorithm(100, 100000, 269722, new BlendCrossover<>(0.5),
+                new GeneticAlgorithm<Solution<Double>>(100, 100000, 269722, new BlendCrossover<>(0.5),
                         new GaussMutation(0.1), new TournamentSelection<>(5),
                         fitnessFunction, new RandomPopulationInitializer(9 * 10 + 11 * 7, -1, 1));
 

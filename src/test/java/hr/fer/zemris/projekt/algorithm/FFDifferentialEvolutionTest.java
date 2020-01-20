@@ -3,7 +3,6 @@ package hr.fer.zemris.projekt.algorithm;
 import hr.fer.zemris.projekt.algorithm.DifferentialEvolution;
 import hr.fer.zemris.projekt.algorithm.OptimizationAlgorithm;
 import hr.fer.zemris.projekt.algorithm.differential.crossover.BinomialDifferentialCrossover;
-import hr.fer.zemris.projekt.algorithm.differential.mutation.RandomDifferentialMutation;
 import hr.fer.zemris.projekt.algorithm.differential.mutation.TargetToBestDifferentialMutation;
 import hr.fer.zemris.projekt.algorithm.differential.selection.SelectBetterDifferentialSelection;
 import hr.fer.zemris.projekt.algorithm.fitness.FeedforwardFitnessFunction;

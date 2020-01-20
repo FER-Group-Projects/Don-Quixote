@@ -1,5 +1,6 @@
 package hr.fer.zemris.projekt.LGP;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,9 +11,12 @@ import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction;
 import hr.fer.zemris.projekt.algorithm.OptimizationAlgorithm;
 import hr.fer.zemris.projekt.algorithm.crossover.Crossover;
 import hr.fer.zemris.projekt.algorithm.fitness.FitnessFunction;
+import hr.fer.zemris.projekt.algorithm.fitness.GameFitnessFunction;
 import hr.fer.zemris.projekt.algorithm.initializer.PopulationInitializer;
 import hr.fer.zemris.projekt.algorithm.mutation.Mutation;
 import hr.fer.zemris.projekt.algorithm.solution.Solution;
+import hr.fer.zemris.projekt.model.serialization.JavaArtificialPlayerSerializer;
+import hr.fer.zemris.projekt.model.serialization.SerializationException;
 
 public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> {
 	
@@ -54,8 +58,9 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 		populationSort(population);
 		
 		long iter=0;
+		double lastBest = -Long.MAX_VALUE;
 		while(iter<maxGenerations && population.get(0).getFitness()<fitnessThreshold) {
-			List<Solution<EasyLGPInstruction>> newPopulation = new ArrayList<>();
+			List<Solution<EasyLGPInstruction>> newPopulation = new ArrayList<>(population.subList(0, (int) (0.1*populationSize)));
 			
 			// Selection (fitness proportionate selection, aka roulette wheel selection), crossover and mutation
 			while(newPopulation.size() != populationSize) {
@@ -72,6 +77,14 @@ public class LGP implements OptimizationAlgorithm<Solution<EasyLGPInstruction>> 
 			populationSort(population);
 			iter++;
 			System.out.println(population.get(0).getFitness() + " : " + population.get(0).getGeneAt(0));
+			if(lastBest<population.get(0).getFitness()) {
+				lastBest = population.get(0).getFitness();
+				try {
+		            new JavaArtificialPlayerSerializer().serialize(Paths.get("player_" + (int)lastBest + ".lgp"), ((GameFitnessFunction<Solution<EasyLGPInstruction>>)fitnessFunction).initializeArtificialPlayer(population.get(0)));
+		        } catch (SerializationException e) {
+		            e.printStackTrace();
+		        }
+			}
 		}
 		
 		return population.get(0);

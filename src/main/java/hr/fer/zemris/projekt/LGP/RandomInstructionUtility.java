@@ -12,6 +12,8 @@ import hr.fer.zemris.projekt.LGP.lang.instructions.ModInstruction;
 import hr.fer.zemris.projekt.LGP.lang.instructions.MovConstInstruction;
 import hr.fer.zemris.projekt.LGP.lang.instructions.MovInstruction;
 import hr.fer.zemris.projekt.LGP.lang.instructions.MulInstruction;
+import hr.fer.zemris.projekt.LGP.lang.instructions.PopInstruction;
+import hr.fer.zemris.projekt.LGP.lang.instructions.PushInstruction;
 import hr.fer.zemris.projekt.LGP.lang.instructions.SubInstruction;
 import hr.fer.zemris.projekt.LGP.lang.instructions.JpInstruction.Condition;
 
@@ -21,7 +23,7 @@ public class RandomInstructionUtility {
 	
 	public static EasyLGPInstruction generateRandomLGPInstruction(int numOfRegisters, int programLength, double maxAbsMovConstant) {
 		
-		int rnd = random.nextInt(10);
+		int rnd = random.nextInt(9);
 		
 		switch(rnd) {
 		
@@ -34,7 +36,9 @@ public class RandomInstructionUtility {
 			case 6 : return new JpInstruction(generateRandomJpCondition(), random.nextInt(programLength));
 			case 7 : return new HaltInstruction();
 			case 8 : return new MovInstruction(generateRandomRegNumber(numOfRegisters), generateRandomRegNumber(numOfRegisters));
-			case 9 : return new MovConstInstruction(generateRandomRegNumber(numOfRegisters), getRandomSign() * (long) (random.nextDouble() * maxAbsMovConstant));
+			//case 9 : return new PushInstruction(generateRandomRegNumber(numOfRegisters));
+			//case 10 : return new PopInstruction(generateRandomRegNumber(numOfRegisters));
+			//case 11 : return new MovConstInstruction(generateRandomRegNumber(numOfRegisters), getRandomSign() * (long) (random.nextDouble() * maxAbsMovConstant));
 			default : return null; // Never
 		
 		}
