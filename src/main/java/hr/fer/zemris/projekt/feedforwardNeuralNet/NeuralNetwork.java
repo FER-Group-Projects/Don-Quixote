@@ -1,6 +1,8 @@
 package hr.fer.zemris.projekt.feedforwardNeuralNet;
 
-public class NeuralNetwork {
+import java.io.Serializable;
+
+public class NeuralNetwork implements Serializable {
     private int[] layout;
 
     public NeuralNetwork(int[] layout) {
