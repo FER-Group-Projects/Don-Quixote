@@ -135,13 +135,13 @@ public class GamePhysicsTest extends JPanel implements GameControllerListener {
 			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Platform(new BoundingBox2DImpl(100, 425, 420, 20)));
 			Thread.sleep((long) (1_000.0));
-			gc.addGameObject(new Ladder(new BoundingBox2DImpl(150, 155, 35, 105)));
+			gc.addGameObject(new Ladder(new BoundingBox2DImpl(150, 175, 35, 125)));
 			Thread.sleep((long) (1_000.0));
-			gc.addGameObject(new Ladder(new BoundingBox2DImpl(400, 155, 35, 105)));
+			gc.addGameObject(new Ladder(new BoundingBox2DImpl(400, 175, 35, 125)));
 			Thread.sleep((long) (1_000.0));
-			gc.addGameObject(new Ladder(new BoundingBox2DImpl(220, 280, 35, 105)));
+			gc.addGameObject(new Ladder(new BoundingBox2DImpl(220, 300, 35, 125)));
 			Thread.sleep((long) (1_000.0));
-			gc.addGameObject(new Ladder(new BoundingBox2DImpl(245, 405, 35, 105)));
+			gc.addGameObject(new Ladder(new BoundingBox2DImpl(245, 425, 35, 125)));
 			Thread.sleep((long) (1_000.0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(320, 320, 20, 20), -75, 0));
 			gc.addGameObject(new Barrel(new BoundingBox2DImpl(250, 320, 20, 20), 75, 0));

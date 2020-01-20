@@ -429,7 +429,7 @@ public class GameControllerImpl implements GameController, Game2DObjectListener,
 			
 			if (moveObj.isOnGround()) {
 				if (moveObj.getVelocityX() == 0) {
-					if (Math.sin(moveObj.getBoundingBox().getY()) > 0)
+					if (Math.sin(moveObj.getBoundingBox().getY()) < 0)
 						moveObj.setVelocityX(params.getOtherDefaultSpeedGround());
 					else
 						moveObj.setVelocityX(-params.getOtherDefaultSpeedGround());

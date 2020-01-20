@@ -24,7 +24,7 @@ public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
 	private double mutationChance; 		//sansa mutacije za pojedinacno stablo
 	private int populationSize;
 	private int terminationFitnessValue;
-	private int maxGen = 50;
+	private int maxGen = 100000;
 	
 	
 	public TreeAlgorithm(int populationSize,int terminationFitnessValue, double reproductionChance, double mutationChance,FitnessFunction<Tree> f) {
@@ -85,8 +85,8 @@ public class TreeAlgorithm implements OptimizationAlgorithm<Tree>{
 				if (population.size() == 0 ) break;
 			}
 			
-			List<Tree> selected = new ArrayList();
-			List<Tree> mutated = new ArrayList();
+			List<Tree> selected = new ArrayList<>();
+			List<Tree> mutated = new ArrayList<>();
 			for (int i = 0; i < newPopulation.size(); i++) {
 				if (random.nextDouble() < mutationChance) {
 					Tree temp = newPopulation.get(i);

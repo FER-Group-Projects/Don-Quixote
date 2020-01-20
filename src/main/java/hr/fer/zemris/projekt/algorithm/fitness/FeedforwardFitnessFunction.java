@@ -4,14 +4,16 @@ import hr.fer.zemris.projekt.algorithm.player.ArtificialPlayer;
 import hr.fer.zemris.projekt.algorithm.solution.DoubleArraySolution;
 import hr.fer.zemris.projekt.algorithm.solution.Solution;
 import hr.fer.zemris.projekt.feedforwardNeuralNet.NeuralNetwork;
+import hr.fer.zemris.projekt.model.ElmanNetwork.ElmanNeuralNetwork;
 import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.input.GameInputExtractor;
 import hr.fer.zemris.projekt.model.scenes.SceneGenerator;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class FeedforwardFitnessFunction extends GameFitnessFunction<Solution<Double>> {
+public class FeedforwardFitnessFunction extends GameFitnessFunction<Solution<Double>> implements Serializable {
 
     private final int[] layout;
 
@@ -22,23 +24,32 @@ public class FeedforwardFitnessFunction extends GameFitnessFunction<Solution<Dou
 
     @Override
     public ArtificialPlayer initializeArtificialPlayer(Solution<Double> solution){
-        return new ArtificialPlayer() {
-            NeuralNetwork feedforwardNN = new NeuralNetwork(layout);
-            double[] weights = ((DoubleArraySolution) solution).toArray();
+        return new FeedforwardNNPlayer(layout, ((DoubleArraySolution) solution).toArray());
+    }
 
-            @Override
-            public PlayerAction calculateAction(double[] input) {
-                double[] output = feedforwardNN.calculateOutput(input, weights);
+    public static class FeedforwardNNPlayer implements ArtificialPlayer {
+        private NeuralNetwork neuralNetwork;
+        private double[] weights;
 
-                int maxIndex = 0;
-                for(int index=0; index<output.length; index++){
-                    if(output[index] > output[maxIndex]){
-                        maxIndex = index;
-                    }
+        public FeedforwardNNPlayer(int[] layout, double[] weights) {
+            neuralNetwork = new NeuralNetwork(layout);
+            this.weights = weights;
+        }
+
+        @Override
+        public PlayerAction calculateAction(double[] input) {
+            double[] output = neuralNetwork.calculateOutput(input, weights);
+
+            int maximumIndex = 0;
+
+            for (int index = 0; index < output.length; index++) {
+                if (output[index] > output[maximumIndex]) {
+                    maximumIndex = index;
                 }
-
-                return PlayerAction.values()[maxIndex];
             }
-        };
+
+            return PlayerAction.values()[maximumIndex];
+        }
+
     }
 }

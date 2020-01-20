@@ -1,11 +1,12 @@
 package hr.fer.zemris.projekt.algorithm.tree_based_GP_implementation;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import hr.fer.zemris.projekt.algorithm.solution.DoubleArraySolution;
 import hr.fer.zemris.projekt.algorithm.solution.Solution;
 
-public class Tree implements Solution<Node>,Comparable<Tree>{
+public class Tree implements Solution<Node>,Comparable<Tree>, Serializable {
 	//nonterminal cvorovi su operacije
 	//terminal cvorovi su indexi u listi inputa
 	

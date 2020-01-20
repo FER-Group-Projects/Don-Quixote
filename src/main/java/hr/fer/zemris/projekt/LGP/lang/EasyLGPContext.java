@@ -1,14 +1,24 @@
 package hr.fer.zemris.projekt.LGP.lang;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
-public class EasyLGPContext {
+public class EasyLGPContext implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7736303470625836993L;
+
 	private int numberOfRegisters;
 	
 	// Map : registerNumber -> registerValue
 	private Map<Integer, Double> registers = new HashMap<>();
+	
+	// Stack
+	private Stack<Double> stack = new Stack<>();
 	
 	// Status register (SR)
 	boolean negative = false;
@@ -52,8 +62,17 @@ public class EasyLGPContext {
 	
 	public void clear() {
 		registers.clear();
+		stack.clear();
 		negative = false;
 		zero = false;
+	}
+	
+	public void push(double value) {
+		stack.push(value);
+	}
+	
+	public double pop() {
+		return stack.pop();
 	}
 	
 }

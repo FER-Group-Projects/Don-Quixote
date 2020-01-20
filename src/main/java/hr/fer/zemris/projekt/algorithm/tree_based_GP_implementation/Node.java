@@ -1,10 +1,11 @@
 package hr.fer.zemris.projekt.algorithm.tree_based_GP_implementation;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class Node {
+public class Node implements Serializable {
 	
 	private String value; 
 	private Node left;

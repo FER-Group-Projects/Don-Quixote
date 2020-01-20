@@ -5,29 +5,28 @@ import java.util.Objects;
 import hr.fer.zemris.projekt.LGP.lang.EasyLGPContext;
 import hr.fer.zemris.projekt.LGP.lang.EasyLGPInstruction;
 
-public class MovConstInstruction implements EasyLGPInstruction {
+public class PushInstruction implements EasyLGPInstruction {
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -5472710173686017486L;
-	private int regTo;
-	private double constant;
-	
-	public MovConstInstruction(int regTo, double constant) {
-		this.regTo = regTo;
-		this.constant = constant;
+	private static final long serialVersionUID = 6563673020539849134L;
+	private int reg;
+
+	public PushInstruction(int reg) {
+		this.reg = reg;
 	}
 
 	@Override
 	public InstructionResult execute(EasyLGPContext context) {
-		context.setRegister(regTo, constant);
+		context.push(context.getRegister(reg));
+		
 		return new InstructionResult(InstructionResultStatus.CONTINUE);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(constant, regTo);
+		return Objects.hash(reg);
 	}
 
 	@Override
@@ -36,15 +35,15 @@ public class MovConstInstruction implements EasyLGPInstruction {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof MovConstInstruction))
+		if (!(obj instanceof PushInstruction))
 			return false;
-		MovConstInstruction other = (MovConstInstruction) obj;
-		return constant == other.constant && regTo == other.regTo;
+		PushInstruction other = (PushInstruction) obj;
+		return reg == other.reg;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "MOV " + regTo + " " + constant;
+		return "PUSH " + reg;
 	}
 
 }

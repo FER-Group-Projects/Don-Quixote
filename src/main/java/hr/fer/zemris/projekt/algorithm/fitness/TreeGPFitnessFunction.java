@@ -18,14 +18,22 @@ public class TreeGPFitnessFunction extends GameFitnessFunction<Tree>{
 	@Override
 	public ArtificialPlayer initializeArtificialPlayer(Tree solution) {
 		
-		return new ArtificialPlayer() {
+		return new TreePlayer(solution);
+	}
 
-			@Override
-			public PlayerAction calculateAction(double[] input) {
-				
-				Double numSolution = TreeEngine.compute(solution, input);
-				return TreeEngine.calculatePlayerAction(numSolution);
-			}		
-		};
+	public static class TreePlayer implements ArtificialPlayer {
+
+		private Tree tree;
+
+		public TreePlayer(Tree tree) {
+			this.tree = tree;
+		}
+
+		@Override
+		public PlayerAction calculateAction(double[] input) {
+			double numSolution = TreeEngine.compute(tree, input);
+			return TreeEngine.calculatePlayerAction(numSolution);
+		}
+
 	}
 }

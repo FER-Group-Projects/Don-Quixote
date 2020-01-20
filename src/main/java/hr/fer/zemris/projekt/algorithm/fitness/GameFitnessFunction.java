@@ -21,6 +21,11 @@ public abstract class GameFitnessFunction<G extends Solution<?>> implements Fitn
     private final int numberOfTicksBetweenMoves = 10;
 
     private final double playerDestroyedPunishment = -1E5;
+    
+    public GameFitnessFunction() {
+		sceneGenerators = null;
+		gameInputExtractor = null;
+	}
 
     public GameFitnessFunction(List<SceneGenerator> sceneGenerators, GameInputExtractor gameInputExtractor) {
         this.sceneGenerators = sceneGenerators;

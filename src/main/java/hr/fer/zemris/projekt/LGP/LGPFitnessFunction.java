@@ -1,5 +1,6 @@
 package hr.fer.zemris.projekt.LGP;
 
+import java.io.Serializable;
 import java.util.List;
 
 import hr.fer.zemris.projekt.LGP.lang.EasyLGPContext;
@@ -12,12 +13,22 @@ import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.input.GameInputExtractor;
 import hr.fer.zemris.projekt.model.scenes.SceneGenerator;
 
-public class LGPFitnessFunction extends GameFitnessFunction<Solution<EasyLGPInstruction>> {
+public class LGPFitnessFunction extends GameFitnessFunction<Solution<EasyLGPInstruction>> implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -109827621633324291L;
+
 	private final PlayerAction actions[] = PlayerAction.values();
 	
 	private final int numberOfRegisters;
 	private final long maxSteps;
+	
+	public LGPFitnessFunction() {
+		this.numberOfRegisters = 0;
+		this.maxSteps = 0;
+	}
 
 	public LGPFitnessFunction(List<SceneGenerator> sceneGenerators, GameInputExtractor gameInputExtractor, int numberOfRegisters, long maxSteps) {
 		super(sceneGenerators, gameInputExtractor);
@@ -32,6 +43,10 @@ public class LGPFitnessFunction extends GameFitnessFunction<Solution<EasyLGPInst
 		
 		return new ArtificialPlayer() {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -6530259715285633518L;
 			private EasyLGPContext context = new EasyLGPContext(numberOfRegisters);
 			private LGPSolution lgpSolution = (LGPSolution) solution;
 			
