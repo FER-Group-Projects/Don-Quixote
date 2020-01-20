@@ -2,7 +2,6 @@ package hr.fer.zemris.projekt.gui.view;
 
 import hr.fer.zemris.projekt.algorithm.player.ArtificialPlayer;
 import hr.fer.zemris.projekt.gui.configuration.WindowConfig;
-import hr.fer.zemris.projekt.gui.util.ResourceLoader;
 import hr.fer.zemris.projekt.model.controller.GameController;
 import hr.fer.zemris.projekt.model.serialization.GameControllerSerializer;
 import hr.fer.zemris.projekt.model.serialization.JavaArtificialPlayerSerializer;
@@ -22,10 +21,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import static hr.fer.zemris.projekt.gui.configuration.SceneConfig.*;
 
@@ -122,7 +117,6 @@ public class MenuViewManager {
             getChildren().add(mainMenuPane);
         }
 
-
         private void initMainMenuPane(Pane root) {
             VBox menu = new VBox(menuPadding);
             mainMenuPane = new TitledPane("Main menu", menu);
@@ -198,6 +192,8 @@ public class MenuViewManager {
                     } catch (SerializationException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    aiPlayer = null;
                 }
                 translateTransition(activeMenu, mainMenuPane);
             };

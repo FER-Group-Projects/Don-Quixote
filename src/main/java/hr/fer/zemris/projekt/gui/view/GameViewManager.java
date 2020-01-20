@@ -32,7 +32,11 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import static hr.fer.zemris.projekt.gui.assets.Sprites.*;
@@ -51,6 +55,9 @@ public class GameViewManager implements GameControllerListener {
 
     private PlayerSprite playerSprite;
     private List<Sprite> sprites;
+
+    private Platform lastPlatform;
+    private BooleanProperty playerOnLastPlatform = new SimpleBooleanProperty(false);
 
     private Random rand = new Random();
 
@@ -80,14 +87,6 @@ public class GameViewManager implements GameControllerListener {
             posYs[i] = offsetY;
             offsetY += LADDER_HEIGHT;
         }
-       /* for (double posY : posYs) {
-            Barrel barrel = new Barrel(new BoundingBox2DImpl(
-                    posX, posY, BARREL_WIDTH, BARREL_HEIGHT),
-                    0, 0
-            );
-            sprites.add(new BarrelSprite(BARREL_SPRITESHEET, barrel));
-            gc.addGameObject(barrel);
-        }*/
         while (!stopBarrels) {
             for (double posY : posYs) {
                 Barrel barrel = new Barrel(new BoundingBox2DImpl(
@@ -175,11 +174,12 @@ public class GameViewManager implements GameControllerListener {
             initSpritesList();
             initGameController();
         } else {
-            sprites = new ArrayList<>();
+            sprites = new CopyOnWriteArrayList<>();
             gc.addListener(this);
             for (Game2DObject object : gc.getGameObjects()) {
                 if (object instanceof Platform) {
                     sprites.add(new PlatformSprite(PLATFORM_SPRITE, (Platform) object));
+                    lastPlatform = (Platform) object;
                 } else if (object instanceof Ladder) {
                     sprites.add(new LadderSprite(LADDER_SPRITE, (Ladder) object));
                 } else if (object instanceof Player) {
@@ -208,7 +208,7 @@ public class GameViewManager implements GameControllerListener {
         gameStage.setScene(gameScene);
         gameStage.setResizable(false);
         gameStage.setTitle(WindowConfig.WINDOW_TITLE);
-        gameStage.setOnCloseRequest(event -> stop());
+        gameStage.setOnCloseRequest(event -> stop(false));
 
         gameName = artificialPlayer == null ?
                 "Real player" :
@@ -240,7 +240,7 @@ public class GameViewManager implements GameControllerListener {
     }
 
     private void initSpritesList() {
-        sprites = new ArrayList<>();
+        sprites = new CopyOnWriteArrayList<>();
         initPlatforms();
         initLadders();
     }
@@ -255,6 +255,7 @@ public class GameViewManager implements GameControllerListener {
             sprites.add(new PlatformSprite(PLATFORM_SPRITE, platform));
             offsetY += LADDER_HEIGHT;
             numberOfPlatforms++;
+            lastPlatform = platform;
         }
     }
 
@@ -290,7 +291,7 @@ public class GameViewManager implements GameControllerListener {
                 ft.setFromValue(1);
                 ft.setToValue(0);
                 ft.setOnFinished(event -> {
-                    stop();
+                    stop(false);
                     menuStage.show();
                 });
                 ft.play();
@@ -364,22 +365,6 @@ public class GameViewManager implements GameControllerListener {
     }
 
     private void initGameController() {
-        /*gc = new ClimbingBarrelScene(60, 1000, 1, 100, 100, 300, 75, 75, 25, 50, 420, 20, 35, 20, 20).generateScene();
-
-        sprites = new ArrayList<>();
-        gc.addListener(this);
-
-        for (Game2DObject object : gc.getGameObjects()) {
-            if (object instanceof Platform) {
-                sprites.add(new PlatformSprite(PLATFORM_SPRITE, (Platform) object));
-            } else if (object instanceof Ladder) {
-                sprites.add(new LadderSprite(LADDER_SPRITE, (Ladder) object));
-            } else if (object instanceof Player) {
-                sprites.add(new PlayerSprite(PLAYER_SPRITESHEET, (Player) object));
-            } else {
-                sprites.add(new BarrelSprite(BARREL_SPRITESHEET, (Barrel) object));
-            }
-        }*/
         gc = new GameControllerImpl(
                 (Player) playerSprite.getObject(),
                 sprites.stream().map(Sprite::getObject).collect(Collectors.toList()),
@@ -389,6 +374,15 @@ public class GameViewManager implements GameControllerListener {
     }
 
     private void startGame() {
+        playerOnLastPlatform.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                javafx.application.Platform.runLater(() -> {
+                    AlertBox.display("Reached the top", this);
+                    stop(true);
+                });
+
+            }
+        });
         if (artificialPlayer == null) {
             gc.start();
             barrelThread.start();
@@ -429,6 +423,7 @@ public class GameViewManager implements GameControllerListener {
                         posX, GAME_SCENE_HEIGHT - bb.getY(),
                         direction * PLAYER_WIDTH, PLAYER_HEIGHT
                 );
+                playerOnLastPlatform.set(obj.getBoundingBox().isOnTopOf(lastPlatform.getBoundingBox()));
             }
             if (obj instanceof Barrel) {
                 Frame frame = ((BarrelSprite) sprite).roll();
@@ -513,11 +508,23 @@ public class GameViewManager implements GameControllerListener {
         gameStage.show();
     }
 
-    public void stop() {
+    public void stop(boolean onlyController) {
         stopBarrels = true;
         stopAIThread = true;
         gc.stop();
+        System.out.println("Controlled stopped");
+        if (!onlyController) {
+            closeGameStage();
+        }
+    }
+
+    public void closeGameStage() {
         gameStage.close();
+        System.out.println("Game stage closed");
+    }
+
+    public void showMenuStage() {
+        menuStage.show();
     }
 
     @Override
@@ -544,6 +551,7 @@ public class GameViewManager implements GameControllerListener {
         if (object instanceof Player) {
             javafx.application.Platform.runLater(() -> {
                 AlertBox.display("Game over", this);
+                stop(true);
                 System.out.println("Game Over");
             });
         }
