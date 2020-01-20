@@ -182,10 +182,14 @@ public class MenuViewManager {
 
         private void initReturnButton() {
             EventHandler<ActionEvent> action = event -> {
-                RadioButton selectedModel = activeMenu == apMenuPane
-                        ? (RadioButton) aiTg.getSelectedToggle()
-                        : (RadioButton) sceneTg.getSelectedToggle();
-                if (selectedModel != null && activeMenu == apMenuPane) {
+                if (activeMenu == sceneMenuPane) {
+                    Toggle t = sceneTg.getSelectedToggle();
+                    if (t != null) t.setSelected(false);
+                    translateTransition(activeMenu, mainMenuPane);
+                    return;
+                }
+                RadioButton selectedModel = (RadioButton) aiTg.getSelectedToggle();
+                if (selectedModel != null) {
                     try {
                         JavaArtificialPlayerSerializer ds = new JavaArtificialPlayerSerializer();
                         aiPlayer = ds.deserialize("/players/" + selectedModel.getText());
