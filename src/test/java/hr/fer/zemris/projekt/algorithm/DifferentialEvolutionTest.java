@@ -29,7 +29,7 @@ class DifferentialEvolutionTest {
 
         OptimizationAlgorithm<Solution<Double>> algorithm =
                 new DifferentialEvolution(100, 100000, 269722, new BinomialDifferentialCrossover(0.1),
-                        new RandomDifferentialMutation(0.2, 1), new SelectBetterDifferentialSelection<>(),
+                        new RandomDifferentialMutation(0.8, 4), new SelectBetterDifferentialSelection<>(),
                         fitnessFunction, new RandomPopulationInitializer(17 * 8 + 9 * 7 + 8, -1, 1));
 
         Solution<Double> solution = algorithm.run();
