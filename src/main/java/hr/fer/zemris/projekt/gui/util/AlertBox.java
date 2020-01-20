@@ -35,8 +35,8 @@ public class AlertBox {
             ft.setFromValue(1);
             ft.setToValue(0);
             ft.setOnFinished(event -> {
-                manager.stop();
-                manager.getMenuStage().show();
+                manager.closeGameStage();
+                manager.showMenuStage();
             });
             ft.play();
         });
