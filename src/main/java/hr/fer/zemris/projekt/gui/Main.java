@@ -17,10 +17,10 @@ public class Main {
     public static void main(String[] args) {
         GameLauncher.main(args);
         /*GameController gc;
-        gc = new ClimbingBarrelScene(
+        gc = new ClimbingScene(
                 TICK_RATE_PER_SEC,
                 GRAVITATIONAL_ACCELARATION,
-                BARREL_LADDER_PROBABILITY,
+                1,
                 PLAYER_DEFAULT_SPEED_GROUND,
                 PLAYER_DEFAULT_SPEED_LADDERS,
                 PLAYER_DEFAULT_SPEED_JUMP,
@@ -30,12 +30,10 @@ public class Main {
                 PLAYER_HEIGHT,
                 420,
                 PLATFORM_HEIGHT,
-                LADDER_WIDTH,
-                BARREL_WIDTH,
-                BARREL_HEIGHT).generateScene();
+                LADDER_WIDTH).generateScene();
         GameControllerSerializer s = new JavaGameControllerSerializer();
         try {
-            s.serialize(Paths.get("./src/main/resources/scenes/ClimbingBarrelScene.scene"), gc);
+            s.serialize(Paths.get("./src/main/resources/scenes/ClimbingScene.scene"), gc);
         } catch (SerializationException e) {
             e.printStackTrace();
         }*/
