@@ -94,10 +94,9 @@ public class MenuViewManager {
 
         // AI players menu items
         private RadioButton[] aiModels = new RadioButton[]{
-                new RadioButton("elman"),
-                new RadioButton("Model 2"),
-                new RadioButton("Model 3"),
-                new RadioButton("Model 4")
+                new RadioButton("player.elman"),
+                new RadioButton("player_ga.ff"),
+                new RadioButton("player.tree")
         };
         // AI menu toggle group
         private ToggleGroup aiTg = new ToggleGroup();
@@ -195,7 +194,7 @@ public class MenuViewManager {
                 if (selectedModel != null && activeMenu == apMenuPane) {
                     try {
                         JavaArtificialPlayerSerializer ds = new JavaArtificialPlayerSerializer();
-                        aiPlayer = ds.deserialize("/players/player." + selectedModel.getText());
+                        aiPlayer = ds.deserialize("/players/" + selectedModel.getText());
                     } catch (SerializationException e) {
                         e.printStackTrace();
                     }
