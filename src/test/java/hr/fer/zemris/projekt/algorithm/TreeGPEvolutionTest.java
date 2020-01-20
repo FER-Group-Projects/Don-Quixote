@@ -5,8 +5,11 @@ import java.util.List;
 
 import hr.fer.zemris.projekt.algorithm.fitness.GameFitnessFunction;
 import hr.fer.zemris.projekt.algorithm.fitness.TreeGPFitnessFunction;
+import hr.fer.zemris.projekt.algorithm.player.ArtificialPlayer;
 import hr.fer.zemris.projekt.algorithm.tree_based_GP_implementation.Tree;
 import hr.fer.zemris.projekt.algorithm.tree_based_GP_implementation.TreeAlgorithm;
+import hr.fer.zemris.projekt.feedforwardNeuralNet.NeuralNetwork;
+import hr.fer.zemris.projekt.model.controller.PlayerAction;
 import hr.fer.zemris.projekt.model.input.impl.RayColliderInputExtractor;
 import hr.fer.zemris.projekt.model.scenes.ClimbingBarrelScene;
 import hr.fer.zemris.projekt.model.scenes.ClimbingScene;
@@ -28,7 +31,7 @@ public class TreeGPEvolutionTest {
 		Tree solution = algorithm.run();
 
 		try {
-			new JavaArtificialPlayerSerializer().serialize(Paths.get("player.ff"), fitnessFunction.initializeArtificialPlayer(solution));
+			new JavaArtificialPlayerSerializer().serialize(Paths.get("player.tree"), fitnessFunction.initializeArtificialPlayer(solution));
 		} catch (SerializationException e) {
 			e.printStackTrace();
 		}
@@ -40,4 +43,6 @@ public class TreeGPEvolutionTest {
 		}
 		ArtificialPlayerTest.show(fitnessFunction.initializeArtificialPlayer(solution));
 	}
+
+
 }
