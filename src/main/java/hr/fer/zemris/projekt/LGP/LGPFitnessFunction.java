@@ -24,6 +24,11 @@ public class LGPFitnessFunction extends GameFitnessFunction<Solution<EasyLGPInst
 	
 	private final int numberOfRegisters;
 	private final long maxSteps;
+	
+	public LGPFitnessFunction() {
+		this.numberOfRegisters = 0;
+		this.maxSteps = 0;
+	}
 
 	public LGPFitnessFunction(List<SceneGenerator> sceneGenerators, GameInputExtractor gameInputExtractor, int numberOfRegisters, long maxSteps) {
 		super(sceneGenerators, gameInputExtractor);
