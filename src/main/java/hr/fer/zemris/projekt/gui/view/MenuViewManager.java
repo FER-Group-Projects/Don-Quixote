@@ -91,7 +91,8 @@ public class MenuViewManager {
         private RadioButton[] aiModels = new RadioButton[]{
                 new RadioButton("player.elman"),
                 new RadioButton("player_ga.ff"),
-                new RadioButton("player.tree")
+                new RadioButton("player.tree"),
+                new RadioButton("player.lgp")
         };
         // AI menu toggle group
         private ToggleGroup aiTg = new ToggleGroup();
