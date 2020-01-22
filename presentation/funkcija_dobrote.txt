@@ -1,0 +1,7 @@
+za svaku scenu iz liste scena:
+    stvori umjetnog igrača iz rješenja
+    ponovi broj otkucaja sata puta:
+        simuliraj otkucaj sata u modelu igre
+        svaki n-ti otkucaj sata izračunaj novi potez igrača
+    odredi razliku konačne visine i početne
+vrati prosjek razlika visina

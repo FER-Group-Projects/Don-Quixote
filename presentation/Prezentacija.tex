@@ -1,0 +1,92 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{varwidth}
+\usepackage[font=scriptsize]{caption}
+\usepackage{graphicx}
+\usepackage{forest}
+\usepackage{verbatim}
+
+\usetheme{metropolis}
+\usetikzlibrary{matrix}
+\usetikzlibrary{calc}
+\usetikzlibrary{external}
+\setmainfont[Ligatures=TeX]{Fira Sans}
+\newcommand{\floor}[1]{\left \lfloor #1 \right \rfloor}
+
+\title{Don Quixote}
+
+\date{\vspace{1em}Zagreb, 21. siječnja 2020.}
+
+\institute{Fakultet elektrotehnike i računarstva}
+
+\author{Marko Lazarić (voditelj)  \\ Matija Bačić \hspace*{10em} Bruno Bandić \\ Darijo Brčina \hspace*{9.75em} Jakov Ćurić \\ Andrija Raguž \hspace*{9.3em} Nikola Vnučec \\[1em] Mentor: Doc. dr. sc. Marko Čupić}
+
+\newcommand{\engl}[1]{ (engl. \emph{#1})}
+\newcommand{\twocolumns}[2]{
+	\begin{columns}
+		\begin{column}{0.4\textwidth}
+			#1
+		\end{column}
+		\begin{column}{0.6\textwidth}  %%<--- here
+			#2
+		\end{column}
+	\end{columns}
+}
+%\setbeameroption{show notes}
+%\setbeamertemplate{note page}[plain]
+\renewcommand{\figurename}{Slika}
+
+\begin{document}
+  \begin{frame}[noframenumbering, plain]
+  	\centering
+  	\vspace{2em}
+  	Preddiplomski projekt
+  	\vspace{-4em}
+  	
+  	\titlepage
+  \end{frame}
+
+  \begin{frame}{Komponente}
+	\tableofcontents
+  \end{frame}
+
+  \section{Igra Don Quixote}
+  \input{igra.tex}
+
+  \section{Modeli umjetne inteligencije}
+  \input{modeli.tex}
+
+  \section{Optimizacijski algoritmi}
+  \input{algoritmi.tex}
+
+  \section*{Demonstracija programa}
+
+  \begin{frame}{Napomene}
+	\begin{enumerate}
+	  \item male scene
+	  \begin{itemize}
+	    \item vremenska složenost funkcije dobrote
+	    \item brzina konvergencije funkcije dobrote\\[2em]
+	  \end{itemize} 
+	  \item naučeno ponašanje
+	  \begin{itemize}
+	    \item naučio je scene, ne općenito ponašanja
+	    \item učenje generaliziranog ponašanja variranjem scena u funkciji dobrote
+	  \end{itemize}
+	\end{enumerate}
+  \end{frame}
+  
+  \begin{frame}[plain]
+  	\section*{Hvala na pažnji!}
+  	\usebeamerfont{frametitle}
+  	\hspace{15em}Pitanja?
+  \end{frame}
+  
+\end{document}

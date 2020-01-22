@@ -1,0 +1,87 @@
+\begin{frame}{Funkcija dobrote rješenja}
+	\begin{enumerate}
+		\item za svaku scenu iz liste scena:
+		\begin{enumerate}
+			\item stvori umjetnog igrača iz rješenja
+			\item ponovi broj otkucaja sata puta:
+			\begin{enumerate}
+				\item simuliraj otkucaj sata u modelu igre
+				\item svaki $n$-ti otkucaj sata, \\ izračunaj novi potez igrača i postavi ga u modelu igre
+			\end{enumerate}
+			\item odredi razliku konačne visine i početne
+		\end{enumerate}
+		\item vrati prosjek razlika visina
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}{Genetski algoritam}
+	\begin{itemize}
+		\item generacijski genetski algoritam
+		\item operatori:
+		\begin{itemize}
+			\item $k$-turnirska selekcija
+			\item BLX-$\alpha$ križanje
+			\item normalna mutacija
+		\end{itemize}
+		\item modeli:
+		\begin{itemize}
+			\item unaprijedna umjetna neuronska mreža
+			\item Elmanova umjetna neuronska mreža
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Diferencijska evolucija}
+	\begin{itemize}
+		\item strategije:
+		\begin{itemize}
+			\item DE/rand/1/bin
+			\item DE/target-to-best/4/bin
+		\end{itemize}
+		\item modeli:
+		\begin{itemize}
+			\item unaprijedna umjetna neuronska mreža
+			\item Elmanova umjetna neuronska mreža
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Genetsko programiranje bazirano na operatorskim stablima}
+	\begin{itemize}
+		\item generacijski genetski algoritam s elitizmom
+		\item operatori:
+		\begin{itemize}
+			\item $k$-turnirska selekcija
+			\item zamjena podstabla jednog roditelja podstablom drugog roditelja 
+			\item zamjena podstabla slučajno generiranim podstablom
+		\end{itemize}
+		\item modeli:
+		\begin{itemize}
+			\item operatorsko stablo
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Linearno genetsko programiranje}
+	\begin{itemize}
+		\item generacijski genetski algoritam
+		\item operatori:
+		\begin{itemize}
+			\item proporcionalna selekcija
+			\item križanja:
+			\begin{itemize}
+				\item križanje s jednom točkom prekida
+				\item križanje s dvije točke prekida
+			\end{itemize}
+			\item mutacije:
+			\begin{itemize}
+				\item zamjena jedne instrukcije slučajno generiranom instrukcijom
+				\item zamjena kontinuiranog bloka instrukcija slučajno generiranim blokom instrukcija
+			\end{itemize}
+		\end{itemize}
+		\item modeli:
+		\begin{itemize}
+			\item programski isječak
+		\end{itemize}
+	\end{itemize}
+\end{frame}
